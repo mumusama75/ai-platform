@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banana AI 绘图 - AI Hub</title>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a3e;
+            --bg-tertiary: #0d0d1f;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            --bg-input: rgba(255, 255, 255, 0.08);
+            --text-primary: #fff;
+            --text-secondary: #ccc;
+            --text-muted: #888;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(255, 200, 50, 0.4);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --accent: #ffc832;
+            --accent-secondary: #ff9500;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #e8ecf1;
+            --bg-tertiary: #ffffff;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-card-hover: rgba(255, 255, 255, 1);
+            --bg-input: rgba(0, 0, 0, 0.05);
+            --text-primary: #1a1a2e;
+            --text-secondary: #444;
+            --text-muted: #666;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-hover: rgba(255, 150, 0, 0.4);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --accent: #e6a800;
+            --accent-secondary: #cc7a00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+        }
+
+        .theme-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .theme-btn.active {
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 50px 20px 30px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 200, 50, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .api-input-wrapper {
+            position: relative;
+        }
+
+        .api-input-wrapper input {
+            padding-right: 50px;
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+
+        .toggle-visibility:hover {
+            color: var(--accent);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 30px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            border: none;
+            border-radius: 25px;
+            color: #000;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 200, 50, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--accent);
+            box-shadow: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* 结果面板 */
+        .result-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-area {
+            flex: 1;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-area.has-image {
+            border-style: solid;
+        }
+
+        .result-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .result-placeholder span {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .result-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .result-actions .btn {
+            flex: 1;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 状态提示 */
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.error {
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 136, 0.15);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .status-message.info {
+            background: rgba(0, 212, 255, 0.15);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        /* 历史记录 */
+        .history-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .history-section h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .history-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            border-color: var(--accent);
+        }
+
+        .history-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+        }
+
+        /* 高级设置折叠 */
+        .advanced-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            user-select: none;
+        }
+
+        .advanced-toggle:hover {
+            color: var(--accent);
+        }
+
+        .advanced-settings {
+            display: none;
+            padding: 15px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .advanced-settings.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .history-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">AI Hub</a>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="chat.html">AI对话</a></li>
+                <li><a href="image.html">AI绘图</a></li>
+                <li><a href="music.html">AI音乐</a></li>
+                <li><a href="video.html">AI视频</a></li>
+            </ul>
+            <div class="theme-toggle">
+                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
+                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <h1>🍌 Banana AI 绘图</h1>
+        <p>使用 Banana API 调用 Stable Diffusion 生成精美图片</p>
+    </section>
+
+    <div class="main-container">
+        <!-- 输入面板 -->
+        <div class="panel">
+            <h2>⚙️ 参数设置</h2>
+
+            <div class="form-group">
+                <label>API Key *</label>
+                <div class="api-input-wrapper">
+                    <input type="password" id="apiKey" placeholder="输入你的 Banana API Key" autocomplete="off">
+                    <button class="toggle-visibility" onclick="toggleApiKeyVisibility()">👁️</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Model Key (模型标识)</label>
+                <input type="text" id="modelKey" placeholder="输入 Banana 模型 Key，如: sd-base">
+            </div>
+
+            <div class="form-group">
+                <label>提示词 (Prompt) *</label>
+                <textarea id="prompt" placeholder="描述你想生成的图片内容...&#10;例如: A beautiful sunset over mountains, digital art, highly detailed, 4k"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>反向提示词 (Negative Prompt)</label>
+                <textarea id="negativePrompt" placeholder="描述你不想出现的内容...&#10;例如: blurry, low quality, distorted" style="min-height: 80px;"></textarea>
+            </div>
+
+            <div class="advanced-toggle" onclick="toggleAdvanced()">
+                <span id="advancedIcon">▶</span> 高级设置
+            </div>
+
+            <div class="advanced-settings" id="advancedSettings">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>宽度 (Width)</label>
+                        <select id="width">
+                            <option value="512" selected>512px</option>
+                            <option value="768">768px</option>
+                            <option value="1024">1024px</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>高度 (Height)</label>
+                        <select id="height">
+                            <option value="512" selected>512px</option>
+                            <option value="768">768px</option>
+                            <option value="1024">1024px</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>采样步数 (Steps)</label>
+                        <input type="number" id="steps" value="30" min="1" max="150">
+                    </div>
+                    <div class="form-group">
+                        <label>引导系数 (CFG Scale)</label>
+                        <input type="number" id="cfgScale" value="7.5" min="1" max="20" step="0.5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>随机种子 (Seed，-1为随机)</label>
+                    <input type="number" id="seed" value="-1">
+                </div>
+
+                <div class="form-group">
+                    <label>API 端点 (Endpoint)</label>
+                    <input type="text" id="endpoint" value="https://api.banana.dev/start/v4" placeholder="Banana API 端点">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="generateImage()" id="generateBtn">
+                    🎨 生成图片
+                </button>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <!-- 结果面板 -->
+        <div class="panel result-panel">
+            <h2>🖼️ 生成结果</h2>
+
+            <div class="result-area" id="resultArea">
+                <div class="result-placeholder" id="placeholder">
+                    <span>🎨</span>
+                    <p>输入提示词并点击生成</p>
+                </div>
+                <img class="result-image" id="resultImage" style="display: none;">
+                <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                    <div class="spinner"></div>
+                    <div class="loading-text">正在生成中...</div>
+                </div>
+            </div>
+
+            <div class="result-actions" id="resultActions" style="display: none;">
+                <button class="btn btn-secondary" onclick="downloadImage()">💾 下载图片</button>
+                <button class="btn btn-secondary" onclick="copyPrompt()">📋 复制提示词</button>
+            </div>
+
+            <div class="history-section" id="historySection" style="display: none;">
+                <h3>📜 历史记录</h3>
+                <div class="history-grid" id="historyGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
+    </footer>
+
+    <script>
+        // 主题切换
+        const html = document.documentElement;
+        const themeBtns = document.querySelectorAll('.theme-btn');
+        const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeButtons(savedTheme);
+
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.getAttribute('data-theme');
+                html.setAttribute('data-theme', theme);
+                localStorage.setItem('ai-hub-theme', theme);
+                updateThemeButtons(theme);
+            });
+        });
+
+        function updateThemeButtons(theme) {
+            themeBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+            });
+        }
+
+        // 加载保存的 API Key
+        const savedApiKey = localStorage.getItem('banana-api-key');
+        if (savedApiKey) {
+            document.getElementById('apiKey').value = savedApiKey;
+        }
+
+        const savedModelKey = localStorage.getItem('banana-model-key');
+        if (savedModelKey) {
+            document.getElementById('modelKey').value = savedModelKey;
+        }
+
+        // 历史记录
+        let imageHistory = JSON.parse(localStorage.getItem('banana-history') || '[]');
+        renderHistory();
+
+        // API Key 显示切换
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            const btn = document.querySelector('.toggle-visibility');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        // 高级设置折叠
+        function toggleAdvanced() {
+            const settings = document.getElementById('advancedSettings');
+            const icon = document.getElementById('advancedIcon');
+            settings.classList.toggle('show');
+            icon.textContent = settings.classList.contains('show') ? '▼' : '▶';
+        }
+
+        // 显示状态消息
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message show ' + type;
+        }
+
+        function hideStatus() {
+            document.getElementById('statusMessage').classList.remove('show');
+        }
+
+        // 生成图片
+        async function generateImage() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const modelKey = document.getElementById('modelKey').value.trim();
+            const prompt = document.getElementById('prompt').value.trim();
+            const negativePrompt = document.getElementById('negativePrompt').value.trim();
+            const width = parseInt(document.getElementById('width').value);
+            const height = parseInt(document.getElementById('height').value);
+            const steps = parseInt(document.getElementById('steps').value);
+            const cfgScale = parseFloat(document.getElementById('cfgScale').value);
+            const seed = parseInt(document.getElementById('seed').value);
+            const endpoint = document.getElementById('endpoint').value.trim();
+
+            // 验证
+            if (!apiKey) {
+                showStatus('请输入 API Key', 'error');
+                return;
+            }
+            if (!prompt) {
+                showStatus('请输入提示词', 'error');
+                return;
+            }
+
+            // 保存设置
+            localStorage.setItem('banana-api-key', apiKey);
+            if (modelKey) {
+                localStorage.setItem('banana-model-key', modelKey);
+            }
+
+            // 显示加载状态
+            const btn = document.getElementById('generateBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const placeholder = document.getElementById('placeholder');
+            const resultArea = document.getElementById('resultArea');
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ 生成中...';
+            loadingOverlay.style.display = 'flex';
+            placeholder.style.display = 'none';
+            hideStatus();
+
+            try {
+                // 构建请求体
+                const requestBody = {
+                    apiKey: apiKey,
+                    modelKey: modelKey || 'sd-base',
+                    modelInputs: {
+                        prompt: prompt,
+                        negative_prompt: negativePrompt,
+                        width: width,
+                        height: height,
+                        num_inference_steps: steps,
+                        guidance_scale: cfgScale,
+                        seed: seed === -1 ? Math.floor(Math.random() * 2147483647) : seed
+                    }
+                };
+
+                showStatus('正在连接 Banana API...', 'info');
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                // 处理返回结果
+                if (result.message && result.message.toLowerCase().includes('error')) {
+                    throw new Error(result.message);
+                }
+
+                // 获取图片数据 (根据 Banana API 返回格式调整)
+                let imageData = null;
+
+                if (result.modelOutputs && result.modelOutputs[0]) {
+                    imageData = result.modelOutputs[0].image || result.modelOutputs[0].image_base64;
+                } else if (result.output) {
+                    imageData = result.output.image || result.output;
+                } else if (result.image) {
+                    imageData = result.image;
+                }
+
+                if (!imageData) {
+                    // 如果是异步任务，显示任务ID
+                    if (result.id || result.callID) {
+                        showStatus(`任务已提交，ID: ${result.id || result.callID}。请稍后查询结果。`, 'success');
+                        btn.disabled = false;
+                        btn.innerHTML = '🎨 生成图片';
+                        loadingOverlay.style.display = 'none';
+                        placeholder.style.display = 'block';
+                        return;
+                    }
+                    throw new Error('未能获取到图片数据，请检查API响应');
+                }
+
+                // 显示图片
+                const resultImage = document.getElementById('resultImage');
+                const imageSrc = imageData.startsWith('data:') ? imageData : `data:image/png;base64,${imageData}`;
+                resultImage.src = imageSrc;
+                resultImage.style.display = 'block';
+                resultArea.classList.add('has-image');
+                document.getElementById('resultActions').style.display = 'flex';
+
+                // 保存到历史记录
+                addToHistory(imageSrc, prompt);
+
+                showStatus('图片生成成功！', 'success');
+
+            } catch (error) {
+                console.error('生成失败:', error);
+                showStatus(`生成失败: ${error.message}`, 'error');
+                placeholder.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🎨 生成图片';
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // 下载图片
+        function downloadImage() {
+            const img = document.getElementById('resultImage');
+            if (!img.src) return;
+
+            const link = document.createElement('a');
+            link.download = `banana-ai-${Date.now()}.png`;
+            link.href = img.src;
+            link.click();
+        }
+
+        // 复制提示词
+        function copyPrompt() {
+            const prompt = document.getElementById('prompt').value;
+            navigator.clipboard.writeText(prompt).then(() => {
+                showStatus('提示词已复制到剪贴板', 'success');
+                setTimeout(hideStatus, 2000);
+            });
+        }
+
+        // 添加到历史记录
+        function addToHistory(imageSrc, prompt) {
+            imageHistory.unshift({
+                image: imageSrc,
+                prompt: prompt,
+                time: Date.now()
+            });
+
+            // 最多保存12张
+            if (imageHistory.length > 12) {
+                imageHistory = imageHistory.slice(0, 12);
+            }
+
+            localStorage.setItem('banana-history', JSON.stringify(imageHistory));
+            renderHistory();
+        }
+
+        // 渲染历史记录
+        function renderHistory() {
+            const section = document.getElementById('historySection');
+            const grid = document.getElementById('historyGrid');
+
+            if (imageHistory.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            grid.innerHTML = imageHistory.map((item, index) => `
+                <div class="history-item" onclick="loadFromHistory(${index})" title="${item.prompt}">
+                    <img src="${item.image}" alt="历史图片">
+                </div>
+            `).join('');
+        }
+
+        // 从历史记录加载
+        function loadFromHistory(index) {
+            const item = imageHistory[index];
+            if (!item) return;
+
+            document.getElementById('prompt').value = item.prompt;
+
+            const resultImage = document.getElementById('resultImage');
+            resultImage.src = item.image;
+            resultImage.style.display = 'block';
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('resultArea').classList.add('has-image');
+            document.getElementById('resultActions').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
