@@ -9,5 +9,16 @@
     "settings": {
       "theme": "dark"
     }
+  },
+  {
+    "id": "1767666731044",
+    "username": "123321",
+    "email": "linshun76@gmail.com",
+    "password": "$2a$10$k/RpQl7RZTq0M7AyaJa1CuBCrXFS0rYy/jcvTuLaecr8n2wDcfoYy",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=123321",
+    "createdAt": "2026-01-06T02:32:11.044Z",
+    "settings": {
+      "theme": "dark"
+    }
   }
 ]
