@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - AI Hub</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .avatar-section {
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            object-fit: cover;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .avatar-edit:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-info h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .profile-info .email {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .profile-info .joined {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* 标签页导航 */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            background: var(--bg-card);
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 卡片样式 */
+        .settings-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .settings-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* API Key 管理 */
+        .api-key-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .api-key-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .api-key-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .api-key-icon.gemini {
+            background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335);
+        }
+
+        .api-key-icon.replicate {
+            background: linear-gradient(135deg, #000, #333);
+        }
+
+        .api-key-name {
+            font-weight: 600;
+        }
+
+        .api-key-status {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .api-key-status.configured {
+            color: var(--success);
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-icon.danger:hover {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        /* 输入模态框 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        /* 帖子列表 */
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .post-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .post-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .post-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .post-title:hover {
+            color: var(--accent);
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        /* 密码修改表单 */
+        .password-form {
+            max-width: 400px;
+        }
+
+        /* 登录历史列表 */
+        .login-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .login-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .login-history-item .time {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .login-history-item .details {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .login-history-item .ip {
+            font-family: monospace;
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1 1 45%;
+            }
+
+            .login-history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">AI Hub</a>
+        <button class="menu-toggle">☰</button>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="gemini-chat.html">AI对话</a></li>
+                <li><a href="banana-draw.html">AI绘图</a></li>
+                <li><a href="forum.html">社区</a></li>
+            </ul>
+            <div class="theme-toggle">
+                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
+                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+            </div>
+            <div class="user-area">
+                <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+                <div class="user-profile" id="userProfile">
+                    <img class="user-avatar" id="userAvatar" src="" alt="头像">
+                    <span class="user-name" id="userName"></span>
+                    <div class="user-dropdown">
+                        <a href="profile.html" class="dropdown-item">👤 个人中心</a>
+                        <a href="profile.html#settings" class="dropdown-item">⚙️ 设置</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout logout-btn">🚪 退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 未登录提示 -->
+        <div id="notLoggedIn" class="settings-card" style="display: none; text-align: center; padding: 60px;">
+            <span style="font-size: 4rem;">🔒</span>
+            <h2 style="margin: 20px 0;">请先登录</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">登录后即可访问个人中心</p>
+            <a href="login.html" class="btn">前往登录</a>
+        </div>
+
+        <!-- 已登录内容 -->
+        <div id="loggedInContent" style="display: none;">
+            <!-- 个人信息头部 -->
+            <div class="profile-header">
+                <div class="avatar-section">
+                    <img class="profile-avatar" id="profileAvatar" src="" alt="头像">
+                    <button class="avatar-edit" onclick="changeAvatar()" title="更换头像">📷</button>
+                </div>
+                <div class="profile-info">
+                    <h1 id="profileUsername">用户名</h1>
+                    <p class="email" id="profileEmail">email@example.com</p>
+                    <p class="joined" id="profileJoined">加入时间：-</p>
+                </div>
+            </div>
+
+            <!-- 标签页导航 -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('apikeys')">🔑 API 密钥</button>
+                <button class="tab-btn" onclick="switchTab('posts')">📝 我的帖子</button>
+                <button class="tab-btn" onclick="switchTab('security')">🛡️ 安全</button>
+                <button class="tab-btn" onclick="switchTab('settings')">⚙️ 账号设置</button>
+            </div>
+
+            <!-- API 密钥管理 -->
+            <div class="tab-content active" id="tab-apikeys">
+                <div class="settings-card">
+                    <h3>🔑 API 密钥管理</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+                        在这里管理您的 API 密钥，密钥将加密存储在服务器上，使用 AI 功能时无需重复输入。
+                    </p>
+
+                    <div class="api-key-item">
+                        <div class="api-key-info">
+                            <div class="api-key-icon gemini">G</div>
+                            <div>
+                                <div class="api-key-name">Google Gemini</div>
+                                <div class="api-key-status" id="geminiStatus">未配置</div>
+                            </div>
+                        </div>
+                        <div class="api-key-actions">
+                            <button class="btn-icon" onclick="configureApiKey('gemini')" title="配置">⚙️</button>
+                            <button class="btn-icon danger" onclick="deleteApiKey('gemini')" title="删除" id="geminiDelete" style="display: none;">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div class="api-key-item">
+                        <div class="api-key-info">
+                            <div class="api-key-icon replicate">R</div>
+                            <div>
+                                <div class="api-key-name">Replicate</div>
+                                <div class="api-key-status" id="replicateStatus">未配置</div>
+                            </div>
+                        </div>
+                        <div class="api-key-actions">
+                            <button class="btn-icon" onclick="configureApiKey('replicate')" title="配置">⚙️</button>
+                            <button class="btn-icon danger" onclick="deleteApiKey('replicate')" title="删除" id="replicateDelete" style="display: none;">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的帖子 -->
+            <div class="tab-content" id="tab-posts">
+                <div class="settings-card">
+                    <h3>📝 我的帖子</h3>
+                    <div class="post-list" id="postList">
+                        <div class="empty-state">
+                            <span>📭</span>
+                            <p>暂无帖子</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 安全设置 -->
+            <div class="tab-content" id="tab-security">
+                <div class="settings-card">
+                    <h3>📜 登录历史</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;">
+                        最近 10 次登录记录
+                    </p>
+                    <div class="login-history-list" id="loginHistoryList">
+                        <div class="empty-state">
+                            <span>📭</span>
+                            <p>暂无登录记录</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card" style="border-color: var(--error);">
+                    <h3 style="color: var(--error);">⚠️ 删除账户</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">
+                        删除账户将永久移除您的所有数据，包括帖子和评论。此操作不可撤销。
+                    </p>
+                    <button class="btn btn-secondary" style="border-color: var(--error); color: var(--error);" onclick="showDeleteAccountModal()">
+                        删除我的账户
+                    </button>
+                </div>
+            </div>
+
+            <!-- 账号设置 -->
+            <div class="tab-content" id="tab-settings">
+                <div class="settings-card">
+                    <h3>👤 个人信息</h3>
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" id="editUsername" placeholder="用户名">
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱</label>
+                        <input type="email" id="editEmail" placeholder="邮箱">
+                    </div>
+                    <button class="btn" onclick="updateProfile()">保存修改</button>
+                    <div class="status-message" id="profileStatus"></div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>🔒 修改密码</h3>
+                    <div class="password-form">
+                        <div class="form-group">
+                            <label>当前密码</label>
+                            <input type="password" id="oldPassword" placeholder="输入当前密码">
+                        </div>
+                        <div class="form-group">
+                            <label>新密码</label>
+                            <input type="password" id="newPassword" placeholder="8位以上，含大小写、数字、特殊字符">
+                        </div>
+                        <div class="form-group">
+                            <label>确认新密码</label>
+                            <input type="password" id="confirmNewPassword" placeholder="再次输入新密码">
+                        </div>
+                        <button class="btn" onclick="changePassword()">修改密码</button>
+                        <div class="status-message" id="passwordStatus"></div>
+                    </div>
+                </div>
+
+                <div class="settings-card" style="border-color: var(--error);">
+                    <h3 style="color: var(--error);">⚠️ 危险区域</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">退出登录将清除本地保存的登录状态。</p>
+                    <button class="btn btn-secondary" style="border-color: var(--error); color: var(--error);" onclick="logout()">退出登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key 配置模态框 -->
+    <div class="modal-overlay" id="apiKeyModal">
+        <div class="modal">
+            <h3 id="modalTitle">配置 API Key</h3>
+            <div class="form-group">
+                <label id="modalLabel">API Key</label>
+                <input type="password" id="modalApiKey" placeholder="输入 API Key">
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);" id="modalHint"></p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn" onclick="saveApiKey()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除账户模态框 -->
+    <div class="modal-overlay" id="deleteAccountModal">
+        <div class="modal">
+            <h3 style="color: var(--error);">⚠️ 确认删除账户</h3>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">
+                此操作将永久删除您的账户和所有数据，无法恢复。请输入密码确认：
+            </p>
+            <div class="form-group">
+                <label>当前密码</label>
+                <input type="password" id="deleteConfirmPassword" placeholder="输入密码以确认">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+                <button class="btn" style="background: var(--error);" onclick="deleteAccount()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 头像上传模态框 -->
+    <div class="modal-overlay" id="avatarModal">
+        <div class="modal">
+            <h3>📷 更换头像</h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="text-align: center;">
+                    <img id="avatarPreview" src="" alt="预览" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);">
+                </div>
+                <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/gif,image/webp" style="display: none;" onchange="previewAvatar(event)">
+                <button class="btn btn-secondary" onclick="document.getElementById('avatarInput').click()">选择图片</button>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">支持 PNG、JPEG、GIF、WebP，最大 2MB</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeAvatarModal()">取消</button>
+                <button class="btn" onclick="uploadAvatar()">上传</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
+    </footer>
+
+    <script src="scripts/common.js"></script>
+    <script>
+        const API_BASE = window.AIHub ? window.AIHub.API_BASE : '/api';
+        let currentUser = null;
+        let currentProvider = null;
+
+        // 检查登录状态
+        async function checkAuth() {
+            const token = localStorage.getItem('ai-hub-token');
+            if (!token) {
+                showNotLoggedIn();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/user`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    showNotLoggedIn();
+                    return;
+                }
+
+                const data = await res.json();
+                currentUser = data.user;
+                showLoggedIn();
+                loadApiKeyStatus();
+                loadUserPosts();
+                loadLoginHistory();
+            } catch (error) {
+                console.error('验证失败:', error);
+                showNotLoggedIn();
+            }
+        }
+
+        function showNotLoggedIn() {
+            document.getElementById('notLoggedIn').style.display = 'block';
+            document.getElementById('loggedInContent').style.display = 'none';
+        }
+
+        function showLoggedIn() {
+            document.getElementById('notLoggedIn').style.display = 'none';
+            document.getElementById('loggedInContent').style.display = 'block';
+
+            // 填充用户信息
+            document.getElementById('profileAvatar').src = currentUser.avatar || '';
+            document.getElementById('profileUsername').textContent = currentUser.username;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profileJoined').textContent = '加入时间：' + formatDate(currentUser.createdAt);
+
+            // 填充编辑表单
+            document.getElementById('editUsername').value = currentUser.username;
+            document.getElementById('editEmail').value = currentUser.email;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // 标签页切换
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        // 检查 URL hash 并切换到对应标签
+        function checkHash() {
+            const hash = window.location.hash;
+            if (hash === '#settings') {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+                document.getElementById('tab-settings').classList.add('active');
+            }
+        }
+
+        // API Key 状态加载
+        async function loadApiKeyStatus() {
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user/apikeys`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                updateApiKeyUI('gemini', data.configured.gemini);
+                updateApiKeyUI('replicate', data.configured.replicate);
+            } catch (error) {
+                console.error('加载 API Key 状态失败:', error);
+            }
+        }
+
+        function updateApiKeyUI(provider, configured) {
+            const statusEl = document.getElementById(provider + 'Status');
+            const deleteBtn = document.getElementById(provider + 'Delete');
+
+            if (configured) {
+                statusEl.textContent = '已配置';
+                statusEl.classList.add('configured');
+                deleteBtn.style.display = 'flex';
+            } else {
+                statusEl.textContent = '未配置';
+                statusEl.classList.remove('configured');
+                deleteBtn.style.display = 'none';
+            }
+        }
+
+        // 配置 API Key
+        function configureApiKey(provider) {
+            currentProvider = provider;
+            const names = { gemini: 'Google Gemini', replicate: 'Replicate' };
+            const hints = {
+                gemini: '获取地址：https://aistudio.google.com/apikey',
+                replicate: '获取地址：https://replicate.com/account/api-tokens'
+            };
+
+            document.getElementById('modalTitle').textContent = '配置 ' + names[provider] + ' API Key';
+            document.getElementById('modalLabel').textContent = names[provider] + ' API Key';
+            document.getElementById('modalHint').textContent = hints[provider];
+            document.getElementById('modalApiKey').value = '';
+            document.getElementById('apiKeyModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('apiKeyModal').classList.remove('show');
+            currentProvider = null;
+        }
+
+        async function saveApiKey() {
+            const apiKey = document.getElementById('modalApiKey').value.trim();
+            if (!apiKey) {
+                alert('请输入 API Key');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user/apikeys`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ provider: currentProvider, apiKey })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || '保存失败');
+                }
+
+                closeModal();
+                loadApiKeyStatus();
+                alert('保存成功！');
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function deleteApiKey(provider) {
+            if (!confirm('确定要删除此 API Key 吗？')) return;
+
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user/apikeys/${provider}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    const data = await res.json();
+                    throw new Error(data.error || '删除失败');
+                }
+
+                loadApiKeyStatus();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // 加载用户帖子
+        async function loadUserPosts() {
+            try {
+                const res = await fetch(`${API_BASE}/forum/user/${currentUser.id}/posts`);
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const postList = document.getElementById('postList');
+
+                if (data.posts.length === 0) {
+                    postList.innerHTML = `
+                        <div class="empty-state">
+                            <span>📭</span>
+                            <p>暂无帖子</p>
+                            <a href="forum.html" class="btn" style="margin-top: 20px;">去发帖</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                postList.innerHTML = data.posts.map(post => `
+                    <div class="post-item">
+                        <a href="forum.html?post=${post.id}" class="post-title">${escapeHtml(post.title)}</a>
+                        <div class="post-meta">
+                            <span>👁️ ${post.views || 0}</span>
+                            <span>❤️ ${post.likes}</span>
+                            <span>💬 ${post.commentCount}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('加载帖子失败:', error);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 更新个人信息
+        async function updateProfile() {
+            const username = document.getElementById('editUsername').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+
+            if (!username || !email) {
+                showStatus('profileStatus', '请填写完整信息', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ username, email })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || '更新失败');
+                }
+
+                // 更新本地存储
+                localStorage.setItem('ai-hub-user', JSON.stringify(data.user));
+                currentUser = data.user;
+                showLoggedIn();
+                showStatus('profileStatus', '保存成功！', 'success');
+
+                // 更新导航栏
+                if (window.AIHub) {
+                    window.AIHub.AuthManager.updateUI();
+                }
+            } catch (error) {
+                showStatus('profileStatus', error.message, 'error');
+            }
+        }
+
+        // 修改密码
+        async function changePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (!oldPassword || !newPassword || !confirmNewPassword) {
+                showStatus('passwordStatus', '请填写所有密码字段', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                showStatus('passwordStatus', '两次输入的新密码不一致', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user/password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || '修改失败');
+                }
+
+                showStatus('passwordStatus', '密码修改成功！', 'success');
+                document.getElementById('oldPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmNewPassword').value = '';
+            } catch (error) {
+                showStatus('passwordStatus', error.message, 'error');
+            }
+        }
+
+        function showStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'status-message show ' + type;
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        // 更换头像 - 显示选择模态框
+        function changeAvatar() {
+            document.getElementById('avatarPreview').src = currentUser.avatar || '';
+            document.getElementById('avatarModal').classList.add('show');
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').classList.remove('show');
+            document.getElementById('avatarInput').value = '';
+        }
+
+        let selectedAvatarData = null;
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 检查文件大小
+            if (file.size > 2 * 1024 * 1024) {
+                alert('图片大小不能超过 2MB');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedAvatarData = e.target.result;
+                document.getElementById('avatarPreview').src = selectedAvatarData;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadAvatar() {
+            if (!selectedAvatarData) {
+                alert('请先选择图片');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user/avatar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ image: selectedAvatarData })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || '上传失败');
+                }
+
+                // 更新本地
+                currentUser.avatar = data.avatar;
+                localStorage.setItem('ai-hub-user', JSON.stringify(currentUser));
+                document.getElementById('profileAvatar').src = data.avatar;
+
+                if (window.AIHub) {
+                    window.AIHub.AuthManager.updateUI();
+                }
+
+                closeAvatarModal();
+                selectedAvatarData = null;
+                alert('头像上传成功！');
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // 加载登录历史
+        async function loadLoginHistory() {
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user/login-history`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const historyList = document.getElementById('loginHistoryList');
+
+                if (!data.loginHistory || data.loginHistory.length === 0) {
+                    historyList.innerHTML = `
+                        <div class="empty-state">
+                            <span>📭</span>
+                            <p>暂无登录记录</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                historyList.innerHTML = data.loginHistory.map(item => {
+                    const date = new Date(item.time);
+                    const timeStr = date.toLocaleString('zh-CN', {
+                        year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    const browser = parseBrowser(item.userAgent);
+                    return `
+                        <div class="login-history-item">
+                            <div>
+                                <div class="time">${timeStr}</div>
+                                <div class="details">${browser}</div>
+                            </div>
+                            <span class="ip">${item.ip || '未知'}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('加载登录历史失败:', error);
+            }
+        }
+
+        function parseBrowser(ua) {
+            if (!ua) return '未知设备';
+            if (ua.includes('Chrome')) return 'Chrome 浏览器';
+            if (ua.includes('Firefox')) return 'Firefox 浏览器';
+            if (ua.includes('Safari')) return 'Safari 浏览器';
+            if (ua.includes('Edge')) return 'Edge 浏览器';
+            return '其他浏览器';
+        }
+
+        // 删除账户
+        function showDeleteAccountModal() {
+            document.getElementById('deleteConfirmPassword').value = '';
+            document.getElementById('deleteAccountModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteAccountModal').classList.remove('show');
+        }
+
+        async function deleteAccount() {
+            const password = document.getElementById('deleteConfirmPassword').value;
+            if (!password) {
+                alert('请输入密码');
+                return;
+            }
+
+            if (!confirm('确定要删除账户吗？此操作不可撤销！')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('ai-hub-token');
+                const res = await fetch(`${API_BASE}/user`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || '删除失败');
+                }
+
+                alert('账户已删除');
+                localStorage.removeItem('ai-hub-token');
+                localStorage.removeItem('ai-hub-user');
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            if (window.AIHub) {
+                window.AIHub.AuthManager.logout();
+            } else {
+                localStorage.removeItem('ai-hub-token');
+                localStorage.removeItem('ai-hub-user');
+            }
+            window.location.href = 'index.html';
+        }
+
+        // 初始化
+        checkAuth();
+        checkHash();
+    </script>
+</body>
+</html>

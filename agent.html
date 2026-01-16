@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 浏览器智能体 - AI Hub</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent), #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .demo-video {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .demo-video img {
+            width: 100%;
+            display: block;
+        }
+
+        .features {
+            padding: 80px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .install-section {
+            padding: 80px 50px;
+            background: var(--bg-secondary);
+        }
+
+        .install-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+        }
+
+        .install-steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(90deg, var(--accent), #00ff88);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .step-content code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: linear-gradient(90deg, var(--accent), #00ff88);
+            border-radius: 30px;
+            color: #000;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .warning-box {
+            max-width: 800px;
+            margin: 40px auto 0;
+            padding: 20px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            color: #ffc107;
+        }
+
+        .warning-box h4 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features,
+            .install-section {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">AI Hub</a>
+        <button class="menu-toggle">☰</button>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="gemini-chat.html">AI对话</a></li>
+                <li><a href="banana-draw.html">AI绘图</a></li>
+                <li><a href="forum.html">社区</a></li>
+            </ul>
+            <div class="theme-toggle">
+                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
+                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+            </div>
+            <div class="user-area">
+                <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
+                <div class="user-profile" id="userProfile">
+                    <img class="user-avatar" id="userAvatar" src="" alt="头像">
+                    <span class="user-name" id="userName"></span>
+                    <div class="user-dropdown">
+                        <a href="profile.html" class="dropdown-item">👤 个人中心</a>
+                        <a href="profile.html#settings" class="dropdown-item">⚙️ 设置</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item logout logout-btn">🚪 退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>🤖 AI 浏览器智能体</h1>
+        <p>让 AI 帮你操作浏览器，自动完成搜索、点赞、填表等重复任务</p>
+        <div class="demo-video">
+            <img src="https://via.placeholder.com/800x450/1a1a2e/00d4ff?text=AI+Browser+Agent+Demo" alt="演示">
+        </div>
+    </section>
+
+    <section class="features">
+        <h2>✨ 核心功能</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👁️</div>
+                <h3>看得见</h3>
+                <p>AI 能够读取当前网页的所有可交互元素，理解页面结构和内容</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>会思考</h3>
+                <p>基于 Gemini AI 的智能决策，自动规划实现目标的最优路径</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🖱️</div>
+                <h3>能操作</h3>
+                <p>模拟人类操作，执行点击、输入、滚动、导航等各类浏览器动作</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>本地运行</h3>
+                <p>数据不经过任何服务器，API Key 仅存在你的浏览器本地</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="install-section">
+        <h2>📦 安装指南</h2>
+        <div class="install-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>下载扩展</h3>
+                    <p>点击下方按钮下载扩展文件压缩包，解压到任意文件夹</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>打开扩展管理页</h3>
+                    <p>在 Chrome 浏览器地址栏输入 <code>chrome://extensions</code> 并回车</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>启用开发者模式</h3>
+                    <p>打开右上角的 "开发者模式" 开关</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>加载扩展</h3>
+                    <p>点击 "加载已解压的扩展程序"，选择解压后的 <code>browser-agent</code> 文件夹</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>配置 API Key</h3>
+                    <p>点击扩展图标，在设置中输入你的 Gemini API Key（可在 <a href="https://aistudio.google.com/apikey" target="_blank"
+                            style="color: var(--accent);">Google AI Studio</a> 免费获取）</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="browser-agent/" download class="download-btn">
+                <span>📥</span> 下载扩展
+            </a>
+        </div>
+
+        <div class="warning-box">
+            <h4>⚠️ 安全提示</h4>
+            <p>此扩展可以控制浏览器操作任意网站。请勿在银行、密码管理器等敏感页面使用，以确保安全。</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
+    </footer>
+
+    <script src="scripts/common.js"></script>
+</body>
+
+</html>

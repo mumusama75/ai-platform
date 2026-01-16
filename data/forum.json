@@ -1,0 +1,36 @@
+{
+  "posts": [
+    {
+      "id": "1768526807686",
+      "title": "11",
+      "content": "11",
+      "category": "讨论",
+      "authorId": "1768526796386",
+      "authorName": "bnetplayer",
+      "authorAvatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=bnetplayer",
+      "createdAt": "2026-01-16T01:26:47.686Z",
+      "likes": [
+        "1768526796386"
+      ],
+      "comments": [
+        {
+          "id": "1768526952724",
+          "content": "bbb",
+          "authorId": "1768526796386",
+          "authorName": "bnetplayer",
+          "authorAvatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=bnetplayer",
+          "createdAt": "2026-01-16T01:29:12.724Z",
+          "likes": []
+        }
+      ],
+      "views": 3
+    }
+  ],
+  "categories": [
+    "讨论",
+    "分享",
+    "教程",
+    "求助",
+    "公告"
+  ]
+}

@@ -8,6 +8,9 @@
     "createdAt": "2026-01-05T06:35:27.015Z",
     "settings": {
       "theme": "dark"
+    },
+    "apiKeys": {
+      "gemini": "5b44f93803fcf09179e773f1b1a3f60e:1c8f4ecbf68bb7bae90f991d8d95979d9995ed36755e861719b093ebece51568089703967d72690dc9736e547f031687"
     }
   },
   {
@@ -17,6 +20,31 @@
     "password": "$2a$10$k/RpQl7RZTq0M7AyaJa1CuBCrXFS0rYy/jcvTuLaecr8n2wDcfoYy",
     "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=123321",
     "createdAt": "2026-01-06T02:32:11.044Z",
+    "settings": {
+      "theme": "dark"
+    }
+  },
+  {
+    "id": "1767943130977",
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "$2a$10$EFdI/GCyz6fKEMn/BR2X4uiTwiNm7w0HyU4miz56b6JPMZkqnq0cm",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testuser",
+    "createdAt": "2026-01-09T07:18:50.977Z",
+    "settings": {
+      "theme": "dark"
+    },
+    "apiKeys": {
+      "gemini": "827efbef461299064b82a275d134a646:eefd4342e98f5f83d971aa2ac05af2f6858cf4caec585465b15fa0033f1d127a"
+    }
+  },
+  {
+    "id": "1768526152275",
+    "username": "mumu123",
+    "email": "mumu123@test.com",
+    "password": "$2a$10$KlwHHOEu38w9kGYHBnCpeOepNggoccepdPdACQOZadk7cHMyEqqMy",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mumu123",
+    "createdAt": "2026-01-16T01:15:52.275Z",
     "settings": {
       "theme": "dark"
     }

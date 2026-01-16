@@ -4,48 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 / 注册 - AI Hub</title>
+    <link rel="stylesheet" href="styles/common.css">
     <style>
-        :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a3e;
-            --bg-tertiary: #0d0d1f;
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-input: rgba(255, 255, 255, 0.08);
-            --text-primary: #fff;
-            --text-secondary: #ccc;
-            --text-muted: #888;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --accent: #00d4ff;
-            --accent-secondary: #7b2fff;
-            --error: #ff6b6b;
-            --success: #00ff88;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #e8ecf1;
-            --bg-tertiary: #ffffff;
-            --bg-card: rgba(255, 255, 255, 0.95);
-            --bg-input: rgba(0, 0, 0, 0.05);
-            --text-primary: #1a1a2e;
-            --text-secondary: #444;
-            --text-muted: #666;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --accent: #0096c8;
-            --accent-secondary: #6b21a8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -385,6 +346,88 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* 密码强度提示 */
+        .password-requirements {
+            margin-top: 10px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* 记住我和忘记密码 */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--accent);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .forgot-password:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* 登录尝试提示 */
+        .attempts-warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .attempts-warning.show {
+            display: block;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .req-item.valid {
+            color: var(--success);
+        }
+
+        .req-item.valid .req-icon {
+            color: var(--success);
+        }
+
+        .req-icon {
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -414,6 +457,8 @@
 
             <!-- 登录表单 -->
             <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="attempts-warning" id="attemptsWarning"></div>
+
                 <div class="form-group">
                     <label>用户名 / 邮箱</label>
                     <div class="input-wrapper">
@@ -429,6 +474,14 @@
                         <input type="password" id="loginPassword" placeholder="输入密码" required>
                         <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</button>
                     </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>记住我 (30天)</span>
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showForgotPassword(event)">忘记密码？</a>
                 </div>
 
                 <button type="submit" class="submit-btn" id="loginBtn">
@@ -459,8 +512,15 @@
                     <label>密码</label>
                     <div class="input-wrapper">
                         <span class="icon">🔒</span>
-                        <input type="password" id="regPassword" placeholder="至少 6 个字符" required minlength="6">
+                        <input type="password" id="regPassword" placeholder="8位以上，含大小写、数字、特殊字符" required minlength="8" oninput="validatePasswordRealtime()">
                         <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)">👁️</button>
+                    </div>
+                    <div class="password-requirements" id="passwordRequirements">
+                        <div class="req-item" id="reqLength"><span class="req-icon">○</span> 至少 8 个字符</div>
+                        <div class="req-item" id="reqUpper"><span class="req-icon">○</span> 包含大写字母</div>
+                        <div class="req-item" id="reqLower"><span class="req-icon">○</span> 包含小写字母</div>
+                        <div class="req-item" id="reqNumber"><span class="req-icon">○</span> 包含数字</div>
+                        <div class="req-item" id="reqSpecial"><span class="req-icon">○</span> 包含特殊字符 (!@#$%^&* 等)</div>
                     </div>
                 </div>
 
@@ -485,36 +545,16 @@
         </div>
     </div>
 
+    <script src="scripts/common.js"></script>
     <script>
-        const API_BASE = 'http://localhost:3000/api';
-
-        // 主题切换
-        const html = document.documentElement;
-        const themeBtns = document.querySelectorAll('.theme-btn');
-        const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        updateThemeButtons(savedTheme);
-
-        themeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.getAttribute('data-theme');
-                html.setAttribute('data-theme', theme);
-                localStorage.setItem('ai-hub-theme', theme);
-                updateThemeButtons(theme);
-            });
-        });
-
-        function updateThemeButtons(theme) {
-            themeBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-            });
-        }
+        // 使用 common.js 中定义的 API_BASE
+        const API_BASE_URL = window.AIHub ? window.AIHub.API_BASE : '/api';
 
         // 检查是否已登录
         const token = localStorage.getItem('ai-hub-token');
         if (token) {
             // 验证 token
-            fetch(`${API_BASE}/verify`, {
+            fetch(`${API_BASE_URL}/verify`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             .then(res => res.json())
@@ -552,6 +592,29 @@
             }
         }
 
+        // 实时密码验证
+        function validatePasswordRealtime() {
+            const password = document.getElementById('regPassword').value;
+
+            const requirements = {
+                reqLength: password.length >= 8,
+                reqUpper: /[A-Z]/.test(password),
+                reqLower: /[a-z]/.test(password),
+                reqNumber: /[0-9]/.test(password),
+                reqSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+            };
+
+            for (const [id, valid] of Object.entries(requirements)) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.toggle('valid', valid);
+                    el.querySelector('.req-icon').textContent = valid ? '✓' : '○';
+                }
+            }
+
+            return Object.values(requirements).every(v => v);
+        }
+
         // HTML 转义函数（防止 XSS）
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -571,27 +634,47 @@
             document.getElementById('message').classList.remove('show');
         }
 
+        // 显示登录尝试警告
+        function showAttemptsWarning(remaining) {
+            const warning = document.getElementById('attemptsWarning');
+            if (remaining !== undefined && remaining <= 3 && remaining > 0) {
+                warning.textContent = `⚠️ 还剩 ${remaining} 次尝试机会，之后账户将被锁定 15 分钟`;
+                warning.classList.add('show');
+            } else {
+                warning.classList.remove('show');
+            }
+        }
+
         // 登录处理
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
 
             btn.classList.add('loading');
             btn.disabled = true;
             hideMessage();
 
             try {
-                const res = await fetch(`${API_BASE}/login`, {
+                const res = await fetch(`${API_BASE_URL}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username, password, rememberMe })
                 });
 
                 const data = await res.json();
 
                 if (!res.ok) {
+                    // 显示剩余尝试次数
+                    if (data.attemptsRemaining !== undefined) {
+                        showAttemptsWarning(data.attemptsRemaining);
+                    }
+                    // 账户锁定
+                    if (data.locked) {
+                        throw new Error(`账户已锁定，请 ${data.remainingMinutes} 分钟后再试`);
+                    }
                     throw new Error(data.error || '登录失败');
                 }
 
@@ -600,6 +683,7 @@
                 localStorage.setItem('ai-hub-user', JSON.stringify(data.user));
 
                 showMessage('登录成功，正在跳转...', 'success');
+                showAttemptsWarning(); // 清除警告
 
                 setTimeout(() => {
                     window.location.href = 'index.html';
@@ -611,6 +695,31 @@
                 btn.classList.remove('loading');
                 btn.disabled = false;
             }
+        }
+
+        // 忘记密码
+        function showForgotPassword(e) {
+            e.preventDefault();
+            const email = prompt('请输入您的注册邮箱：');
+            if (!email) return;
+
+            fetch(`${API_BASE_URL}/forgot-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.resetToken) {
+                    // 开发模式下显示令牌
+                    alert(`密码重置链接（开发模式）：\n${window.location.origin}/reset-password.html?token=${data.resetToken}`);
+                } else {
+                    showMessage(data.message, 'success');
+                }
+            })
+            .catch(err => {
+                showMessage('请求失败，请稍后再试');
+            });
         }
 
         // 注册处理
@@ -632,7 +741,7 @@
             hideMessage();
 
             try {
-                const res = await fetch(`${API_BASE}/register`, {
+                const res = await fetch(`${API_BASE_URL}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password })

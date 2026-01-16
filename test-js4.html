@@ -428,115 +428,12 @@
         <a href="index.html" class="logo">AI Hub</a>
         <button class="menu-toggle">☰</button>
         <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="gemini-chat.html" class="active">AI对话</a></li>
-                <li><a href="banana-draw.html">AI绘图</a></li>
-                <li><a href="forum.html">社区</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
-            </div>
-            <div class="user-area">
-                <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
-                <div class="user-profile" id="userProfile">
-                    <img class="user-avatar" id="userAvatar" src="" alt="头像">
-                    <span class="user-name" id="userName"></span>
-                    <div class="user-dropdown">
-                        <a href="profile.html" class="dropdown-item">👤 个人中心</a>
-                        <a href="profile.html#settings" class="dropdown-item">⚙️ 设置</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item logout logout-btn">🚪 退出登录</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="main-container">
-        <!-- 侧边栏设置 -->
-        <div class="sidebar">
-            <div class="settings-card">
-                <h3>🔑 API 设置</h3>
-                <div class="form-group" id="savedKeyInfo" style="display: none;">
-                    <div
-                        style="padding: 10px; background: rgba(0, 255, 136, 0.1); border-radius: 8px; color: var(--success); font-size: 0.9rem;">
-                        ✓ 已使用账号保存的 API Key
-                    </div>
-                </div>
-                <div class="form-group" id="apiKeyGroup">
-                    <label>Gemini API Key</label>
-                    <div class="api-wrapper">
-                        <input type="password" id="apiKey" placeholder="输入 Google API Key">
-                        <button class="toggle-api">👁️</button>
-                    </div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;" id="apiKeyHint">
-                        <a href="login.html" style="color: var(--accent);">登录</a> 后可在个人中心保存 API Key
-                    </p>
-                </div>
-                <div class="form-group">
-                    <label>模型选择</label>
-                    <select id="model">
-                        <option value="gemini-2.0-flash-exp" selected>Gemini 2.0 Flash Exp (最新)</option>
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                        <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="settings-card">
-                <h3>⚙️ 参数设置</h3>
-                <div class="form-group">
-                    <label>温度 (Temperature): <span id="tempValue">0.7</span></label>
-                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
-                </div>
-                <div class="form-group">
-                    <label>最大输出长度</label>
-                    <select id="maxTokens">
-                        <option value="1024">1024</option>
-                        <option value="2048" selected>2048</option>
-                        <option value="4096">4096</option>
-                        <option value="8192">8192</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="settings-card">
-                <h3>🗑️ 操作</h3>
-                <button class="btn-clear">清空对话</button>
-            </div>
-        </div>
-
-        <!-- 对话区域 -->
-        <div class="chat-container">
-            <div class="chat-header">
-                <h2>✨ Gemini 对话</h2>
-                <span class="model-badge" id="modelBadge">gemini-2.0-flash-exp</span>
-            </div>
-
-            <div class="chat-messages" id="chatMessages">
-                <div class="welcome-message" id="welcomeMessage">
-                    <span>✨</span>
-                    <h3>欢迎使用 Gemini AI</h3>
-                    <p>输入你的 API Key，然后开始对话吧！</p>
-                </div>
-            </div>
-
-            <div class="status-bar" id="statusBar"></div>
-
-            <div class="chat-input-area">
-                <div class="input-wrapper">
-                    <textarea id="userInput" placeholder="输入消息... (Shift+Enter 换行，Enter 发送)" rows="1"></textarea>
-                    <button class="send-btn" id="sendBtn">➤</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+</head>
+<body>
+    <h1>Test 4</h1>
     <script src="scripts/common.js"></script>
-    <script src="scripts/chat.js"></script>
+    <script>
+        alert("Test 4 脚本执行");
+    </script>
 </body>
-
 </html>

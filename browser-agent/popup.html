@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Hub Browser Agent</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      min-height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e4e4e7;
+    }
+
+    .header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .header h1 {
+      font-size: 18px;
+      background: linear-gradient(90deg, #00d4ff, #00ff88);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 12px;
+      color: #a1a1aa;
+    }
+
+    .main {
+      padding: 20px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      color: #a1a1aa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #e4e4e7;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #00d4ff;
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .api-key-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #a1a1aa;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #00d4ff, #00ff88);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0,212,255,0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e4e4e7;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .status {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.info {
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.3);
+      color: #00d4ff;
+    }
+
+    .status.success {
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.3);
+      color: #00ff88;
+    }
+
+    .status.error {
+      background: rgba(255,107,107,0.1);
+      border: 1px solid rgba(255,107,107,0.3);
+      color: #ff6b6b;
+    }
+
+    .log-container {
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 12px;
+    }
+
+    .log-entry {
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-entry .time {
+      color: #a1a1aa;
+      margin-right: 8px;
+    }
+
+    .log-entry.action {
+      color: #00d4ff;
+    }
+
+    .log-entry.thinking {
+      color: #fbbf24;
+    }
+
+    .log-entry.done {
+      color: #00ff88;
+    }
+
+    .log-entry.error {
+      color: #ff6b6b;
+    }
+
+    .settings-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+
+    .settings-toggle::after {
+      content: '▼';
+      font-size: 10px;
+      transition: transform 0.3s;
+    }
+
+    .settings-toggle.open::after {
+      transform: rotate(180deg);
+    }
+
+    .settings-content {
+      display: none;
+      padding-top: 10px;
+    }
+
+    .settings-content.show {
+      display: block;
+    }
+
+    .saved-indicator {
+      font-size: 11px;
+      color: #00ff88;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .saved-indicator.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🤖 AI Browser Agent</h1>
+    <p>让 AI 帮你操作浏览器</p>
+  </div>
+
+  <div class="main">
+    <!-- 设置区域 -->
+    <div class="section">
+      <div class="settings-toggle" id="settingsToggle">
+        ⚙️ API 设置
+      </div>
+      <div class="settings-content" id="settingsContent">
+        <div class="input-group">
+          <input type="password" id="apiKey" placeholder="输入 Gemini API Key">
+          <button class="api-key-toggle" id="apiKeyToggle">👁️</button>
+        </div>
+        <div class="saved-indicator" id="savedIndicator">✓ 已保存</div>
+      </div>
+    </div>
+
+    <!-- 任务输入 -->
+    <div class="section">
+      <div class="section-title">任务指令</div>
+      <textarea id="taskInput" placeholder="描述你想让 AI 完成的任务...&#10;例如: 打开 bilibili.com 并搜索 AI 教程"></textarea>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="section">
+      <button class="btn btn-primary" id="startBtn">
+        🚀 开始执行
+      </button>
+      <button class="btn btn-secondary" id="stopBtn" style="display: none;">
+        ⏹️ 停止执行
+      </button>
+    </div>
+
+    <!-- 状态提示 -->
+    <div class="status" id="status"></div>
+
+    <!-- 执行日志 -->
+    <div class="section">
+      <div class="section-title">执行日志</div>
+      <div class="log-container" id="logContainer">
+        <div class="log-entry" style="color: #a1a1aa;">等待任务开始...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

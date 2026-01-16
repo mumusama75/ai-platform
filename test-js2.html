@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JS Test 2</title>
+</head>
+<body>
+    <h1>JavaScript 测试 2 (含 common.js)</h1>
+    <button onclick="testClick()">点击测试</button>
+    <div id="result"></div>
+
+    <script src="scripts/common.js"></script>
+    <script>
+        alert('第二个脚本执行了');
+
+        function testClick() {
+            document.getElementById('result').innerHTML = '测试成功!';
+            alert('按钮点击成功!');
+        }
+    </script>
+</body>
+</html>
