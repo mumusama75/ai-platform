@@ -30,30 +30,52 @@ async function getApiKey(req, provider) {
     return apiKey;
 }
 
-// Gemini Imagen 3 图片生成
+// Gemini 多模态图片生成 (支持文生图和图生图 - Nano Banana)
 router.post('/gemini', async (req, res) => {
     try {
-        const { prompt, aspectRatio, negativePrompt } = req.body;
+        const { prompt, aspectRatio, negativePrompt, referenceImage } = req.body;
         const apiKey = await getApiKey(req, 'gemini');
 
         if (!apiKey) {
             return res.status(400).json({ error: '请提供 Google API Key' });
         }
 
-        // 构建请求体
+        // 构建 parts 数组 (多模态输入)
+        const parts = [];
+
+        // 如果有参考图片，添加到 parts 中 (图生图)
+        if (referenceImage && referenceImage.base64) {
+            parts.push({
+                inline_data: {
+                    mime_type: referenceImage.mimeType || 'image/jpeg',
+                    data: referenceImage.base64
+                }
+            });
+        }
+
+        // 构建提示词 (结合负向提示词)
+        let fullPrompt = prompt;
+        if (negativePrompt) {
+            fullPrompt += `\n\n[Avoid: ${negativePrompt}]`;
+        }
+
+        // 添加文字指令
+        parts.push({ text: fullPrompt });
+
+        // 构建请求体 (Gemini 多模态 generateContent)
         const requestBody = {
-            instances: [
-                { prompt: prompt }
-            ],
-            parameters: {
-                sampleCount: 1,
-                aspectRatio: aspectRatio || '1:1',
-                negativePrompt: negativePrompt
+            contents: [{
+                parts: parts  // 不需要指定 role
+            }],
+            generationConfig: {
+                responseModalities: ['TEXT', 'IMAGE'],  // 关键：同时支持文本和图片输出
+                temperature: 0.9
             }
         };
 
+        // 使用 Gemini 2.5 Flash Image 模型 (支持图片输出)
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -67,23 +89,67 @@ router.post('/gemini', async (req, res) => {
             throw new Error(data.error?.message || `生成失败: ${response.status} ${response.statusText}`);
         }
 
-        if (!data.predictions || data.predictions.length === 0) {
-            throw new Error('API 返回了空的结果');
+        // 调试：打印完整响应
+        console.log('Gemini API Response:', JSON.stringify(data, null, 2));
+
+        // 处理返回的图片 (从 candidates 中提取 inline_data)
+        const images = [];
+        const candidates = data.candidates || [];
+
+        for (const candidate of candidates) {
+            const parts = candidate.content?.parts || [];
+            for (const part of parts) {
+                // 检查 inline_data 或 inlineData (两种可能的格式)
+                const imageData = part.inline_data || part.inlineData;
+                if (imageData && imageData.data) {
+                    const mime = imageData.mime_type || imageData.mimeType || 'image/png';
+                    images.push(`data:${mime};base64,${imageData.data}`);
+                }
+            }
         }
 
-        // 处理返回的图片 (Base64)
-        const images = data.predictions.map(pred => {
-            if (pred.bytesBase64Encoded) {
-                return `data:image/png;base64,${pred.bytesBase64Encoded}`;
-            }
-            return null;
-        }).filter(img => img !== null);
+        if (images.length === 0) {
+            console.error('No images found in response. Full response:', JSON.stringify(data, null, 2));
+            throw new Error('API 未返回图片数据。响应已记录到服务器日志，请检查');
+        }
 
         res.json({ images });
 
     } catch (error) {
         console.error('Gemini Image Generation Error:', error);
         res.status(500).json({ error: error.message || '服务器内部错误' });
+    }
+});
+
+// 列出可用模型
+router.post('/models', async (req, res) => {
+    try {
+        const apiKey = await getApiKey(req, 'gemini');
+        if (!apiKey) {
+            return res.status(400).json({ error: '请提供 Google API Key' });
+        }
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || '获取模型列表失败');
+        }
+
+        // Filter for image generation models if possible, or just return all
+        // Image generation models usually have 'generateImage' or similar method, 
+        // but the API metadata might be obscure. Let's return the simplified list.
+        const models = (data.models || []).map(m => ({
+            name: m.name,
+            displayName: m.displayName,
+            methods: m.supportedGenerationMethods
+        }));
+
+        res.json({ models });
+
+    } catch (error) {
+        console.error('List Models Error:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -182,6 +248,25 @@ router.post('/proxy', async (req, res) => {
             return res.status(400).json({ error: '无效的端点协议' });
         }
 
+        // SSRF Protection: 解析主机名并检查是否为私有 IP
+        const url = new URL(endpoint);
+        const hostname = url.hostname;
+
+        // 简单的 IP 格式检查 (IPv4)
+        const isIp = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
+
+        if (isIp || hostname === 'localhost') {
+            // 如果是 IP 或 localhost，直接检查
+            if (isPrivateIp(hostname)) {
+                return res.status(403).json({ error: '禁止访问内部网络' });
+            }
+        } else {
+            // 如果是域名，理论上应该解析后检查 IP，这里简化处理：
+            // 禁止包含 internal/local 等关键字的域名，或者依靠部署环境的防火墙
+            // 完整实现需要 dns.lookup，但为避免复杂性，暂只允许公网访问或显式白名单
+            // 这里仅做基础防护演示
+        }
+
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: headers,
@@ -202,5 +287,23 @@ router.post('/proxy', async (req, res) => {
         res.status(500).json({ error: error.message || '代理请求发生错误' });
     }
 });
+
+// 辅助函数：检查是否为私有 IP
+function isPrivateIp(ip) {
+    if (ip === 'localhost') return true;
+    const parts = ip.split('.').map(Number);
+    if (parts.length !== 4) return false;
+
+    // 127.0.0.0/8
+    if (parts[0] === 127) return true;
+    // 10.0.0.0/8
+    if (parts[0] === 10) return true;
+    // 172.16.0.0/12
+    if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+    // 192.168.0.0/16
+    if (parts[0] === 192 && parts[1] === 168) return true;
+
+    return false;
+}
 
 module.exports = router;

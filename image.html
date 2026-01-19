@@ -1,415 +1,297 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 绘图 - AI Hub</title>
+    <link rel="stylesheet" href="styles/home.css">
     <style>
-        :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a3e;
-            --bg-tertiary: #0d0d1f;
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-card-hover: rgba(255, 255, 255, 0.08);
-            --text-primary: #fff;
-            --text-secondary: #ccc;
-            --text-muted: #888;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --border-hover: rgba(168, 85, 247, 0.4);
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --accent: #a855f7;
-            --accent-secondary: #ec4899;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #e8ecf1;
-            --bg-tertiary: #ffffff;
-            --bg-card: rgba(255, 255, 255, 0.9);
-            --bg-card-hover: rgba(255, 255, 255, 1);
-            --text-primary: #1a1a2e;
-            --text-secondary: #444;
-            --text-muted: #666;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --border-hover: rgba(168, 85, 247, 0.4);
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --accent: #9333ea;
-            --accent-secondary: #db2777;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Page Specific Overrides */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: var(--bg-card);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--accent);
-        }
-
-        .theme-toggle {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            padding: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--accent);
-        }
-
-        .theme-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-            background: transparent;
-        }
-
-        .theme-btn.active {
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            box-shadow: 0 2px 10px var(--shadow-color);
+            padding-top: 80px;
         }
 
         .page-header {
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 60px 20px 40px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--text-primary);
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 6px;
+            background: var(--hero-gradient-text);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            letter-spacing: .007em;
+            color: var(--text-secondary);
         }
 
         .ai-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            padding: 30px 50px;
-            max-width: 1400px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 20px 40px 80px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .ai-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .ai-card:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--border-hover);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px var(--shadow-color);
-        }
-
-        .ai-card-header {
+        .tool-card {
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+        }
+
+        [data-theme="light"] .tool-card {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            font-size: 40px;
             margin-bottom: 20px;
         }
 
-        .ai-card-icon {
-            font-size: 3rem;
-        }
-
-        .ai-card-title h3 {
-            font-size: 1.4rem;
-            margin-bottom: 5px;
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .ai-card-title span {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        .card-company {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background: rgba(128, 128, 128, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
-        .ai-card p {
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 20px;
+        .card-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
 
-        .ai-card-features {
+        .card-features {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
         .feature-tag {
-            padding: 5px 12px;
-            background: rgba(168, 85, 247, 0.2);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--accent);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .ai-card-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            border-radius: 25px;
-            color: #fff;
+        [data-theme="light"] .feature-tag {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 980px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
         }
 
-        .ai-card-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+        .card-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-color);
         }
 
-        .free-tag {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
-        }
-
-        .hot-tag {
-            background: rgba(255, 100, 100, 0.2);
-            color: #ff6b6b;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            margin-top: 60px;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
-            .ai-list {
-                padding: 30px 20px;
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Unified Navbar -->
     <nav class="navbar">
-        <a href="index.html" class="logo">AI Hub</a>
-        <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="chat.html">AI对话</a></li>
-                <li><a href="image.html" class="active">AI绘图</a></li>
-                <li><a href="music.html">AI音乐</a></li>
-                <li><a href="video.html">AI视频</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+        <div class="nav-content">
+            <a href="index.html" style="font-weight: 600; font-size: 16px;">AI Hub</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="chat.html">对话</a>
+                <a href="image.html" class="active">绘图</a>
+                <a href="music.html">音乐</a>
+                <a href="video.html">视频</a>
+                <a href="forum.html">社区</a>
+            </div>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle" id="themeToggle" title="切换主题"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"></button>
+                <a href="login.html" id="loginBtn" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+                <div id="userArea"
+                    style="display: none; font-size: 12px; align-items: center; gap: 10px; color: var(--text-primary);">
+                    <span id="userName">User</span>
+                </div>
             </div>
         </div>
     </nav>
 
     <section class="page-header">
-        <h1>🎨 AI 绘图工具</h1>
-        <p>用文字描述创作精美图片，释放你的无限创意</p>
+        <h1>AI 绘图工具</h1>
+        <p>激发无限创意，将想象力转化为视觉盛宴</p>
     </section>
 
-    <section class="ai-list">
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🖼️</span>
-                <div class="ai-card-title">
-                    <h3>Midjourney</h3>
-                    <span>Midjourney Inc.</span>
-                </div>
+    <div class="ai-list">
+        <!-- MJ -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Midjourney
+                <span class="card-company">Midjourney Inc.</span>
             </div>
-            <p>全球最火的AI绘图工具，以极高的艺术性和美感著称。适合创作概念艺术、插画、游戏原画等专业级图像。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag hot-tag">热门推荐</span>
-                <span class="feature-tag">艺术风格</span>
-                <span class="feature-tag">高质量</span>
-                <span class="feature-tag">V6模型</span>
+            <p class="card-desc">目前公认效果最强的AI绘图工具，画面精美度、艺术性极高，适合专业创作。</p>
+            <div class="card-features">
+                <span class="feature-tag">艺术级画质</span>
+                <span class="feature-tag">Discord生态</span>
+                <span class="feature-tag">风格多样</span>
             </div>
-            <a href="https://midjourney.com" target="_blank" class="ai-card-btn">访问 Midjourney</a>
+            <a href="https://www.midjourney.com" target="_blank" class="card-btn">访问 Midjourney</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎭</span>
-                <div class="ai-card-title">
-                    <h3>DALL-E 3</h3>
-                    <span>OpenAI</span>
-                </div>
+        <!-- SD -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Stable Diffusion
+                <span class="card-company">Stability AI</span>
             </div>
-            <p>OpenAI推出的AI绘图模型，集成于ChatGPT Plus，文字理解能力极强，能精准还原复杂的提示词描述。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag">文字理解强</span>
-                <span class="feature-tag">ChatGPT集成</span>
-                <span class="feature-tag">多风格</span>
-                <span class="feature-tag">编辑修改</span>
-            </div>
-            <a href="https://chat.openai.com" target="_blank" class="ai-card-btn">访问 DALL-E</a>
-        </div>
-
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🌀</span>
-                <div class="ai-card-title">
-                    <h3>Stable Diffusion</h3>
-                    <span>Stability AI</span>
-                </div>
-            </div>
-            <p>开源AI绘图模型，可本地部署，支持丰富的社区模型和LoRA微调，高度可定制，自由度极高。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">开源免费</span>
+            <p class="card-desc">最强大的开源绘图模型，支持本地部署，拥有海量社区模型和插件，可控性极佳。</p>
+            <div class="card-features">
+                <span class="feature-tag">开源免费</span>
                 <span class="feature-tag">本地部署</span>
-                <span class="feature-tag">社区模型</span>
-                <span class="feature-tag">LoRA</span>
+                <span class="feature-tag">高度可控</span>
             </div>
-            <a href="https://stability.ai" target="_blank" class="ai-card-btn">访问 Stability AI</a>
+            <a href="https://stability.ai" target="_blank" class="card-btn">访问官网</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">✨</span>
-                <div class="ai-card-title">
-                    <h3>即梦AI</h3>
-                    <span>字节跳动</span>
-                </div>
+        <!-- DALL-E 3 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                DALL·E 3
+                <span class="card-company">OpenAI</span>
             </div>
-            <p>字节跳动推出的AI创作平台，支持文生图、图生图，提供丰富的风格模板，操作简单易上手。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费额度</span>
-                <span class="feature-tag">中文优化</span>
-                <span class="feature-tag">风格模板</span>
+            <p class="card-desc">集成于 ChatGPT Plus，语义理解能力极强，能精准还原复杂的提示词描述。</p>
+            <div class="card-features">
+                <span class="feature-tag">语义精准</span>
+                <span class="feature-tag">对话式绘图</span>
                 <span class="feature-tag">简单易用</span>
             </div>
-            <a href="https://jimeng.jianying.com" target="_blank" class="ai-card-btn">访问即梦AI</a>
+            <a href="https://chat.openai.com" target="_blank" class="card-btn">访问 DALL·E 3</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎪</span>
-                <div class="ai-card-title">
-                    <h3>通义万相</h3>
-                    <span>阿里云</span>
-                </div>
+        <!-- Flux -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Flux
+                <span class="card-company">Black Forest Labs</span>
             </div>
-            <p>阿里巴巴推出的AI绘画工具，支持文生图、图生图、涂鸦作画等多种创作方式，中文理解出色。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费使用</span>
-                <span class="feature-tag">多种模式</span>
-                <span class="feature-tag">中文优化</span>
-                <span class="feature-tag">涂鸦创作</span>
+            <p class="card-desc">新晋最强开源模型，由原SD团队成员开发，在文字生成和人体结构上表现极其出色。</p>
+            <div class="card-features">
+                <span class="feature-tag">顶级画质</span>
+                <span class="feature-tag">文字渲染</span>
+                <span class="feature-tag">开源</span>
             </div>
-            <a href="https://tongyi.aliyun.com/wanxiang" target="_blank" class="ai-card-btn">访问通义万相</a>
+            <a href="https://blackforestlabs.ai" target="_blank" class="card-btn">访问 Flux</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🦁</span>
-                <div class="ai-card-title">
-                    <h3>Leonardo AI</h3>
-                    <span>Leonardo.ai</span>
-                </div>
+        <!-- Ideogram -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Ideogram
+                <span class="card-company">Ideogram AI</span>
             </div>
-            <p>专注游戏资产创作的AI绘图平台，提供强大的模型训练功能，适合游戏开发者和设计师使用。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">每日免费</span>
+            <p class="card-desc">以强大的文字渲染能力出名，可在图片中生成清晰可读的任何字体和语言文本。</p>
+            <div class="card-features">
+                <span class="feature-tag">超强文字</span>
+                <span class="feature-tag">免费使用</span>
+                <span class="feature-tag">特色风格</span>
+            </div>
+            <a href="https://ideogram.ai" target="_blank" class="card-btn">访问 Ideogram</a>
+        </div>
+
+        <!-- Leonardo -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Leonardo.AI
+                <span class="card-company">Leonardo Inc.</span>
+            </div>
+            <p class="card-desc">功能强大的在线AI绘图平台，内置多种模型，支持游戏资产、概念艺术等专业场景。</p>
+            <div class="card-features">
                 <span class="feature-tag">游戏资产</span>
-                <span class="feature-tag">模型训练</span>
-                <span class="feature-tag">一致性强</span>
+                <span class="feature-tag">多模型</span>
+                <span class="feature-tag">免费额度</span>
             </div>
-            <a href="https://leonardo.ai" target="_blank" class="ai-card-btn">访问 Leonardo</a>
+            <a href="https://leonardo.ai" target="_blank" class="card-btn">访问 Leonardo</a>
         </div>
-    </section>
+    </div>
 
-    <footer>
-        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
-    </footer>
-
-    <script>
-        const html = document.documentElement;
-        const themeBtns = document.querySelectorAll('.theme-btn');
-        const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        updateThemeButtons(savedTheme);
-
-        themeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.getAttribute('data-theme');
-                html.setAttribute('data-theme', theme);
-                localStorage.setItem('ai-hub-theme', theme);
-                updateThemeButtons(theme);
-            });
-        });
-
-        function updateThemeButtons(theme) {
-            themeBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-            });
-        }
-    </script>
+    <script src="scripts/layout.js"></script>
 </body>
+
 </html>

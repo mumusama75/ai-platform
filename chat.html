@@ -1,410 +1,299 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 对话 - AI Hub</title>
+    <link rel="stylesheet" href="styles/home.css">
     <style>
-        :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a3e;
-            --bg-tertiary: #0d0d1f;
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-card-hover: rgba(255, 255, 255, 0.08);
-            --text-primary: #fff;
-            --text-secondary: #ccc;
-            --text-muted: #888;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --border-hover: rgba(0, 212, 255, 0.3);
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --accent: #00d4ff;
-            --accent-secondary: #7b2fff;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #e8ecf1;
-            --bg-tertiary: #ffffff;
-            --bg-card: rgba(255, 255, 255, 0.9);
-            --bg-card-hover: rgba(255, 255, 255, 1);
-            --text-primary: #1a1a2e;
-            --text-secondary: #444;
-            --text-muted: #666;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --border-hover: rgba(0, 150, 200, 0.4);
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --accent: #0096c8;
-            --accent-secondary: #6b21a8;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Page Specific Overrides */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: var(--bg-card);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--accent);
-        }
-
-        .theme-toggle {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            padding: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--accent);
-        }
-
-        .theme-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-            background: transparent;
-        }
-
-        .theme-btn.active {
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            box-shadow: 0 2px 10px var(--shadow-color);
+            padding-top: 80px;
+            /* Space for fixed navbar */
         }
 
         .page-header {
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 60px 20px 40px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--text-primary);
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 6px;
+            background: var(--hero-gradient-text);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            letter-spacing: .007em;
+            color: var(--text-secondary);
         }
 
         .ai-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            padding: 30px 50px;
-            max-width: 1400px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 20px 40px 80px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .ai-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .ai-card:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--border-hover);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px var(--shadow-color);
-        }
-
-        .ai-card-header {
+        /* Reusing Bento Card styles but customizing for list */
+        .tool-card {
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+        }
+
+        [data-theme="light"] .tool-card {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            font-size: 40px;
             margin-bottom: 20px;
         }
 
-        .ai-card-icon {
-            font-size: 3rem;
-        }
-
-        .ai-card-title h3 {
-            font-size: 1.4rem;
-            margin-bottom: 5px;
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .ai-card-title span {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        .card-company {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background: rgba(128, 128, 128, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
-        .ai-card p {
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 20px;
+        .card-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
 
-        .ai-card-features {
+        .card-features {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
         .feature-tag {
-            padding: 5px 12px;
-            background: rgba(0, 212, 255, 0.15);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--accent);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .ai-card-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            border-radius: 25px;
-            color: #fff;
+        [data-theme="light"] .feature-tag {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 980px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
         }
 
-        .ai-card-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        .card-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-color);
         }
 
-        .free-tag {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            margin-top: 60px;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
-            .ai-list {
-                padding: 30px 20px;
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Unified Navbar -->
     <nav class="navbar">
-        <a href="index.html" class="logo">AI Hub</a>
-        <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="chat.html" class="active">AI对话</a></li>
-                <li><a href="image.html">AI绘图</a></li>
-                <li><a href="music.html">AI音乐</a></li>
-                <li><a href="video.html">AI视频</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+        <div class="nav-content">
+            <a href="index.html" style="font-weight: 600; font-size: 16px;">AI Hub</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="chat.html" class="active">对话</a>
+                <a href="image.html">绘图</a>
+                <a href="music.html">音乐</a>
+                <a href="video.html">视频</a>
+                <a href="forum.html">社区</a>
+            </div>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle" id="themeToggle" title="切换主题"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"></button>
+                <a href="login.html" id="loginBtn" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+                <div id="userArea"
+                    style="display: none; font-size: 12px; align-items: center; gap: 10px; color: var(--text-primary);">
+                    <span id="userName">User</span>
+                </div>
             </div>
         </div>
     </nav>
 
     <section class="page-header">
-        <h1>💬 AI 对话工具</h1>
-        <p>精选全球顶级AI对话助手，满足问答、创作、编程等各种需求</p>
+        <h1>AI 对话工具</h1>
+        <p>精选全球顶级大语言模型，满足你的所有创作需求</p>
     </section>
 
-    <section class="ai-list">
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🤖</span>
-                <div class="ai-card-title">
-                    <h3>ChatGPT</h3>
-                    <span>OpenAI</span>
-                </div>
+    <div class="ai-list">
+        <!-- Card 1 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                ChatGPT
+                <span class="card-company">OpenAI</span>
             </div>
-            <p>全球最流行的AI对话助手，支持GPT-4o、GPT-4等模型，擅长自然对话、文本创作、代码编写和问题分析。</p>
-            <div class="ai-card-features">
+            <p class="card-desc">全球最流行的AI对话助手，支持GPT-4o、GPT-4等模型，擅长自然对话、文本创作、代码编写。</p>
+            <div class="card-features">
                 <span class="feature-tag">自然对话</span>
                 <span class="feature-tag">代码生成</span>
-                <span class="feature-tag">文案创作</span>
                 <span class="feature-tag">多模态</span>
             </div>
-            <a href="https://chat.openai.com" target="_blank" class="ai-card-btn">访问 ChatGPT</a>
+            <a href="https://chat.openai.com" target="_blank" class="card-btn">访问 ChatGPT</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🧠</span>
-                <div class="ai-card-title">
-                    <h3>Claude</h3>
-                    <span>Anthropic</span>
-                </div>
+        <!-- Card 2 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Claude
+                <span class="card-company">Anthropic</span>
             </div>
-            <p>Anthropic开发的AI助手，以安全性和长文本处理能力著称，Claude 3.5 Sonnet 性能卓越，适合复杂分析任务。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag">超长上下文</span>
-                <span class="feature-tag">代码分析</span>
+            <p class="card-desc">以安全性和超长上下文处理能力著称，Claude 3.5 Sonnet 性能卓越，适合复杂分析任务。</p>
+            <div class="card-features">
+                <span class="feature-tag">200K 上下文</span>
                 <span class="feature-tag">学术写作</span>
-                <span class="feature-tag">安全可靠</span>
+                <span class="feature-tag">代码分析</span>
             </div>
-            <a href="https://claude.ai" target="_blank" class="ai-card-btn">访问 Claude</a>
+            <a href="https://claude.ai" target="_blank" class="card-btn">访问 Claude</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🔮</span>
-                <div class="ai-card-title">
-                    <h3>豆包</h3>
-                    <span>字节跳动</span>
-                </div>
+        <!-- Card 3 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                豆包
+                <span class="card-company">字节跳动</span>
             </div>
-            <p>字节跳动推出的AI助手，基于云雀大模型，支持多轮对话、文本创作、知识问答，中文理解能力出色。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费使用</span>
+            <p class="card-desc">字节跳动推出的AI助手，基于云雀大模型，中文理解能力出色，响应速度超快。</p>
+            <div class="card-features">
+                <span class="feature-tag">完全免费</span>
                 <span class="feature-tag">中文优化</span>
-                <span class="feature-tag">创意写作</span>
                 <span class="feature-tag">实时联网</span>
             </div>
-            <a href="https://www.doubao.com" target="_blank" class="ai-card-btn">访问豆包</a>
+            <a href="https://www.doubao.com" target="_blank" class="card-btn">访问豆包</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🌙</span>
-                <div class="ai-card-title">
-                    <h3>Kimi</h3>
-                    <span>月之暗面</span>
-                </div>
+        <!-- Card 4 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Kimi
+                <span class="card-company">月之暗面</span>
             </div>
-            <p>专注长文本处理的AI助手，支持20万字超长上下文，可阅读论文、分析文档、总结会议记录。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费使用</span>
-                <span class="feature-tag">20万字上下文</span>
-                <span class="feature-tag">文档分析</span>
-                <span class="feature-tag">学术研究</span>
+            <p class="card-desc">专注长文本处理的国产之光，支持超长上下文，可阅读论文、分析财报、总结会议。</p>
+            <div class="card-features">
+                <span class="feature-tag">长文档分析</span>
+                <span class="feature-tag">免费使用</span>
+                <span class="feature-tag">网页总结</span>
             </div>
-            <a href="https://kimi.moonshot.cn" target="_blank" class="ai-card-btn">访问 Kimi</a>
+            <a href="https://kimi.moonshot.cn" target="_blank" class="card-btn">访问 Kimi</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">👾</span>
-                <div class="ai-card-title">
-                    <h3>通义千问</h3>
-                    <span>阿里云</span>
-                </div>
+        <!-- Card 5 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                通义千问
+                <span class="card-company">阿里云</span>
             </div>
-            <p>阿里巴巴推出的大语言模型，支持文本、图像等多模态交互，提供丰富的AI能力和应用场景。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费使用</span>
+            <p class="card-desc">阿里巴巴推出的大语言模型，支持文本、图像等多模态交互，功能丰富强大。</p>
+            <div class="card-features">
                 <span class="feature-tag">多模态</span>
-                <span class="feature-tag">代码助手</span>
-                <span class="feature-tag">办公助手</span>
+                <span class="feature-tag">Qwen2.5</span>
+                <span class="feature-tag">开源生态</span>
             </div>
-            <a href="https://tongyi.aliyun.com" target="_blank" class="ai-card-btn">访问通义千问</a>
+            <a href="https://tongyi.aliyun.com" target="_blank" class="card-btn">访问通义千问</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">📝</span>
-                <div class="ai-card-title">
-                    <h3>文心一言</h3>
-                    <span>百度</span>
-                </div>
+        <!-- Card 6 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                文心一言
+                <span class="card-company">百度</span>
             </div>
-            <p>百度推出的知识增强大语言模型，深度整合百度搜索知识库，擅长中文理解和知识问答。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费使用</span>
+            <p class="card-desc">百度推出的知识增强大语言模型，深度整合百度搜索知识库，擅长中文理解和知识问答。</p>
+            <div class="card-features">
                 <span class="feature-tag">知识问答</span>
                 <span class="feature-tag">中文创作</span>
                 <span class="feature-tag">多模态</span>
             </div>
-            <a href="https://yiyan.baidu.com" target="_blank" class="ai-card-btn">访问文心一言</a>
+            <a href="https://yiyan.baidu.com" target="_blank" class="card-btn">访问文心一言</a>
         </div>
-    </section>
+    </div>
 
-    <footer>
-        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
-    </footer>
-
-    <script>
-        const html = document.documentElement;
-        const themeBtns = document.querySelectorAll('.theme-btn');
-        const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        updateThemeButtons(savedTheme);
-
-        themeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.getAttribute('data-theme');
-                html.setAttribute('data-theme', theme);
-                localStorage.setItem('ai-hub-theme', theme);
-                updateThemeButtons(theme);
-            });
-        });
-
-        function updateThemeButtons(theme) {
-            themeBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-            });
-        }
-    </script>
+    <script src="scripts/layout.js"></script>
 </body>
+
 </html>

@@ -5,33 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini AI 对话 - AI Hub</title>
-    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/home.css">
     <style>
-        /* Gemini 对话页面特有的主题色 */
-        :root {
-            --accent: #4285f4;
-            --accent-secondary: #34a853;
-            --border-hover: rgba(66, 133, 244, 0.4);
-            --bg-user-msg: linear-gradient(135deg, #4285f4, #1a73e8);
-            --bg-ai-msg: rgba(255, 255, 255, 0.08);
-        }
-
-        [data-theme="light"] {
-            --accent: #1a73e8;
-            --accent-secondary: #188038;
-            --bg-ai-msg: rgba(0, 0, 0, 0.05);
-        }
-
+        /* Page Specific Overrides */
         body {
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
+            padding-top: 80px;
         }
 
         .navbar {
             flex-shrink: 0;
         }
 
-        /* 主容器 */
+        /* Main Container */
         .main-container {
             flex: 1;
             display: flex;
@@ -43,7 +31,7 @@
             overflow: hidden;
         }
 
-        /* 侧边栏 */
+        /* Sidebar */
         .sidebar {
             width: 300px;
             flex-shrink: 0;
@@ -53,10 +41,18 @@
         }
 
         .settings-card {
-            background: var(--bg-card);
-            border-radius: 16px;
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: 20px;
             padding: 20px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+        }
+
+        [data-theme="light"] .settings-card {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.65);
         }
 
         .settings-card h3 {
@@ -87,18 +83,23 @@
         .form-group select {
             width: 100%;
             padding: 10px 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             color: var(--text-primary);
             font-size: 0.9rem;
             transition: all 0.3s;
         }
 
+        [data-theme="light"] .form-group input,
+        [data-theme="light"] .form-group select {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: var(--text-secondary);
         }
 
         .api-wrapper {
@@ -118,15 +119,15 @@
             border: none;
             cursor: pointer;
             font-size: 1rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .btn-clear {
             width: 100%;
             padding: 10px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             color: var(--text-secondary);
             font-size: 0.9rem;
             cursor: pointer;
@@ -138,20 +139,28 @@
             color: #ff6b6b;
         }
 
-        /* 对话区域 */
+        /* Chat Container */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow: hidden;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+        }
+
+        [data-theme="light"] .chat-container {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.65);
         }
 
         .chat-header {
             padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -164,7 +173,7 @@
 
         .chat-header .model-badge {
             padding: 4px 10px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            background: linear-gradient(90deg, #4285f4, #34a853);
             border-radius: 12px;
             font-size: 0.75rem;
             color: #fff;
@@ -215,7 +224,7 @@
         }
 
         .message.user .message-avatar {
-            background: var(--bg-user-msg);
+            background: linear-gradient(135deg, #4285f4, #1a73e8);
         }
 
         .message.ai .message-avatar {
@@ -230,13 +239,13 @@
         }
 
         .message.user .message-content {
-            background: var(--bg-user-msg);
+            background: linear-gradient(135deg, #4285f4, #1a73e8);
             color: #fff;
             border-bottom-right-radius: 4px;
         }
 
         .message.ai .message-content {
-            background: var(--bg-ai-msg);
+            background: rgba(128, 128, 128, 0.1);
             color: var(--text-primary);
             border-bottom-left-radius: 4px;
         }
@@ -263,7 +272,7 @@
             display: inline-block;
             width: 2px;
             height: 1em;
-            background: var(--accent);
+            background: #4285f4;
             margin-left: 2px;
             animation: blink 1s infinite;
         }
@@ -283,7 +292,7 @@
 
         .welcome-message {
             text-align: center;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             padding: 60px 20px;
         }
 
@@ -299,10 +308,10 @@
             color: var(--text-primary);
         }
 
-        /* 输入区域 */
+        /* Input Area */
         .chat-input-area {
             padding: 15px 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .input-wrapper {
@@ -314,9 +323,9 @@
         .input-wrapper textarea {
             flex: 1;
             padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            background: var(--bg-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
             color: var(--text-primary);
             font-size: 0.95rem;
             font-family: inherit;
@@ -329,19 +338,19 @@
 
         .input-wrapper textarea:focus {
             outline: none;
-            border-color: var(--accent);
+            border-color: var(--text-secondary);
         }
 
         .input-wrapper textarea::placeholder {
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .send-btn {
             width: 48px;
             height: 48px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            background: linear-gradient(135deg, #4285f4, #34a853);
             color: #fff;
             font-size: 1.3rem;
             cursor: pointer;
@@ -361,7 +370,6 @@
             cursor: not-allowed;
         }
 
-        /* 状态提示 */
         .status-bar {
             padding: 8px 20px;
             background: rgba(255, 100, 100, 0.1);
@@ -381,7 +389,6 @@
             color: #00ff88;
         }
 
-        /* 响应式 */
         @media (max-width: 900px) {
             .main-container {
                 flex-direction: column;
@@ -400,14 +407,6 @@
         }
 
         @media (max-width: 600px) {
-            .navbar {
-                padding: 10px 15px;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
             .main-container {
                 padding: 10px;
             }
@@ -424,43 +423,40 @@
 </head>
 
 <body>
+
+    <!-- Unified Navbar -->
     <nav class="navbar">
-        <a href="index.html" class="logo">AI Hub</a>
-        <button class="menu-toggle">☰</button>
-        <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="gemini-chat.html" class="active">AI对话</a></li>
-                <li><a href="banana-draw.html">AI绘图</a></li>
-                <li><a href="forum.html">社区</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+        <div class="nav-content">
+            <a href="index.html" style="font-weight: 600; font-size: 16px;">AI Hub</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="chat.html">对话</a>
+                <a href="image.html">绘图</a>
+                <a href="music.html">音乐</a>
+                <a href="video.html">视频</a>
+                <a href="forum.html">社区</a>
             </div>
-            <div class="user-area">
-                <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
-                <div class="user-profile" id="userProfile">
-                    <img class="user-avatar" id="userAvatar" src="" alt="头像">
-                    <span class="user-name" id="userName"></span>
-                    <div class="user-dropdown">
-                        <a href="profile.html" class="dropdown-item">👤 个人中心</a>
-                        <a href="profile.html#settings" class="dropdown-item">⚙️ 设置</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item logout logout-btn">🚪 退出登录</a>
-                    </div>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle" id="themeToggle" title="切换主题"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"></button>
+                <a href="login.html" id="loginBtn" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+                <div id="userArea"
+                    style="display: none; font-size: 12px; align-items: center; gap: 10px; color: var(--text-primary);">
+                    <span id="userName">User</span>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="main-container">
-        <!-- 侧边栏设置 -->
+        <!-- Sidebar Settings -->
         <div class="sidebar">
             <div class="settings-card">
-                <h3>🔑 API 设置</h3>
+                <h3>API 设置</h3>
                 <div class="form-group" id="savedKeyInfo" style="display: none;">
                     <div
-                        style="padding: 10px; background: rgba(0, 255, 136, 0.1); border-radius: 8px; color: var(--success); font-size: 0.9rem;">
+                        style="padding: 10px; background: rgba(0, 255, 136, 0.1); border-radius: 8px; color: #00ff88; font-size: 0.9rem;">
                         ✓ 已使用账号保存的 API Key
                     </div>
                 </div>
@@ -468,10 +464,18 @@
                     <label>Gemini API Key</label>
                     <div class="api-wrapper">
                         <input type="password" id="apiKey" placeholder="输入 Google API Key">
-                        <button class="toggle-api">👁️</button>
+                        <button class="toggle-api" title="显示/隐藏">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
                     </div>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;" id="apiKeyHint">
-                        <a href="login.html" style="color: var(--accent);">登录</a> 后可在个人中心保存 API Key
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;" id="apiKeyHint">
+                        <a href="login.html" style="color: var(--text-primary); font-weight: 600;">登录</a> 后可在个人中心保存 API
+                        Key
                     </p>
                 </div>
                 <div class="form-group">
@@ -487,7 +491,7 @@
             </div>
 
             <div class="settings-card">
-                <h3>⚙️ 参数设置</h3>
+                <h3>参数设置</h3>
                 <div class="form-group">
                     <label>温度 (Temperature): <span id="tempValue">0.7</span></label>
                     <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
@@ -504,21 +508,21 @@
             </div>
 
             <div class="settings-card">
-                <h3>🗑️ 操作</h3>
+                <h3>操作</h3>
                 <button class="btn-clear">清空对话</button>
             </div>
         </div>
 
-        <!-- 对话区域 -->
+        <!-- Chat Area -->
         <div class="chat-container">
             <div class="chat-header">
-                <h2>✨ Gemini 对话</h2>
+                <h2>Gemini 对话</h2>
                 <span class="model-badge" id="modelBadge">gemini-2.0-flash-exp</span>
             </div>
 
             <div class="chat-messages" id="chatMessages">
                 <div class="welcome-message" id="welcomeMessage">
-                    <span>✨</span>
+                    <span></span>
                     <h3>欢迎使用 Gemini AI</h3>
                     <p>输入你的 API Key，然后开始对话吧！</p>
                 </div>
@@ -535,7 +539,7 @@
         </div>
     </div>
 
-    <script src="scripts/common.js"></script>
+    <script src="scripts/layout.js"></script>
     <script src="scripts/chat.js"></script>
 </body>
 

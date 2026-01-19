@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -354,31 +355,27 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
-        <a href="index.html" class="logo">AI Hub</a>
-        <button class="menu-toggle">☰</button>
-        <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="gemini-chat.html">AI对话</a></li>
-                <li><a href="banana-draw.html">AI绘图</a></li>
-                <li><a href="forum.html">社区</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+        <div class="nav-content">
+            <a href="index.html" style="font-weight: 600; font-size: 16px;">AI Hub</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="chat.html">对话</a>
+                <a href="image.html">绘图</a>
+                <a href="music.html">音乐</a>
+                <a href="video.html">视频</a>
+                <a href="forum.html">社区</a>
             </div>
-            <div class="user-area">
-                <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
-                <div class="user-profile" id="userProfile">
-                    <img class="user-avatar" id="userAvatar" src="" alt="头像">
-                    <span class="user-name" id="userName"></span>
-                    <div class="user-dropdown">
-                        <a href="profile.html" class="dropdown-item">👤 个人中心</a>
-                        <a href="profile.html#settings" class="dropdown-item">⚙️ 设置</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item logout logout-btn">🚪 退出登录</a>
-                    </div>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle" id="themeToggle" title="切换主题"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"></button>
+                <a href="login.html" id="loginBtn" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+                <div id="userArea"
+                    style="display: none; font-size: 12px; align-items: center; gap: 10px; color: var(--text-primary);">
+                    <span id="userName">User</span>
                 </div>
             </div>
         </div>
@@ -434,7 +431,8 @@
                         </div>
                         <div class="api-key-actions">
                             <button class="btn-icon" onclick="configureApiKey('gemini')" title="配置">⚙️</button>
-                            <button class="btn-icon danger" onclick="deleteApiKey('gemini')" title="删除" id="geminiDelete" style="display: none;">🗑️</button>
+                            <button class="btn-icon danger" onclick="deleteApiKey('gemini')" title="删除"
+                                id="geminiDelete" style="display: none;">🗑️</button>
                         </div>
                     </div>
 
@@ -448,7 +446,8 @@
                         </div>
                         <div class="api-key-actions">
                             <button class="btn-icon" onclick="configureApiKey('replicate')" title="配置">⚙️</button>
-                            <button class="btn-icon danger" onclick="deleteApiKey('replicate')" title="删除" id="replicateDelete" style="display: none;">🗑️</button>
+                            <button class="btn-icon danger" onclick="deleteApiKey('replicate')" title="删除"
+                                id="replicateDelete" style="display: none;">🗑️</button>
                         </div>
                     </div>
                 </div>
@@ -487,7 +486,8 @@
                     <p style="color: var(--text-muted); margin-bottom: 15px;">
                         删除账户将永久移除您的所有数据，包括帖子和评论。此操作不可撤销。
                     </p>
-                    <button class="btn btn-secondary" style="border-color: var(--error); color: var(--error);" onclick="showDeleteAccountModal()">
+                    <button class="btn btn-secondary" style="border-color: var(--error); color: var(--error);"
+                        onclick="showDeleteAccountModal()">
                         删除我的账户
                     </button>
                 </div>
@@ -532,7 +532,8 @@
                 <div class="settings-card" style="border-color: var(--error);">
                     <h3 style="color: var(--error);">⚠️ 危险区域</h3>
                     <p style="color: var(--text-muted); margin-bottom: 15px;">退出登录将清除本地保存的登录状态。</p>
-                    <button class="btn btn-secondary" style="border-color: var(--error); color: var(--error);" onclick="logout()">退出登录</button>
+                    <button class="btn btn-secondary" style="border-color: var(--error); color: var(--error);"
+                        onclick="logout()">退出登录</button>
                 </div>
             </div>
         </div>
@@ -578,9 +579,11 @@
             <h3>📷 更换头像</h3>
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <div style="text-align: center;">
-                    <img id="avatarPreview" src="" alt="预览" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);">
+                    <img id="avatarPreview" src="" alt="预览"
+                        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);">
                 </div>
-                <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/gif,image/webp" style="display: none;" onchange="previewAvatar(event)">
+                <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/gif,image/webp"
+                    style="display: none;" onchange="previewAvatar(event)">
                 <button class="btn btn-secondary" onclick="document.getElementById('avatarInput').click()">选择图片</button>
                 <p style="font-size: 0.85rem; color: var(--text-muted);">支持 PNG、JPEG、GIF、WebP，最大 2MB</p>
             </div>
@@ -1099,4 +1102,5 @@
         checkHash();
     </script>
 </body>
+
 </html>

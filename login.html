@@ -1,451 +1,231 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录 / 注册 - AI Hub</title>
-    <link rel="stylesheet" href="styles/common.css">
+    <title>AI Hub - 登录</title>
+    <link rel="stylesheet" href="styles/home.css">
     <style>
+        /* Auth Specific Styles within the Home Theme context */
         body {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            min-height: 100vh;
         }
 
         .auth-container {
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
+            padding: 20px;
+            perspective: 1000px;
         }
 
         .auth-card {
-            background: var(--bg-card);
-            border-radius: 24px;
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
             padding: 40px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
         }
 
-        .auth-header {
+        /* Subtle spotlight for auth card */
+        .auth-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .logo-area {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
-        .auth-header .logo {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .auth-header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+        .logo-area h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: var(--hero-gradient-text);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
         }
 
-        .auth-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+        .logo-area p {
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
-        /* 标签切换 */
+        /* Tabs */
         .auth-tabs {
             display: flex;
-            margin-bottom: 30px;
-            background: var(--bg-input);
+            background: rgba(0, 0, 0, 0.1);
+            padding: 4px;
             border-radius: 12px;
-            padding: 5px;
+            margin-bottom: 25px;
+        }
+
+        [data-theme="light"] .auth-tabs {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .auth-tab {
             flex: 1;
-            padding: 12px;
+            padding: 8px;
             text-align: center;
             background: transparent;
             border: none;
-            color: var(--text-muted);
-            font-size: 1rem;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 9px;
             transition: all 0.3s;
         }
 
         .auth-tab.active {
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            color: #fff;
-            font-weight: 600;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* 表单 */
+        /* Forms */
         .auth-form {
             display: none;
+            animation: fadeIn 0.4s ease;
         }
 
         .auth-form.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 600;
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
+            margin-bottom: 6px;
+            margin-left: 4px;
         }
 
         .input-wrapper {
             position: relative;
         }
 
-        .input-wrapper .icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.1rem;
-            color: var(--text-muted);
-        }
-
-        .form-group input {
+        .input-wrapper input {
             width: 100%;
-            padding: 14px 14px 14px 45px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 5px;
-        }
-
-        .toggle-password:hover {
-            color: var(--accent);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            border: none;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* 消息提示 */
-        .message {
             padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .message.show {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .message.error {
-            background: rgba(255, 107, 107, 0.15);
-            color: var(--error);
-            border: 1px solid rgba(255, 107, 107, 0.3);
-        }
-
-        .message.success {
-            background: rgba(0, 255, 136, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-        }
-
-        /* 其他登录方式 */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        .divider span {
-            padding: 0 15px;
-        }
-
-        .social-login {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-btn {
-            flex: 1;
-            padding: 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             color: var(--text-primary);
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
+            font-size: 15px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        [data-theme="light"] .input-wrapper input {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .input-wrapper input:focus {
+            background: transparent;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            margin-top: 10px;
             justify-content: center;
         }
 
-        .social-btn:hover {
-            border-color: var(--accent);
-            background: var(--bg-card);
-        }
-
-        /* 底部链接 */
-        .auth-footer {
+        /* Back Link */
+        .back-link {
             text-align: center;
-            margin-top: 25px;
-        }
-
-        .auth-footer a {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* 主题切换 */
-        .theme-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            padding: 8px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .theme-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            background: transparent;
-            transition: all 0.3s;
-        }
-
-        .theme-btn.active {
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-        }
-
-        /* 返回首页 */
-        .back-home {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: var(--bg-card);
-            border-radius: 25px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .back-home:hover {
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-
-        /* 加载动画 */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
-
-        .submit-btn.loading .spinner {
-            display: inline-block;
-        }
-
-        .submit-btn.loading .btn-text {
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 480px) {
-            .auth-card {
-                padding: 30px 25px;
-            }
-            .back-home, .theme-switch {
-                padding: 8px 12px;
-                font-size: 0.85rem;
-            }
-        }
-
-        /* 密码强度提示 */
-        .password-requirements {
-            margin-top: 10px;
-            padding: 12px;
-            background: var(--bg-input);
-            border-radius: 8px;
-            font-size: 0.8rem;
-        }
-
-        /* 记住我和忘记密码 */
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 15px 0;
-            font-size: 0.9rem;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
+            margin-top: 20px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
 
-        .remember-me input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--accent);
-            cursor: pointer;
+        .back-link a {
+            color: var(--accent-blue);
         }
 
-        .forgot-password {
-            color: var(--accent);
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-
-        .forgot-password:hover {
-            opacity: 0.8;
-            text-decoration: underline;
-        }
-
-        /* 登录尝试提示 */
-        .attempts-warning {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-            padding: 10px 15px;
+        /* Message */
+        .message {
+            font-size: 13px;
+            padding: 10px;
             border-radius: 8px;
-            font-size: 0.85rem;
             margin-bottom: 15px;
             display: none;
-        }
-
-        .attempts-warning.show {
-            display: block;
-        }
-
-        .req-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 0;
-            color: var(--text-muted);
-            transition: color 0.2s;
-        }
-
-        .req-item.valid {
-            color: var(--success);
-        }
-
-        .req-item.valid .req-icon {
-            color: var(--success);
-        }
-
-        .req-icon {
-            font-size: 0.9rem;
-            width: 16px;
             text-align: center;
+        }
+
+        .message.error {
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
+        }
+
+        .message.success {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
         }
     </style>
 </head>
-<body>
-    <a href="index.html" class="back-home">
-        <span>←</span> 返回首页
-    </a>
 
-    <div class="theme-switch">
-        <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-        <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
-    </div>
+<body>
 
     <div class="auth-container">
+        <!-- Theme Toggle Absolute Position -->
+        <button id="themeToggle" class="theme-toggle" title="切换主题"
+            style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); backdrop-filter: blur(10px); transition: all 0.3s;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+        </button>
+
         <div class="auth-card">
-            <div class="auth-header">
-                <div class="logo">✨</div>
+            <div class="logo-area">
                 <h1>AI Hub</h1>
-                <p>一站式 AI 资源平台</p>
+                <p>探索无限可能</p>
             </div>
 
             <div class="auth-tabs">
@@ -453,323 +233,178 @@
                 <button class="auth-tab" onclick="switchTab('register')">注册</button>
             </div>
 
-            <div class="message" id="message"></div>
+            <div id="message" class="message"></div>
 
-            <!-- 登录表单 -->
-            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
-                <div class="attempts-warning" id="attemptsWarning"></div>
-
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>用户名 / 邮箱</label>
+                    <label>账号</label>
                     <div class="input-wrapper">
-                        <span class="icon">👤</span>
-                        <input type="text" id="loginUsername" placeholder="输入用户名或邮箱" required>
+                        <input type="text" id="loginId" placeholder="用户名或邮箱" required>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>密码</label>
                     <div class="input-wrapper">
-                        <span class="icon">🔒</span>
-                        <input type="password" id="loginPassword" placeholder="输入密码" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</button>
+                        <input type="password" id="loginPass" placeholder="请输入密码" required>
                     </div>
                 </div>
-
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe">
-                        <span>记住我 (30天)</span>
-                    </label>
-                    <a href="#" class="forgot-password" onclick="showForgotPassword(event)">忘记密码？</a>
-                </div>
-
-                <button type="submit" class="submit-btn" id="loginBtn">
-                    <span class="btn-text">登录</span>
-                    <span class="spinner"></span>
-                </button>
+                <button type="submit" class="btn btn-primary btn-submit" id="loginBtn">进入探索</button>
             </form>
 
-            <!-- 注册表单 -->
-            <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label>用户名</label>
                     <div class="input-wrapper">
-                        <span class="icon">👤</span>
-                        <input type="text" id="regUsername" placeholder="2-20 个字符" required minlength="2" maxlength="20">
+                        <input type="text" id="regUser" placeholder="2-20 个字符" required minlength="2">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>邮箱</label>
                     <div class="input-wrapper">
-                        <span class="icon">📧</span>
-                        <input type="email" id="regEmail" placeholder="example@email.com" required>
+                        <input type="email" id="regEmail" placeholder="用于找回密码" required>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>密码</label>
                     <div class="input-wrapper">
-                        <span class="icon">🔒</span>
-                        <input type="password" id="regPassword" placeholder="8位以上，含大小写、数字、特殊字符" required minlength="8" oninput="validatePasswordRealtime()">
-                        <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)">👁️</button>
-                    </div>
-                    <div class="password-requirements" id="passwordRequirements">
-                        <div class="req-item" id="reqLength"><span class="req-icon">○</span> 至少 8 个字符</div>
-                        <div class="req-item" id="reqUpper"><span class="req-icon">○</span> 包含大写字母</div>
-                        <div class="req-item" id="reqLower"><span class="req-icon">○</span> 包含小写字母</div>
-                        <div class="req-item" id="reqNumber"><span class="req-icon">○</span> 包含数字</div>
-                        <div class="req-item" id="reqSpecial"><span class="req-icon">○</span> 包含特殊字符 (!@#$%^&* 等)</div>
+                        <input type="password" id="regPass" placeholder="至少 8 位" required minlength="8">
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>确认密码</label>
-                    <div class="input-wrapper">
-                        <span class="icon">🔒</span>
-                        <input type="password" id="regConfirmPassword" placeholder="再次输入密码" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('regConfirmPassword', this)">👁️</button>
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn" id="registerBtn">
-                    <span class="btn-text">注册</span>
-                    <span class="spinner"></span>
-                </button>
+                <button type="submit" class="btn btn-primary btn-submit" id="regBtn">创建账号</button>
             </form>
 
-            <div class="auth-footer">
-                <a href="index.html">暂不登录，直接访问</a>
+            <div class="back-link">
+                <a href="index.html">返回首页</a>
             </div>
         </div>
     </div>
 
-    <script src="scripts/common.js"></script>
     <script>
-        // 使用 common.js 中定义的 API_BASE
-        const API_BASE_URL = window.AIHub ? window.AIHub.API_BASE : '/api';
+        // Use existing API structure
+        const API_BASE = '/api';
 
-        // 检查是否已登录
-        const token = localStorage.getItem('ai-hub-token');
-        if (token) {
-            // 验证 token
-            fetch(`${API_BASE_URL}/verify`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.valid) {
-                    window.location.href = 'index.html';
-                }
-            })
-            .catch(() => {
-                localStorage.removeItem('ai-hub-token');
-                localStorage.removeItem('ai-hub-user');
-            });
+        // Theme Logic
+        const themeBtn = document.getElementById('themeToggle');
+
+        function getSunIcon() {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
         }
 
-        // 切换标签
+        function getMoonIcon() {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+        }
+
+        function updateIcon(theme) {
+            themeBtn.innerHTML = theme === 'light' ? getMoonIcon() : getSunIcon();
+        }
+
+        themeBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('ai-hub-theme', next);
+            updateIcon(next);
+        });
+
+        // Init theme
+        const theme = localStorage.getItem('ai-hub-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        updateIcon(theme);
+
         function switchTab(tab) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
 
-            document.querySelector(`.auth-tab:nth-child(${tab === 'login' ? 1 : 2})`).classList.add('active');
-            document.getElementById(`${tab}Form`).classList.add('active');
+            // Activate selected
+            const tabBtn = Array.from(document.querySelectorAll('.auth-tab')).find(t => t.textContent === (tab === 'login' ? '登录' : '注册'));
+            if (tabBtn) tabBtn.classList.add('active');
 
+            document.getElementById(tab + 'Form').classList.add('active');
             hideMessage();
         }
 
-        // 显示/隐藏密码
-        function togglePassword(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                btn.textContent = '👁️';
-            }
-        }
-
-        // 实时密码验证
-        function validatePasswordRealtime() {
-            const password = document.getElementById('regPassword').value;
-
-            const requirements = {
-                reqLength: password.length >= 8,
-                reqUpper: /[A-Z]/.test(password),
-                reqLower: /[a-z]/.test(password),
-                reqNumber: /[0-9]/.test(password),
-                reqSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-            };
-
-            for (const [id, valid] of Object.entries(requirements)) {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.classList.toggle('valid', valid);
-                    el.querySelector('.req-icon').textContent = valid ? '✓' : '○';
-                }
-            }
-
-            return Object.values(requirements).every(v => v);
-        }
-
-        // HTML 转义函数（防止 XSS）
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // 显示消息
-        function showMessage(text, type = 'error') {
-            const msg = document.getElementById('message');
-            const icon = type === 'error' ? '❌' : '✅';
-            msg.innerHTML = `<span>${icon}</span> ${escapeHtml(text)}`;
-            msg.className = `message show ${type}`;
+        function showMessage(text, type) {
+            const el = document.getElementById('message');
+            el.textContent = text;
+            el.className = `message ${type}`;
+            el.style.display = 'block';
         }
 
         function hideMessage() {
-            document.getElementById('message').classList.remove('show');
+            document.getElementById('message').style.display = 'none';
         }
 
-        // 显示登录尝试警告
-        function showAttemptsWarning(remaining) {
-            const warning = document.getElementById('attemptsWarning');
-            if (remaining !== undefined && remaining <= 3 && remaining > 0) {
-                warning.textContent = `⚠️ 还剩 ${remaining} 次尝试机会，之后账户将被锁定 15 分钟`;
-                warning.classList.add('show');
-            } else {
-                warning.classList.remove('show');
-            }
-        }
-
-        // 登录处理
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
+            const username = document.getElementById('loginId').value;
+            const password = document.getElementById('loginPass').value;
 
-            btn.classList.add('loading');
             btn.disabled = true;
-            hideMessage();
+            btn.textContent = '登录中...';
 
             try {
-                const res = await fetch(`${API_BASE_URL}/login`, {
+                const res = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, rememberMe })
+                    body: JSON.stringify({ username, password })
                 });
-
                 const data = await res.json();
 
-                if (!res.ok) {
-                    // 显示剩余尝试次数
-                    if (data.attemptsRemaining !== undefined) {
-                        showAttemptsWarning(data.attemptsRemaining);
-                    }
-                    // 账户锁定
-                    if (data.locked) {
-                        throw new Error(`账户已锁定，请 ${data.remainingMinutes} 分钟后再试`);
-                    }
-                    throw new Error(data.error || '登录失败');
-                }
+                if (!res.ok) throw new Error(data.error || '登录失败');
 
-                // 保存登录信息
+                // Store auth
                 localStorage.setItem('ai-hub-token', data.token);
                 localStorage.setItem('ai-hub-user', JSON.stringify(data.user));
 
-                showMessage('登录成功，正在跳转...', 'success');
-                showAttemptsWarning(); // 清除警告
-
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
-
-            } catch (error) {
-                showMessage(error.message);
-            } finally {
-                btn.classList.remove('loading');
+                showMessage('登录成功', 'success');
+                setTimeout(() => window.location.href = 'index.html', 800);
+            } catch (err) {
+                showMessage(err.message, 'error');
                 btn.disabled = false;
+                btn.textContent = '进入探索';
             }
         }
 
-        // 忘记密码
-        function showForgotPassword(e) {
-            e.preventDefault();
-            const email = prompt('请输入您的注册邮箱：');
-            if (!email) return;
-
-            fetch(`${API_BASE_URL}/forgot-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.resetToken) {
-                    // 开发模式下显示令牌
-                    alert(`密码重置链接（开发模式）：\n${window.location.origin}/reset-password.html?token=${data.resetToken}`);
-                } else {
-                    showMessage(data.message, 'success');
-                }
-            })
-            .catch(err => {
-                showMessage('请求失败，请稍后再试');
-            });
-        }
-
-        // 注册处理
         async function handleRegister(e) {
             e.preventDefault();
-            const btn = document.getElementById('registerBtn');
-            const username = document.getElementById('regUsername').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const btn = document.getElementById('regBtn');
+            const username = document.getElementById('regUser').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPass').value;
 
-            if (password !== confirmPassword) {
-                showMessage('两次输入的密码不一致');
-                return;
-            }
-
-            btn.classList.add('loading');
             btn.disabled = true;
-            hideMessage();
+            btn.textContent = '创建中...';
 
             try {
-                const res = await fetch(`${API_BASE_URL}/register`, {
+                const res = await fetch(`${API_BASE}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password })
                 });
-
                 const data = await res.json();
 
-                if (!res.ok) {
-                    throw new Error(data.error || '注册失败');
-                }
+                if (!res.ok) throw new Error(data.error || '注册失败');
 
-                // 保存登录信息
+                // Auto login after register
                 localStorage.setItem('ai-hub-token', data.token);
                 localStorage.setItem('ai-hub-user', JSON.stringify(data.user));
 
-                showMessage('注册成功，正在跳转...', 'success');
-
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
-
-            } catch (error) {
-                showMessage(error.message);
-            } finally {
-                btn.classList.remove('loading');
+                showMessage('注册成功', 'success');
+                setTimeout(() => window.location.href = 'index.html', 800);
+            } catch (err) {
+                showMessage(err.message, 'error');
                 btn.disabled = false;
+                btn.textContent = '创建账号';
             }
         }
+
+        // Init theme from localStorage
+        const theme = localStorage.getItem('ai-hub-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
     </script>
 </body>
+
 </html>

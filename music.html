@@ -1,415 +1,297 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 音乐 - AI Hub</title>
+    <link rel="stylesheet" href="styles/home.css">
     <style>
-        :root {
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a3e;
-            --bg-tertiary: #0d0d1f;
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-card-hover: rgba(255, 255, 255, 0.08);
-            --text-primary: #fff;
-            --text-secondary: #ccc;
-            --text-muted: #888;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --border-hover: rgba(236, 72, 153, 0.4);
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --accent: #ec4899;
-            --accent-secondary: #f97316;
-        }
-
-        [data-theme="light"] {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #e8ecf1;
-            --bg-tertiary: #ffffff;
-            --bg-card: rgba(255, 255, 255, 0.9);
-            --bg-card-hover: rgba(255, 255, 255, 1);
-            --text-primary: #1a1a2e;
-            --text-secondary: #444;
-            --text-muted: #666;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --border-hover: rgba(236, 72, 153, 0.4);
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --accent: #db2777;
-            --accent-secondary: #ea580c;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Page Specific Overrides */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
-            min-height: 100vh;
-            color: var(--text-primary);
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            background: var(--bg-card);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--accent);
-        }
-
-        .theme-toggle {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            padding: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--accent);
-        }
-
-        .theme-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-            background: transparent;
-        }
-
-        .theme-btn.active {
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            box-shadow: 0 2px 10px var(--shadow-color);
+            padding-top: 80px;
         }
 
         .page-header {
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 60px 20px 40px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--text-primary);
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 6px;
+            background: var(--hero-gradient-text);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            letter-spacing: .007em;
+            color: var(--text-secondary);
         }
 
         .ai-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            padding: 30px 50px;
-            max-width: 1400px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 20px 40px 80px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .ai-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .ai-card:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--border-hover);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px var(--shadow-color);
-        }
-
-        .ai-card-header {
+        .tool-card {
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+        }
+
+        [data-theme="light"] .tool-card {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            font-size: 40px;
             margin-bottom: 20px;
         }
 
-        .ai-card-icon {
-            font-size: 3rem;
-        }
-
-        .ai-card-title h3 {
-            font-size: 1.4rem;
-            margin-bottom: 5px;
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .ai-card-title span {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        .card-company {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background: rgba(128, 128, 128, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
-        .ai-card p {
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 20px;
+        .card-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
 
-        .ai-card-features {
+        .card-features {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
         .feature-tag {
-            padding: 5px 12px;
-            background: rgba(236, 72, 153, 0.2);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--accent);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .ai-card-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            border-radius: 25px;
-            color: #fff;
+        [data-theme="light"] .feature-tag {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 980px;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
         }
 
-        .ai-card-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
+        .card-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-color);
         }
 
-        .free-tag {
-            background: rgba(0, 255, 136, 0.2);
-            color: #00ff88;
-        }
-
-        .hot-tag {
-            background: rgba(255, 100, 100, 0.2);
-            color: #ff6b6b;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            margin-top: 60px;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
-            .ai-list {
-                padding: 30px 20px;
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Unified Navbar -->
     <nav class="navbar">
-        <a href="index.html" class="logo">AI Hub</a>
-        <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="chat.html">AI对话</a></li>
-                <li><a href="image.html">AI绘图</a></li>
-                <li><a href="music.html" class="active">AI音乐</a></li>
-                <li><a href="video.html">AI视频</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+        <div class="nav-content">
+            <a href="index.html" style="font-weight: 600; font-size: 16px;">AI Hub</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="chat.html">对话</a>
+                <a href="image.html">绘图</a>
+                <a href="music.html" class="active">音乐</a>
+                <a href="video.html">视频</a>
+                <a href="forum.html">社区</a>
+            </div>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle" id="themeToggle" title="切换主题"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"></button>
+                <a href="login.html" id="loginBtn" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+                <div id="userArea"
+                    style="display: none; font-size: 12px; align-items: center; gap: 10px; color: var(--text-primary);">
+                    <span id="userName">User</span>
+                </div>
             </div>
         </div>
     </nav>
 
     <section class="page-header">
-        <h1>🎵 AI 音乐工具</h1>
+        <h1>AI 音乐工具</h1>
         <p>用文字描述即可创作专属音乐，让每个人都成为音乐创作者</p>
     </section>
 
-    <section class="ai-list">
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎶</span>
-                <div class="ai-card-title">
-                    <h3>Suno</h3>
-                    <span>Suno AI</span>
-                </div>
+    <div class="ai-list">
+        <!-- Suno -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Suno
+                <span class="card-company">Suno AI</span>
             </div>
-            <p>目前最强的AI音乐生成工具，可以根据文字描述生成完整的歌曲，包含人声、伴奏和歌词，支持多种音乐风格。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag hot-tag">热门推荐</span>
+            <p class="card-desc">目前最强的AI音乐生成工具，可以根据文字描述生成完整的歌曲，包含人声、伴奏和歌词，支持多种音乐风格。</p>
+            <div class="card-features">
+                <span class="feature-tag">热门推荐</span>
                 <span class="feature-tag">完整歌曲</span>
                 <span class="feature-tag">人声生成</span>
-                <span class="feature-tag">多种风格</span>
             </div>
-            <a href="https://suno.ai" target="_blank" class="ai-card-btn">访问 Suno</a>
+            <a href="https://suno.ai" target="_blank" class="card-btn">访问 Suno</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎧</span>
-                <div class="ai-card-title">
-                    <h3>Udio</h3>
-                    <span>Udio</span>
-                </div>
+        <!-- Udio -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Udio
+                <span class="card-company">Udio</span>
             </div>
-            <p>由前Google DeepMind团队打造的AI音乐平台，音乐质量极高，擅长生成专业级别的音乐作品。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费额度</span>
+            <p class="card-desc">由前Google DeepMind团队打造的AI音乐平台，音乐质量极高，擅长生成专业级别的音乐作品。</p>
+            <div class="card-features">
+                <span class="feature-tag">免费额度</span>
                 <span class="feature-tag">高质量</span>
                 <span class="feature-tag">专业级</span>
-                <span class="feature-tag">多种曲风</span>
             </div>
-            <a href="https://udio.com" target="_blank" class="ai-card-btn">访问 Udio</a>
+            <a href="https://udio.com" target="_blank" class="card-btn">访问 Udio</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎹</span>
-                <div class="ai-card-title">
-                    <h3>天工音乐</h3>
-                    <span>昆仑万维</span>
-                </div>
+        <!-- 天工音乐 -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                天工音乐
+                <span class="card-company">昆仑万维</span>
             </div>
-            <p>国产AI音乐生成平台，支持中文歌词创作，可生成流行、古风、摇滚等多种风格的中文歌曲。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费使用</span>
+            <p class="card-desc">国产AI音乐生成平台，支持中文歌词创作，可生成流行、古风、摇滚等多种风格的中文歌曲。</p>
+            <div class="card-features">
+                <span class="feature-tag">免费使用</span>
                 <span class="feature-tag">中文优化</span>
-                <span class="feature-tag">多种曲风</span>
                 <span class="feature-tag">古风歌曲</span>
             </div>
-            <a href="https://music.tiangong.cn" target="_blank" class="ai-card-btn">访问天工音乐</a>
+            <a href="https://music.tiangong.cn" target="_blank" class="card-btn">访问天工音乐</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎼</span>
-                <div class="ai-card-title">
-                    <h3>AIVA</h3>
-                    <span>AIVA Technologies</span>
-                </div>
+        <!-- AIVA -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                AIVA
+                <span class="card-company">AIVA Technologies</span>
             </div>
-            <p>专业的AI作曲助手，专注于古典音乐和配乐创作，适合游戏、电影、广告等场景的背景音乐制作。</p>
-            <div class="ai-card-features">
-                <span class="feature-tag free-tag">免费版本</span>
+            <p class="card-desc">专业的AI作曲助手，专注于古典音乐和配乐创作，适合游戏、电影、广告等场景的背景音乐制作。</p>
+            <div class="card-features">
+                <span class="feature-tag">免费版本</span>
                 <span class="feature-tag">古典音乐</span>
                 <span class="feature-tag">影视配乐</span>
-                <span class="feature-tag">商用授权</span>
             </div>
-            <a href="https://aiva.ai" target="_blank" class="ai-card-btn">访问 AIVA</a>
+            <a href="https://aiva.ai" target="_blank" class="card-btn">访问 AIVA</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🔊</span>
-                <div class="ai-card-title">
-                    <h3>Mubert</h3>
-                    <span>Mubert Inc.</span>
-                </div>
+        <!-- Mubert -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Mubert
+                <span class="card-company">Mubert Inc.</span>
             </div>
-            <p>AI生成式音乐平台，可实时生成无限长度的背景音乐，适合视频创作者、直播主播等内容创作者使用。</p>
-            <div class="ai-card-features">
+            <p class="card-desc">AI生成式音乐平台，可实时生成无限长度的背景音乐，适合视频创作者、直播主播等内容创作者使用。</p>
+            <div class="card-features">
                 <span class="feature-tag">实时生成</span>
                 <span class="feature-tag">无限长度</span>
                 <span class="feature-tag">免版权</span>
-                <span class="feature-tag">API支持</span>
             </div>
-            <a href="https://mubert.com" target="_blank" class="ai-card-btn">访问 Mubert</a>
+            <a href="https://mubert.com" target="_blank" class="card-btn">访问 Mubert</a>
         </div>
 
-        <div class="ai-card">
-            <div class="ai-card-header">
-                <span class="ai-card-icon">🎤</span>
-                <div class="ai-card-title">
-                    <h3>Soundraw</h3>
-                    <span>Soundraw Inc.</span>
-                </div>
+        <!-- Soundraw -->
+        <div class="tool-card">
+            <div class="card-icon"></div>
+            <div class="card-title">
+                Soundraw
+                <span class="card-company">Soundraw Inc.</span>
             </div>
-            <p>AI音乐定制平台，可根据情绪、风格、长度等参数生成定制化背景音乐，支持精细调节各个音轨。</p>
-            <div class="ai-card-features">
+            <p class="card-desc">AI音乐定制平台，可根据情绪、风格、长度等参数生成定制化背景音乐，支持精细调节各个音轨。</p>
+            <div class="card-features">
                 <span class="feature-tag">精细定制</span>
                 <span class="feature-tag">参数调节</span>
                 <span class="feature-tag">商用友好</span>
-                <span class="feature-tag">多轨编辑</span>
             </div>
-            <a href="https://soundraw.io" target="_blank" class="ai-card-btn">访问 Soundraw</a>
+            <a href="https://soundraw.io" target="_blank" class="card-btn">访问 Soundraw</a>
         </div>
-    </section>
+    </div>
 
-    <footer>
-        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
-    </footer>
-
-    <script>
-        const html = document.documentElement;
-        const themeBtns = document.querySelectorAll('.theme-btn');
-        const savedTheme = localStorage.getItem('ai-hub-theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-        updateThemeButtons(savedTheme);
-
-        themeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.getAttribute('data-theme');
-                html.setAttribute('data-theme', theme);
-                localStorage.setItem('ai-hub-theme', theme);
-                updateThemeButtons(theme);
-            });
-        });
-
-        function updateThemeButtons(theme) {
-            themeBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-            });
-        }
-    </script>
+    <script src="scripts/layout.js"></script>
 </body>
+
 </html>

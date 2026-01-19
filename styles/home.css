@@ -1,0 +1,357 @@
+/* Reset & Base */
+:root {
+    /* Dark Mode (Default) - Enhanced Glass */
+    --bg-color: #0d0d12;
+    /* Slightly lighter deep blue-black */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --accent-blue: #2997ff;
+    /* Glassy Card Backgrounds - Frosted Textue */
+    --card-bg: rgba(30, 30, 35, 0.6);
+    --card-hover: rgba(40, 40, 45, 0.7);
+    --nav-bg: rgba(13, 13, 18, 0.7);
+    /* Match new bg */
+    --center-glow: rgba(255, 255, 255, 0.04);
+    /* Subtle vertical highlight */
+    /* Slightly darker header for contrast */
+    --hero-gradient-text: linear-gradient(135deg, #fff 0%, #b0b0b0 100%);
+    --hero-bg: radial-gradient(circle at 50% 120%, #252540 0%, #0d0d12 70%);
+    /* Lighter glow */
+    --section-bg: #0d0d12;
+    --footer-bg: #111;
+    /* Complex Tech Background */
+    --grid-color: rgba(255, 255, 255, 0.05);
+    --glow-color: rgba(41, 151, 255, 0.5);
+}
+
+[data-theme="light"] {
+    /* Light Mode - Frosty Glass */
+    --bg-color: #fbfbfd;
+    /* Brighter, near-white */
+    --text-primary: #1d1d1f;
+    --text-secondary: rgba(0, 0, 0, 0.5);
+    --accent-blue: #0071e3;
+    --card-bg: rgba(255, 255, 255, 0.65);
+    /* Heavier white for frosted look */
+    --card-hover: rgba(255, 255, 255, 0.8);
+    --nav-bg: rgba(251, 251, 253, 0.7);
+    /* Lighter nav */
+    --center-glow: rgba(0, 0, 0, 0.02);
+    /* Subtle shadow for depth in light mode */
+    --hero-gradient-text: linear-gradient(135deg, #1d1d1f 0%, #424245 100%);
+    --hero-bg: radial-gradient(circle at 50% 120%, #fbfbfd 0%, #fff 70%);
+    --section-bg: #fbfbfd;
+    --footer-bg: #f5f5f7;
+    --grid-color: rgba(0, 0, 0, 0.05);
+    --glow-color: rgba(0, 113, 227, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, var(--glow-color) 0%, transparent 60%),
+        linear-gradient(90deg, transparent 0%, var(--center-glow) 50%, transparent 100%);
+    background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
+    background-position: center top, center top, center top, center top;
+    background-repeat: repeat, repeat, no-repeat, no-repeat;
+    background-attachment: fixed;
+    /* Ensures background stays while scrolling */
+    color: var(--text-primary);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.5s ease;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Animation Utilities */
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Navbar (Glassmorphism) */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 48px;
+    /* Apple navbar height */
+    background: var(--nav-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: background 0.3s;
+}
+
+.nav-content {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--text-primary);
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.nav-links a:hover {
+    opacity: 1;
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+    color: var(--text-primary);
+    /* Ensure icon takes correct color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    opacity: 1;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    /* Background is handled by body */
+}
+
+.hero h1 {
+    font-size: 56px;
+    line-height: 1.07143;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin-bottom: 1px;
+    background: var(--hero-gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background 0.3s;
+}
+
+.hero h2 {
+    font-size: 28px;
+    line-height: 1.14286;
+    font-weight: 400;
+    letter-spacing: .007em;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 22px;
+    border-radius: 980px;
+    font-size: 17px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    color: white;
+    border: 1px solid var(--accent-blue);
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--accent-blue);
+    border: 1px solid var(--accent-blue);
+}
+
+.btn-outline:hover {
+    background: rgba(41, 151, 255, 0.1);
+}
+
+/* Bento Grid Section */
+.bento-section {
+    padding: 100px 20px;
+    /* Background is handled by body */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h3 {
+    font-size: 40px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 350px);
+    gap: 20px;
+}
+
+.bento-card {
+    background: var(--card-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s, background 0.3s, border-color 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+}
+
+.bento-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    background: var(--card-hover);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.2), 0 0 15px var(--glow-color);
+}
+
+/* Card Sizes */
+.span-2 {
+    grid-column: span 2;
+}
+
+.span-4 {
+    grid-column: span 4;
+}
+
+.row-span-2 {
+    grid-row: span 2;
+}
+
+/* Card Content */
+.card-content {
+    margin-top: auto;
+    z-index: 2;
+}
+
+.card-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.card-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.card-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.card-bg-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    opacity: 0.05;
+    transition: opacity 0.4s;
+    color: var(--text-primary);
+}
+
+.bento-card:hover .card-bg-icon {
+    opacity: 0.1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Footer */
+footer {
+    background: var(--footer-bg);
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 50px;
+    transition: background 0.3s;
+}
+
+@media (max-width: 900px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .span-2,
+    .span-4 {
+        grid-column: span 1;
+    }
+
+    .hero h1 {
+        font-size: 40px;
+    }
+
+    .bento-card {
+        min-height: 300px;
+    }
+}

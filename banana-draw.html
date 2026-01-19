@@ -1,38 +1,53 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 绘图工作室 - AI Hub</title>
-    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/home.css">
     <style>
-        /* 绘图页面特有的主题色覆盖 */
-        :root {
-            --accent: #ffc832;
-            --accent-secondary: #ff9500;
-            --border-hover: rgba(255, 200, 50, 0.4);
-        }
-
-        [data-theme="light"] {
-            --accent: #e6a800;
-            --accent-secondary: #cc7a00;
-            --border-hover: rgba(255, 150, 0, 0.4);
+        /* Page Specific Overrides */
+        body {
+            padding-top: 80px;
         }
 
         .page-header {
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 60px 20px 40px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--text-primary);
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 6px;
+            background: var(--hero-gradient-text);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            letter-spacing: .007em;
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .main-container {
@@ -52,10 +67,18 @@
         }
 
         .panel {
-            background: var(--bg-card);
-            border-radius: 16px;
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: 24px;
             padding: 30px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+        }
+
+        [data-theme="light"] .panel {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.65);
         }
 
         .panel h2 {
@@ -65,6 +88,49 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        [data-theme="light"] .form-group input,
+        [data-theme="light"] .form-group select,
+        [data-theme="light"] .form-group textarea {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--text-secondary);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
         .api-input-wrapper {
@@ -82,24 +148,43 @@
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 1.2rem;
             padding: 5px;
         }
 
         .toggle-visibility:hover {
-            color: var(--accent);
+            color: var(--text-primary);
         }
 
-        /* 绘图页按钮颜色覆盖 */
-        .btn {
-            color: #000;
+        .main-container .btn {
             width: 100%;
+            padding: 14px;
+            background: var(--text-primary);
+            border: none;
+            border-radius: 980px;
+            color: var(--bg-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .btn:hover:not(:disabled) {
-            box-shadow: 0 10px 30px rgba(255, 200, 50, 0.3);
+        .main-container .btn:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .main-container .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .main-container .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .btn-group {
@@ -112,7 +197,7 @@
             flex: 1;
         }
 
-        /* 结果面板 */
+        /* Result Panel */
         .result-panel {
             display: flex;
             flex-direction: column;
@@ -124,9 +209,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--bg-input);
-            border-radius: 12px;
-            border: 2px dashed var(--border-color);
+            background: rgba(128, 128, 128, 0.05);
+            border-radius: 16px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -137,7 +222,7 @@
 
         .result-placeholder {
             text-align: center;
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .result-placeholder span {
@@ -156,8 +241,32 @@
         .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid var(--border-color);
-            border-top-color: var(--accent);
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .result-actions {
@@ -172,11 +281,11 @@
             font-size: 0.9rem;
         }
 
-        /* 历史记录 */
+        /* History */
         .history-section {
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .history-section h3 {
@@ -192,8 +301,9 @@
         }
 
         .history-item {
+            position: relative;
             aspect-ratio: 1;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
             border: 2px solid transparent;
@@ -201,7 +311,8 @@
         }
 
         .history-item:hover {
-            border-color: var(--accent);
+            border-color: var(--accent-blue);
+            transform: scale(1.02);
         }
 
         .history-item img {
@@ -210,35 +321,240 @@
             object-fit: cover;
         }
 
-        /* 高级设置折叠 */
-        .advanced-toggle {
+        .history-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 10px;
+            gap: 6px;
+        }
+
+        .history-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .history-item .overlay-btn {
+            padding: 6px 10px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            user-select: none;
+            justify-content: center;
+            gap: 4px;
         }
 
-        .advanced-toggle:hover {
-            color: var(--accent);
+        .history-item .overlay-btn:hover {
+            background: #0077ed;
+            transform: translateY(-1px);
         }
 
-        .advanced-settings {
+        .history-item .overlay-btn.secondary {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .history-item .overlay-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .history-item .parent-indicator {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: var(--accent-blue);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .history-item.is-reference {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .workflow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        /* Tree View Styles */
+        .history-tree-view {
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+
+        .tree-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .node-content {
+            position: relative;
+            z-index: 2;
+            width: 120px;
+            /* Match history item item style but smaller if needed */
+        }
+
+        .node-content .history-item {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .node-children {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            padding-top: 20px;
+            gap: 20px;
+        }
+
+        /* Connecting lines */
+        .node-children::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .tree-node::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .tree-node:first-child::before {
             display: none;
-            padding: 15px;
-            background: var(--bg-input);
-            border-radius: 10px;
-            margin-bottom: 20px;
+            /* Root node top line handled by parent's children pseudo */
         }
 
-        .advanced-settings.show {
+        /* Horizontal connector for multiple children */
+        .node-children::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            /* Spans from first child center to last child center */
+            /* This is tricky with pure CSS dynamic width, we might simlify with pseudo on children */
+            display: none;
+        }
+
+        /* Improved Connector Lines Logic */
+        .tree-node::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 50%;
+            width: 50%;
+            /* extend to left */
+            height: 2px;
+            border-top: 2px solid rgba(255, 255, 255, 0.15);
+            display: none;
+            /* Only show for non-first/last where approp */
+        }
+
+        /* 
+           Simplified Tree Lines Approach:
+           - Each child has a vertical line going UP to the parent-line
+        */
+        .node-children>.tree-node::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
             display: block;
         }
 
-        /* 风格预设标签 */
+        /* Horizontal bar above children */
+        .node-children>.tree-node::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            left: 0;
+            /* We need to selectively hide parts of this line */
+            display: none;
+        }
+
+        /* 
+           Let's use a cleaner approach for lines:
+           Parent connects down to children container.
+           Children container has horizontal line.
+           Children connect up to horizontal line.
+        */
+
+        .tree-connector-up {
+            width: 2px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 0 auto;
+        }
+
+        .tree-connector-horz {
+            height: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            width: 100%;
+            /* Needs calculation? No, we can use flex tricks */
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .view-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* Style Presets */
         .style-presets {
             display: flex;
             flex-wrap: wrap;
@@ -247,9 +563,9 @@
 
         .style-tag {
             padding: 8px 14px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            background: var(--bg-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 980px;
             color: var(--text-secondary);
             font-size: 0.85rem;
             cursor: pointer;
@@ -258,45 +574,27 @@
         }
 
         .style-tag:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: var(--text-primary);
+            color: var(--text-primary);
             transform: translateY(-2px);
         }
 
         .style-tag.active {
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            background: var(--text-primary);
             border-color: transparent;
-            color: #000;
+            color: var(--bg-color);
             font-weight: 500;
         }
 
-        .template-presets select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .template-presets select:hover,
-        .template-presets select:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
-
-        /* 图片上传区域 */
+        /* Image Upload */
         .image-upload-area {
-            border: 2px dashed var(--border-color);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            background: var(--bg-input);
+            background: rgba(128, 128, 128, 0.05);
             min-height: 120px;
             display: flex;
             align-items: center;
@@ -304,17 +602,16 @@
         }
 
         .image-upload-area:hover {
-            border-color: var(--accent);
-            background: var(--bg-card-hover);
+            border-color: var(--text-primary);
         }
 
         .image-upload-area.dragover {
-            border-color: var(--accent);
-            background: rgba(255, 200, 50, 0.1);
+            border-color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .upload-placeholder {
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .upload-placeholder span {
@@ -361,18 +658,73 @@
             transform: scale(1.1);
         }
 
-        @media (max-width: 768px) {
-            .history-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        /* Advanced Settings */
+        .advanced-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            user-select: none;
+        }
+
+        .advanced-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .advanced-settings {
+            display: none;
+            padding: 15px;
+            background: rgba(128, 128, 128, 0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .advanced-settings.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.error {
+            background: rgba(255, 100, 100, 0.1);
+            color: #ff6b6b;
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+        }
+
+        .status-message.info {
+            background: rgba(100, 150, 255, 0.1);
+            color: #6496ff;
         }
 
         .btn-save-key {
             padding: 5px 12px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            background: var(--text-primary);
             border: none;
             border-radius: 15px;
-            color: #000;
+            color: var(--bg-color);
             font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
@@ -381,41 +733,44 @@
         }
 
         .btn-save-key:hover {
-            transform: scale(1.05);
-            box-shadow: 0 3px 10px rgba(255, 200, 50, 0.3);
+            opacity: 0.9;
         }
 
         .btn-save-key:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
+
+        @media (max-width: 768px) {
+            .history-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
     </style>
 </head>
+
 <body>
+
+    <!-- Unified Navbar -->
     <nav class="navbar">
-        <a href="index.html" class="logo">AI Hub</a>
-        <button class="menu-toggle">☰</button>
-        <div class="nav-right">
-            <ul class="nav-links">
-                <li><a href="gemini-chat.html">AI对话</a></li>
-                <li><a href="banana-draw.html" class="active">AI绘图</a></li>
-                <li><a href="forum.html">社区</a></li>
-            </ul>
-            <div class="theme-toggle">
-                <button class="theme-btn" data-theme="light" title="浅色模式">☀️</button>
-                <button class="theme-btn active" data-theme="dark" title="深色模式">🌙</button>
+        <div class="nav-content">
+            <a href="index.html" style="font-weight: 600; font-size: 16px;">AI Hub</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="chat.html">对话</a>
+                <a href="image.html">绘图</a>
+                <a href="music.html">音乐</a>
+                <a href="video.html">视频</a>
+                <a href="forum.html">社区</a>
             </div>
-            <div class="user-area">
-                <a href="login.html" class="login-btn" id="loginBtn">登录 / 注册</a>
-                <div class="user-profile" id="userProfile">
-                    <img class="user-avatar" id="userAvatar" src="" alt="头像">
-                    <span class="user-name" id="userName"></span>
-                    <div class="user-dropdown">
-                        <a href="profile.html" class="dropdown-item">👤 个人中心</a>
-                        <a href="profile.html#settings" class="dropdown-item">⚙️ 设置</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item logout logout-btn">🚪 退出登录</a>
-                    </div>
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <button class="theme-toggle" id="themeToggle" title="切换主题"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;"></button>
+                <a href="login.html" id="loginBtn" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+                <div id="userArea"
+                    style="display: none; font-size: 12px; align-items: center; gap: 10px; color: var(--text-primary);">
+                    <span id="userName">User</span>
                 </div>
             </div>
         </div>
@@ -423,46 +778,62 @@
 
     <section class="page-header">
         <h1>AI 绘图工作室</h1>
-        <p>支持 Gemini Imagen 3、Replicate SDXL 和本地 SD WebUI</p>
+        <p>支持 Gemini 多模态图生图 (Nano Banana)、Replicate SDXL 和本地 SD WebUI</p>
     </section>
 
     <div class="main-container">
-        <!-- 输入面板 -->
+        <!-- Input Panel -->
         <div class="panel">
-            <h2>⚙️ 参数设置</h2>
+            <h2>参数设置</h2>
 
             <div class="form-group">
                 <label>API 提供商</label>
                 <select id="apiProvider" onchange="switchProvider()">
-                    <option value="gemini">Gemini 2.0 Flash (推荐，支持图片生成)</option>
-                    <option value="replicate">Replicate (SDXL)现不可用</option>
-                    <option value="custom">自定义端点 (本地 SD WebUI 等)</option>
+                    <option value="gemini">Gemini 2.5 Flash Image (推荐，支持图生图)</option>
+                    <option value="replicate">Replicate SDXL</option>
+                    <option value="custom">自定义端点 (本地 SD WebUI)</option>
                 </select>
+                <small id="providerNote" style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px; display: none;">
+                    💡 Gemini 使用多模态 API (Nano Banana) 实现图生图，支持指令式编辑
+                </small>
             </div>
 
             <div class="form-group">
                 <label>API Key <span id="apiKeyRequired">*</span></label>
                 <div class="api-input-wrapper">
                     <input type="password" id="apiKey" placeholder="输入你的 Replicate API Key" autocomplete="off">
-                    <button class="toggle-visibility" onclick="toggleApiKeyVisibility()">👁️</button>
+                    <button class="toggle-visibility" onclick="toggleApiKeyVisibility()" title="显示/隐藏">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap;">
-                    <small style="color: var(--text-muted); font-size: 0.85rem;">
-                        <span id="apiKeyHint">获取 Key: <a href="https://replicate.com/account/api-tokens" target="_blank" style="color: var(--accent);">replicate.com/account/api-tokens</a></span>
+                    <small style="color: var(--text-secondary); font-size: 0.85rem;">
+                        <span id="apiKeyHint">获取 Key: <a href="https://replicate.com/account/api-tokens" target="_blank"
+                                style="color: var(--text-primary);">replicate.com/account/api-tokens</a></span>
                     </small>
-                    <button type="button" id="saveApiKeyBtn" class="btn-save-key" style="display: none;" onclick="saveApiKeyToServer()">🔒 保存到账户</button>
+                    <button type="button" id="saveApiKeyBtn" class="btn-save-key" style="display: none;"
+                        onclick="saveApiKeyToServer()">保存到账户</button>
                 </div>
-                <div id="apiKeyStatus" style="color: var(--accent); font-size: 0.85rem; margin-top: 5px; display: none;">
-                    ✅ 已使用账户中保存的 API Key
+                <div id="apiKeyStatus" style="color: #00ff88; font-size: 0.85rem; margin-top: 5px; display: none;">
+                    已使用账户中保存的 API Key
                 </div>
             </div>
 
             <div class="form-group" id="modelGroup" style="display: none;">
                 <label>模型选择</label>
                 <select id="modelKey">
-                    <option value="stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b">Stable Diffusion XL (推荐)</option>
-                    <option value="stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4">Stable Diffusion 1.5</option>
-                    <option value="lucataco/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a">SDXL Lightning (快速)</option>
+                    <option value="stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b">
+                        Stable Diffusion XL (推荐)</option>
+                    <option
+                        value="stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4">
+                        Stable Diffusion 1.5</option>
+                    <option
+                        value="lucataco/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a">
+                        SDXL Lightning (快速)</option>
                 </select>
             </div>
 
@@ -480,17 +851,19 @@
             <div class="form-group" id="endpointGroup" style="display: none;">
                 <label>API 端点 *</label>
                 <input type="text" id="endpoint" placeholder="例如: http://127.0.0.1:7860/sdapi/v1/txt2img">
-                <small style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; display: block;">
+                <small style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; display: block;">
                     适用于本地 Stable Diffusion WebUI 或其他兼容 API
                 </small>
             </div>
 
             <div class="form-group" id="referenceImageGroup">
                 <label>参考图片 (可选，用于图生图)</label>
-                <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('referenceImage').click()">
-                    <input type="file" id="referenceImage" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <div class="image-upload-area" id="imageUploadArea"
+                    onclick="document.getElementById('referenceImage').click()">
+                    <input type="file" id="referenceImage" accept="image/*" style="display: none;"
+                        onchange="handleImageUpload(event)">
                     <div class="upload-placeholder" id="uploadPlaceholder">
-                        <span>📷</span>
+                        <span></span>
                         <p>点击或拖拽上传参考图片</p>
                     </div>
                     <div class="upload-preview" id="uploadPreview" style="display: none;">
@@ -500,47 +873,55 @@
                 </div>
             </div>
 
-            <!-- 风格预设 -->
+            <!-- Style Presets -->
             <div class="form-group">
-                <label>风格预设 <span style="color: var(--text-muted); font-weight: normal;">(点击添加到提示词)</span></label>
+                <label>风格预设 <span style="color: var(--text-secondary); font-weight: normal;">(点击添加到提示词)</span></label>
                 <div class="style-presets" id="stylePresets">
-                    <button type="button" class="style-tag" data-style="anime style, manga, cel shading">🎌 动漫</button>
-                    <button type="button" class="style-tag" data-style="photorealistic, hyperrealistic, 8k uhd, dslr">📷 写实</button>
-                    <button type="button" class="style-tag" data-style="oil painting, classical art, renaissance style">🎨 油画</button>
-                    <button type="button" class="style-tag" data-style="watercolor painting, soft colors, artistic">💧 水彩</button>
-                    <button type="button" class="style-tag" data-style="cyberpunk, neon lights, futuristic, sci-fi">🌃 赛博朋克</button>
-                    <button type="button" class="style-tag" data-style="fantasy art, magical, ethereal, mystical">✨ 奇幻</button>
-                    <button type="button" class="style-tag" data-style="pixel art, 16-bit, retro game style">👾 像素风</button>
-                    <button type="button" class="style-tag" data-style="3d render, blender, octane render, c4d">🔮 3D渲染</button>
-                    <button type="button" class="style-tag" data-style="minimalist, simple, clean design">⬜ 极简</button>
-                    <button type="button" class="style-tag" data-style="studio ghibli style, hayao miyazaki">🏯 吉卜力</button>
+                    <button type="button" class="style-tag" data-style="anime style, manga, cel shading">动漫</button>
+                    <button type="button" class="style-tag"
+                        data-style="photorealistic, hyperrealistic, 8k uhd, dslr">写实</button>
+                    <button type="button" class="style-tag"
+                        data-style="oil painting, classical art, renaissance style">油画</button>
+                    <button type="button" class="style-tag"
+                        data-style="watercolor painting, soft colors, artistic">水彩</button>
+                    <button type="button" class="style-tag"
+                        data-style="cyberpunk, neon lights, futuristic, sci-fi">赛博朋克</button>
+                    <button type="button" class="style-tag"
+                        data-style="fantasy art, magical, ethereal, mystical">奇幻</button>
+                    <button type="button" class="style-tag"
+                        data-style="pixel art, 16-bit, retro game style">像素风</button>
+                    <button type="button" class="style-tag"
+                        data-style="3d render, blender, octane render, c4d">3D渲染</button>
+                    <button type="button" class="style-tag" data-style="minimalist, simple, clean design">极简</button>
+                    <button type="button" class="style-tag"
+                        data-style="studio ghibli style, hayao miyazaki">吉卜力</button>
                 </div>
             </div>
 
-            <!-- 提示词模板 -->
+            <!-- Template Presets -->
             <div class="form-group">
                 <label>快捷模板</label>
-                <div class="template-presets">
-                    <select id="promptTemplate" onchange="applyTemplate()">
-                        <option value="">选择模板快速填充...</option>
-                        <option value="portrait">👤 人物肖像</option>
-                        <option value="landscape">🏞️ 风景壮观</option>
-                        <option value="character">🦸 角色设计</option>
-                        <option value="product">📦 产品展示</option>
-                        <option value="interior">🏠 室内设计</option>
-                        <option value="logo">🎯 Logo设计</option>
-                    </select>
-                </div>
+                <select id="promptTemplate" onchange="applyTemplate()">
+                    <option value="">选择模板快速填充...</option>
+                    <option value="portrait">人物肖像</option>
+                    <option value="landscape">风景壮观</option>
+                    <option value="character">角色设计</option>
+                    <option value="product">产品展示</option>
+                    <option value="interior">室内设计</option>
+                    <option value="logo">Logo设计</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <label>提示词 (Prompt) *</label>
-                <textarea id="prompt" placeholder="描述你想生成的图片内容...&#10;例如: A beautiful sunset over mountains, digital art, highly detailed, 4k&#10;&#10;💡 点击上方风格标签可快速添加风格词"></textarea>
+                <textarea id="prompt"
+                    placeholder="描述你想生成的图片内容...&#10;例如: A beautiful sunset over mountains, digital art, highly detailed, 4k&#10;&#10;💡 点击上方风格标签可快速添加风格词"></textarea>
             </div>
 
             <div class="form-group">
                 <label>反向提示词 (Negative Prompt)</label>
-                <textarea id="negativePrompt" placeholder="描述你不想出现的内容...&#10;例如: blurry, low quality, distorted" style="min-height: 80px;"></textarea>
+                <textarea id="negativePrompt" placeholder="描述你不想出现的内容...&#10;例如: blurry, low quality, distorted"
+                    style="min-height: 80px;"></textarea>
             </div>
 
             <div class="advanced-toggle" onclick="toggleAdvanced()">
@@ -586,20 +967,20 @@
 
             <div class="btn-group">
                 <button class="btn" onclick="generateImage()" id="generateBtn">
-                    🎨 生成图片
+                    生成图片
                 </button>
             </div>
 
             <div class="status-message" id="statusMessage"></div>
         </div>
 
-        <!-- 结果面板 -->
+        <!-- Result Panel -->
         <div class="panel result-panel">
-            <h2>🖼️ 生成结果</h2>
+            <h2>生成结果</h2>
 
             <div class="result-area" id="resultArea">
                 <div class="result-placeholder" id="placeholder">
-                    <span>🎨</span>
+                    <span></span>
                     <p>输入提示词并点击生成</p>
                 </div>
                 <img class="result-image" id="resultImage" style="display: none;">
@@ -610,310 +991,152 @@
             </div>
 
             <div class="result-actions" id="resultActions" style="display: none;">
-                <button class="btn btn-secondary" onclick="downloadImage()">💾 下载图片</button>
-                <button class="btn btn-secondary" onclick="copyPrompt()">📋 复制提示词</button>
+                <button class="btn btn-secondary" onclick="downloadImage()">下载图片</button>
+                <button class="btn btn-secondary" onclick="copyPrompt()">复制提示词</button>
             </div>
 
             <div class="history-section" id="historySection" style="display: none;">
-                <h3>📜 历史记录</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3>历史记录</h3>
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="switchHistoryView('grid')" id="viewBtnGrid">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            网格
+                        </button>
+                        <button class="view-btn" onclick="switchHistoryView('tree')" id="viewBtnTree">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="5" r="3" />
+                                <path d="M12 8v5" />
+                                <path d="M5 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                <path d="M19 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                                <path d="M12 13l-7 3" />
+                                <path d="M12 13l7 3" />
+                            </svg>
+                            树状图
+                        </button>
+                    </div>
+                </div>
                 <div class="history-grid" id="historyGrid"></div>
+                <div class="history-tree-view" id="historyTreeView" style="display: none;"></div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>AI Hub - 您的一站式AI资源平台 © 2025</p>
-    </footer>
-
-    <script src="scripts/common.js"></script>
+    <script src="scripts/layout.js"></script>
     <script>
-        // 用户认证状态
+        // User auth state
         const userToken = localStorage.getItem('ai-hub-token');
         let serverApiKeyStatus = { gemini: false, replicate: false };
 
-        // 检查用户是否已登录并加载 API Key 状态
         async function checkAuthAndLoadApiKeys() {
-            if (!userToken) {
-                document.getElementById('saveApiKeyBtn').style.display = 'none';
-                return;
-            }
-
+            if (!userToken) { document.getElementById('saveApiKeyBtn').style.display = 'none'; return; }
             try {
-                // 验证 token 有效性
-                const verifyRes = await fetch('/api/verify', {
-                    headers: { 'Authorization': `Bearer ${userToken}` }
-                });
-                if (!verifyRes.ok) {
-                    localStorage.removeItem('ai-hub-token');
-                    return;
-                }
-
-                // 获取已配置的 API Key 状态
-                const keysRes = await fetch('/api/user/apikeys', {
-                    headers: { 'Authorization': `Bearer ${userToken}` }
-                });
-                if (keysRes.ok) {
-                    const data = await keysRes.json();
-                    serverApiKeyStatus = data.configured || { gemini: false, replicate: false };
-                }
-
-                // 显示保存按钮
+                const verifyRes = await fetch('/api/verify', { headers: { 'Authorization': `Bearer ${userToken}` } });
+                if (!verifyRes.ok) { localStorage.removeItem('ai-hub-token'); return; }
+                const keysRes = await fetch('/api/user/apikeys', { headers: { 'Authorization': `Bearer ${userToken}` } });
+                if (keysRes.ok) { const data = await keysRes.json(); serverApiKeyStatus = data.configured || { gemini: false, replicate: false }; }
                 document.getElementById('saveApiKeyBtn').style.display = 'inline-block';
-
-                // 更新 UI 显示
                 updateApiKeyUI();
-
-            } catch (error) {
-                console.error('检查认证状态失败:', error);
-            }
+            } catch (error) { console.error('检查认证状态失败:', error); }
         }
 
-        // 更新 API Key UI 显示
         function updateApiKeyUI() {
             const provider = document.getElementById('apiProvider').value;
             const apiKeyInput = document.getElementById('apiKey');
             const apiKeyStatus = document.getElementById('apiKeyStatus');
             const apiKeyRequired = document.getElementById('apiKeyRequired');
-
-            if (provider === 'custom') {
-                apiKeyStatus.style.display = 'none';
-                apiKeyRequired.textContent = '';
-                return;
-            }
-
+            if (provider === 'custom') { apiKeyStatus.style.display = 'none'; apiKeyRequired.textContent = ''; return; }
             const hasServerKey = serverApiKeyStatus[provider];
-
             if (hasServerKey && !apiKeyInput.value.trim()) {
-                apiKeyStatus.style.display = 'block';
-                apiKeyRequired.textContent = '(可选)';
-                apiKeyInput.placeholder = '留空使用账户中保存的 Key，或输入新 Key';
+                apiKeyStatus.style.display = 'block'; apiKeyRequired.textContent = '(可选)'; apiKeyInput.placeholder = '留空使用账户中保存的 Key，或输入新 Key';
             } else {
-                apiKeyStatus.style.display = 'none';
-                apiKeyRequired.textContent = hasServerKey ? '(可选)' : '*';
+                apiKeyStatus.style.display = 'none'; apiKeyRequired.textContent = hasServerKey ? '(可选)' : '*';
             }
         }
 
-        // 保存 API Key 到服务器
         async function saveApiKeyToServer() {
             const provider = document.getElementById('apiProvider').value;
             const apiKey = document.getElementById('apiKey').value.trim();
-
-            if (provider === 'custom') {
-                showStatus('自定义端点不支持保存到账户', 'error');
-                return;
-            }
-
-            if (!apiKey) {
-                showStatus('请先输入 API Key', 'error');
-                return;
-            }
-
-            if (!userToken) {
-                showStatus('请先登录后再保存 API Key', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('saveApiKeyBtn');
-            btn.disabled = true;
-            btn.textContent = '保存中...';
-
+            if (provider === 'custom') { showStatus('自定义端点不支持保存到账户', 'error'); return; }
+            if (!apiKey) { showStatus('请先输入 API Key', 'error'); return; }
+            if (!userToken) { showStatus('请先登录后再保存 API Key', 'error'); return; }
+            const btn = document.getElementById('saveApiKeyBtn'); btn.disabled = true; btn.textContent = '保存中...';
             try {
-                const res = await fetch('/api/user/apikeys', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${userToken}`
-                    },
-                    body: JSON.stringify({ provider, apiKey })
-                });
-
+                const res = await fetch('/api/user/apikeys', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` }, body: JSON.stringify({ provider, apiKey }) });
                 const data = await res.json();
-
-                if (res.ok) {
-                    serverApiKeyStatus[provider] = true;
-                    // 清除本地存储的 API Key（更安全）
-                    localStorage.removeItem('ai-draw-api-key');
-                    showStatus('API Key 已安全保存到账户', 'success');
-                    updateApiKeyUI();
-                    setTimeout(hideStatus, 3000);
-                } else {
-                    showStatus(data.error || '保存失败', 'error');
-                }
-            } catch (error) {
-                showStatus('保存失败: ' + error.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '🔒 保存到账户';
-            }
+                if (res.ok) { serverApiKeyStatus[provider] = true; localStorage.removeItem('ai-draw-api-key'); showStatus('API Key 已安全保存到账户', 'success'); updateApiKeyUI(); setTimeout(hideStatus, 3000); }
+                else { showStatus(data.error || '保存失败', 'error'); }
+            } catch (error) { showStatus('保存失败: ' + error.message, 'error'); }
+            finally { btn.disabled = false; btn.textContent = '🔒 保存到账户'; }
         }
 
-        // 加载保存的设置
+        // Load saved settings
         const savedApiKey = localStorage.getItem('ai-draw-api-key');
         const savedProvider = localStorage.getItem('ai-draw-provider') || 'gemini';
         const savedEndpoint = localStorage.getItem('ai-draw-endpoint');
-
-        if (savedApiKey) {
-            document.getElementById('apiKey').value = savedApiKey;
-        }
+        if (savedApiKey) document.getElementById('apiKey').value = savedApiKey;
         document.getElementById('apiProvider').value = savedProvider;
-        if (savedEndpoint) {
-            document.getElementById('endpoint').value = savedEndpoint;
-        }
-        switchProvider();
+        if (savedEndpoint) document.getElementById('endpoint').value = savedEndpoint;
 
-        // 初始化时检查认证状态
+        // Check Models Button removed - Gemini not supported for image generation
+
+        switchProvider();
         checkAuthAndLoadApiKeys();
 
-        // 历史记录
         let imageHistory = JSON.parse(localStorage.getItem('ai-draw-history') || '[]');
+        let referenceImageData = null;
+        let currentReferenceId = null;
+        let currentViewMode = 'grid';
         renderHistory();
 
-        // 参考图片数据
-        let referenceImageData = null;
-
-        // 图片上传处理
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                processImageFile(file);
-            }
-        }
-
+        function handleImageUpload(event) { const file = event.target.files[0]; if (file) processImageFile(file); }
         function processImageFile(file) {
-            if (!file.type.startsWith('image/')) {
-                showStatus('请上传图片文件', 'error');
-                return;
-            }
-
-            if (file.size > 10 * 1024 * 1024) {
-                showStatus('图片大小不能超过 10MB', 'error');
-                return;
-            }
-
+            if (!file.type.startsWith('image/')) { showStatus('请上传图片文件', 'error'); return; }
+            if (file.size > 10 * 1024 * 1024) { showStatus('图片大小不能超过 10MB', 'error'); return; }
             const reader = new FileReader();
-            reader.onload = (e) => {
-                referenceImageData = {
-                    base64: e.target.result.split(',')[1],
-                    mimeType: file.type
-                };
-
-                // 显示预览
-                document.getElementById('previewImg').src = e.target.result;
-                document.getElementById('uploadPlaceholder').style.display = 'none';
-                document.getElementById('uploadPreview').style.display = 'block';
-            };
+            reader.onload = (e) => { referenceImageData = { base64: e.target.result.split(',')[1], mimeType: file.type }; document.getElementById('previewImg').src = e.target.result; document.getElementById('uploadPlaceholder').style.display = 'none'; document.getElementById('uploadPreview').style.display = 'block'; };
             reader.readAsDataURL(file);
         }
+        function removeReferenceImage(event) { event.stopPropagation(); referenceImageData = null; document.getElementById('referenceImage').value = ''; document.getElementById('previewImg').src = ''; document.getElementById('uploadPlaceholder').style.display = 'block'; document.getElementById('uploadPreview').style.display = 'none'; }
 
-        function removeReferenceImage(event) {
-            event.stopPropagation();
-            referenceImageData = null;
-            document.getElementById('referenceImage').value = '';
-            document.getElementById('previewImg').src = '';
-            document.getElementById('uploadPlaceholder').style.display = 'block';
-            document.getElementById('uploadPreview').style.display = 'none';
-        }
-
-        // 拖拽上传
+        // Drag and drop
         const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => { uploadArea.classList.remove('dragover'); });
+        uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); const file = e.dataTransfer.files[0]; if (file) processImageFile(file); });
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                processImageFile(file);
-            }
-        });
-
-        // 风格预设点击事件
+        // Style presets
         document.querySelectorAll('.style-tag').forEach(tag => {
             tag.addEventListener('click', () => {
-                const style = tag.dataset.style;
-                const prompt = document.getElementById('prompt');
-
-                // 切换选中状态
-                tag.classList.toggle('active');
-
-                if (tag.classList.contains('active')) {
-                    // 添加风格到提示词
-                    if (prompt.value.trim()) {
-                        prompt.value = prompt.value.trim() + ', ' + style;
-                    } else {
-                        prompt.value = style;
-                    }
-                } else {
-                    // 从提示词中移除该风格
-                    prompt.value = prompt.value
-                        .split(', ')
-                        .filter(s => s !== style)
-                        .join(', ');
-                }
+                const style = tag.dataset.style; const prompt = document.getElementById('prompt'); tag.classList.toggle('active');
+                if (tag.classList.contains('active')) { prompt.value = prompt.value.trim() ? prompt.value.trim() + ', ' + style : style; }
+                else { prompt.value = prompt.value.split(', ').filter(s => s !== style).join(', '); }
             });
         });
 
-        // 提示词模板
+        // Templates
         const templates = {
-            portrait: {
-                prompt: "A portrait of a beautiful woman, soft lighting, detailed face, elegant, professional photography, 8k",
-                negative: "ugly, deformed, blurry, bad anatomy, bad proportions"
-            },
-            landscape: {
-                prompt: "Epic mountain landscape at golden hour, dramatic clouds, crystal clear lake reflection, nature photography, 8k ultra HD",
-                negative: "people, buildings, text, watermark, blurry"
-            },
-            character: {
-                prompt: "Character design sheet, fantasy warrior, multiple poses, detailed armor, concept art, artstation trending",
-                negative: "blurry, low quality, amateur, bad anatomy"
-            },
-            product: {
-                prompt: "Product photography, sleek modern design, studio lighting, white background, commercial quality, 8k",
-                negative: "text, watermark, blurry, low quality"
-            },
-            interior: {
-                prompt: "Modern interior design, minimalist living room, natural lighting, architectural digest style, 8k",
-                negative: "people, clutter, blurry, distorted"
-            },
-            logo: {
-                prompt: "Minimalist logo design, vector art, clean lines, professional branding, modern, scalable",
-                negative: "complex, photorealistic, blurry, text"
-            }
+            portrait: { prompt: "A portrait of a beautiful woman, soft lighting, detailed face, elegant, professional photography, 8k", negative: "ugly, deformed, blurry, bad anatomy, bad proportions" },
+            landscape: { prompt: "Epic mountain landscape at golden hour, dramatic clouds, crystal clear lake reflection, nature photography, 8k ultra HD", negative: "people, buildings, text, watermark, blurry" },
+            character: { prompt: "Character design sheet, fantasy warrior, multiple poses, detailed armor, concept art, artstation trending", negative: "blurry, low quality, amateur, bad anatomy" },
+            product: { prompt: "Product photography, sleek modern design, studio lighting, white background, commercial quality, 8k", negative: "text, watermark, blurry, low quality" },
+            interior: { prompt: "Modern interior design, minimalist living room, natural lighting, architectural digest style, 8k", negative: "people, clutter, blurry, distorted" },
+            logo: { prompt: "Minimalist logo design, vector art, clean lines, professional branding, modern, scalable", negative: "complex, photorealistic, blurry, text" }
         };
-
         function applyTemplate() {
-            const select = document.getElementById('promptTemplate');
-            const templateKey = select.value;
-
-            if (!templateKey) return;
-
+            const select = document.getElementById('promptTemplate'); const templateKey = select.value; if (!templateKey) return;
             const template = templates[templateKey];
-            if (template) {
-                document.getElementById('prompt').value = template.prompt;
-                document.getElementById('negativePrompt').value = template.negative;
-
-                // 清除所有风格选中状态
-                document.querySelectorAll('.style-tag').forEach(tag => {
-                    tag.classList.remove('active');
-                });
-
-                showStatus('已应用模板: ' + select.options[select.selectedIndex].text, 'success');
-                setTimeout(hideStatus, 2000);
-            }
-
-            // 重置选择器
+            if (template) { document.getElementById('prompt').value = template.prompt; document.getElementById('negativePrompt').value = template.negative; document.querySelectorAll('.style-tag').forEach(tag => tag.classList.remove('active')); showStatus('已应用模板: ' + select.options[select.selectedIndex].text, 'success'); setTimeout(hideStatus, 2000); }
             select.value = '';
         }
 
-        // API 提供商切换
         function switchProvider() {
             const provider = document.getElementById('apiProvider').value;
             const modelGroup = document.getElementById('modelGroup');
@@ -922,77 +1145,45 @@
             const advancedToggle = document.querySelector('.advanced-toggle');
             const apiKeyInput = document.getElementById('apiKey');
             const apiKeyHint = document.getElementById('apiKeyHint');
+            const referenceImageGroup = document.getElementById('referenceImageGroup');
+            const providerNote = document.getElementById('providerNote');
 
             if (provider === 'gemini') {
-                modelGroup.style.display = 'none';
-                endpointGroup.style.display = 'none';
-                aspectRatioGroup.style.display = 'block';
-                advancedToggle.style.display = 'none';
-                document.getElementById('advancedSettings').classList.remove('show');
-                apiKeyInput.placeholder = '输入你的 Google AI API Key';
-                apiKeyHint.innerHTML = '获取 Key: <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--accent);">aistudio.google.com/apikey</a>';
+                modelGroup.style.display = 'none'; endpointGroup.style.display = 'none'; aspectRatioGroup.style.display = 'none'; advancedToggle.style.display = 'none'; document.getElementById('advancedSettings').classList.remove('show');
+                apiKeyInput.placeholder = '输入你的 Google AI API Key'; apiKeyHint.innerHTML = '获取 Key: <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--text-primary);">aistudio.google.com/apikey</a>';
+                // Gemini 支持图生图 (多模态 Nano Banana)
+                referenceImageGroup.style.display = 'block';
+                providerNote.style.display = 'block';
             } else if (provider === 'replicate') {
-                modelGroup.style.display = 'block';
-                endpointGroup.style.display = 'none';
-                aspectRatioGroup.style.display = 'none';
-                advancedToggle.style.display = 'flex';
-                apiKeyInput.placeholder = '输入你的 Replicate API Key';
-                apiKeyHint.innerHTML = '获取 Key: <a href="https://replicate.com/account/api-tokens" target="_blank" style="color: var(--accent);">replicate.com/account/api-tokens</a>';
+                modelGroup.style.display = 'block'; endpointGroup.style.display = 'none'; aspectRatioGroup.style.display = 'none'; advancedToggle.style.display = 'flex';
+                apiKeyInput.placeholder = '输入你的 Replicate API Key'; apiKeyHint.innerHTML = '获取 Key: <a href="https://replicate.com/account/api-tokens" target="_blank" style="color: var(--text-primary);">replicate.com/account/api-tokens</a>';
+                referenceImageGroup.style.display = 'block';
+                providerNote.style.display = 'none';
             } else {
-                modelGroup.style.display = 'none';
-                endpointGroup.style.display = 'block';
-                aspectRatioGroup.style.display = 'none';
-                advancedToggle.style.display = 'flex';
-                apiKeyInput.placeholder = 'API Key (可选，视端点要求)';
-                apiKeyHint.innerHTML = '使用本地 Stable Diffusion WebUI 时，API Key 通常不需要';
+                modelGroup.style.display = 'none'; endpointGroup.style.display = 'block'; aspectRatioGroup.style.display = 'none'; advancedToggle.style.display = 'flex';
+                apiKeyInput.placeholder = 'API Key (可选，视端点要求)'; apiKeyHint.innerHTML = '使用本地 Stable Diffusion WebUI 时，API Key 通常不需要';
+                referenceImageGroup.style.display = 'block';
+                providerNote.style.display = 'none';
             }
-
-            localStorage.setItem('ai-draw-provider', provider);
-
-            // 更新 API Key UI 状态
-            updateApiKeyUI();
+            localStorage.setItem('ai-draw-provider', provider); updateApiKeyUI();
         }
 
-        // API Key 显示切换
         function toggleApiKeyVisibility() {
             const input = document.getElementById('apiKey');
             const btn = document.querySelector('.toggle-visibility');
             if (input.type === 'password') {
                 input.type = 'text';
-                btn.textContent = '🙈';
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
             } else {
                 input.type = 'password';
-                btn.textContent = '👁️';
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
             }
         }
+        function toggleAdvanced() { const settings = document.getElementById('advancedSettings'); const icon = document.getElementById('advancedIcon'); settings.classList.toggle('show'); icon.textContent = settings.classList.contains('show') ? '▼' : '▶'; }
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function showStatus(message, type = 'info') { const statusEl = document.getElementById('statusMessage'); statusEl.textContent = message; statusEl.className = 'status-message show ' + type; }
+        function hideStatus() { document.getElementById('statusMessage').classList.remove('show'); }
 
-        // 高级设置折叠
-        function toggleAdvanced() {
-            const settings = document.getElementById('advancedSettings');
-            const icon = document.getElementById('advancedIcon');
-            settings.classList.toggle('show');
-            icon.textContent = settings.classList.contains('show') ? '▼' : '▶';
-        }
-
-        // HTML 转义函数（防止 XSS）
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // 显示状态消息
-        function showStatus(message, type = 'info') {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.textContent = message;
-            statusEl.className = 'status-message show ' + type;
-        }
-
-        function hideStatus() {
-            document.getElementById('statusMessage').classList.remove('show');
-        }
-
-        // 生成图片
         async function generateImage() {
             const provider = document.getElementById('apiProvider').value;
             const apiKey = document.getElementById('apiKey').value.trim();
@@ -1003,340 +1194,370 @@
             const steps = parseInt(document.getElementById('steps').value);
             const cfgScale = parseFloat(document.getElementById('cfgScale').value);
             const seed = parseInt(document.getElementById('seed').value);
-
-            // 验证 API Key（如果用户登录且服务器端有保存的 Key，则不强制要求输入）
             const hasServerKey = serverApiKeyStatus[provider];
-            if ((provider === 'gemini' || provider === 'replicate') && !apiKey && !hasServerKey) {
-                showStatus(`请输入 ${provider === 'gemini' ? 'Gemini' : 'Replicate'} API Key，或登录后保存 Key 到账户`, 'error');
-                return;
-            }
-            if (provider === 'custom' && !document.getElementById('endpoint').value.trim()) {
-                showStatus('请输入 API 端点', 'error');
-                return;
-            }
-            if (!prompt) {
-                showStatus('请输入提示词', 'error');
-                return;
-            }
-
-            // 保存设置（如果使用服务器端存储的 Key，则不保存到 localStorage）
-            if (apiKey && !hasServerKey) {
-                localStorage.setItem('ai-draw-api-key', apiKey);
-            }
-            if (provider === 'custom') {
-                localStorage.setItem('ai-draw-endpoint', document.getElementById('endpoint').value.trim());
-            }
-
-            // 显示加载状态
-            const btn = document.getElementById('generateBtn');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const loadingText = loadingOverlay.querySelector('.loading-text');
-            const placeholder = document.getElementById('placeholder');
-            const resultArea = document.getElementById('resultArea');
-
-            btn.disabled = true;
-            btn.innerHTML = '⏳ 生成中...';
-            loadingOverlay.style.display = 'flex';
-            placeholder.style.display = 'none';
-            hideStatus();
-
+            if ((provider === 'gemini' || provider === 'replicate') && !apiKey && !hasServerKey) { showStatus(`请输入 ${provider === 'gemini' ? 'Gemini' : 'Replicate'} API Key，或登录后保存 Key 到账户`, 'error'); return; }
+            if (provider === 'custom' && !document.getElementById('endpoint').value.trim()) { showStatus('请输入 API 端点', 'error'); return; }
+            if (!prompt) { showStatus('请输入提示词', 'error'); return; }
+            if (apiKey && !hasServerKey) localStorage.setItem('ai-draw-api-key', apiKey);
+            if (provider === 'custom') localStorage.setItem('ai-draw-endpoint', document.getElementById('endpoint').value.trim());
+            const btn = document.getElementById('generateBtn'); const loadingOverlay = document.getElementById('loadingOverlay'); const loadingText = loadingOverlay.querySelector('.loading-text'); const placeholder = document.getElementById('placeholder'); const resultArea = document.getElementById('resultArea');
+            btn.disabled = true; btn.innerHTML = '⏳ 生成中...'; loadingOverlay.style.display = 'flex'; placeholder.style.display = 'none'; hideStatus();
             try {
                 let imageUrl = null;
-
-                if (provider === 'gemini') {
-                    imageUrl = await generateWithGemini(apiKey, prompt, negativePrompt, loadingText);
-                } else if (provider === 'replicate') {
-                    imageUrl = await generateWithReplicate(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
-                } else {
-                    imageUrl = await generateWithCustomEndpoint(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
-                }
-
-                if (!imageUrl) {
-                    throw new Error('未能获取到图片');
-                }
-
-                // 显示图片
-                const resultImage = document.getElementById('resultImage');
-                resultImage.src = imageUrl;
-                resultImage.style.display = 'block';
-                resultArea.classList.add('has-image');
-                document.getElementById('resultActions').style.display = 'flex';
-
-                // 保存到历史记录
-                addToHistory(imageUrl, prompt);
+                if (provider === 'gemini') imageUrl = await generateWithGemini(apiKey, prompt, negativePrompt, loadingText);
+                else if (provider === 'replicate') imageUrl = await generateWithReplicate(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
+                else imageUrl = await generateWithCustomEndpoint(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
+                if (!imageUrl) throw new Error('未能获取到图片');
+                const resultImage = document.getElementById('resultImage'); resultImage.src = imageUrl; resultImage.style.display = 'block'; resultArea.classList.add('has-image'); document.getElementById('resultActions').style.display = 'flex';
+                // Pass currentReferenceId as parentId
+                const newId = addToHistory(imageUrl, prompt, currentReferenceId);
 
                 showStatus('图片生成成功！', 'success');
-
-            } catch (error) {
-                console.error('生成失败:', error);
-                showStatus(`生成失败: ${error.message}`, 'error');
-                placeholder.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '🎨 生成图片';
-                loadingOverlay.style.display = 'none';
-            }
+            } catch (error) { console.error('生成失败:', error); showStatus(`生成失败: ${error.message}`, 'error'); placeholder.style.display = 'block'; }
+            finally { btn.disabled = false; btn.innerHTML = '生成图片'; loadingOverlay.style.display = 'none'; }
         }
 
-        // 使用 Gemini 生成图片
         async function generateWithGemini(apiKey, prompt, negativePrompt, loadingText) {
-            const aspectRatio = document.getElementById('aspectRatio').value;
-
-            if (referenceImageData) {
-                loadingText.textContent = '正在进行图生图...';
-            } else {
-                loadingText.textContent = '正在生成图片...';
-            }
-
-            // 构建请求头（包含用户认证信息）
-            const headers = { 'Content-Type': 'application/json' };
-            if (userToken) {
-                headers['Authorization'] = `Bearer ${userToken}`;
-            }
-
-            const response = await fetch('/api/image/gemini', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                    apiKey: apiKey || undefined,  // 如果为空，后端会使用服务器端存储的 Key
-                    prompt: prompt,
-                    negativePrompt: negativePrompt || undefined,
-                    aspectRatio: aspectRatio,
-                    numberOfImages: 1,
-                    referenceImage: referenceImageData
-                })
-            });
-
+            loadingText.textContent = referenceImageData ? '正在进行图生图 (多模态)...' : '正在生成图片...';
+            const headers = { 'Content-Type': 'application/json' }; if (userToken) headers['Authorization'] = `Bearer ${userToken}`;
+            // Gemini 支持多模态图生图 (Nano Banana)
+            const response = await fetch('/api/image/gemini', { method: 'POST', headers: headers, body: JSON.stringify({ apiKey: apiKey || undefined, prompt: prompt, negativePrompt: negativePrompt || undefined, numberOfImages: 1, referenceImage: referenceImageData }) });
             const result = await response.json();
-
-            if (!response.ok || result.error) {
-                throw new Error(result.error || '生成失败');
-            }
-
-            if (result.images && result.images.length > 0) {
-                return result.images[0];
-            }
-
+            if (!response.ok || result.error) throw new Error(result.error || '生成失败');
+            if (result.images && result.images.length > 0) return result.images[0];
             throw new Error('未能获取到图片');
         }
 
-        // 使用 Replicate API 生成
         async function generateWithReplicate(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText) {
-            const modelKey = document.getElementById('modelKey').value;
-
-            loadingText.textContent = '正在提交生成任务...';
-
-            // 构建输入参数
-            const input = {
-                prompt: prompt,
-                width: width,
-                height: height,
-                num_inference_steps: steps,
-                guidance_scale: cfgScale,
-            };
-
-            if (negativePrompt) {
-                input.negative_prompt = negativePrompt;
-            }
-
-            if (seed !== -1) {
-                input.seed = seed;
-            }
-
-            // 构建请求头（包含用户认证信息）
-            const headers = { 'Content-Type': 'application/json' };
-            if (userToken) {
-                headers['Authorization'] = `Bearer ${userToken}`;
-            }
-
-            // 提交生成任务
-            const createResponse = await fetch('/api/image/replicate', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                    apiKey: apiKey || undefined,  // 如果为空，后端会使用服务器端存储的 Key
-                    model: modelKey,
-                    input: input
-                })
-            });
-
+            const modelKey = document.getElementById('modelKey').value; loadingText.textContent = '正在提交生成任务...';
+            const input = { prompt: prompt, width: width, height: height, num_inference_steps: steps, guidance_scale: cfgScale };
+            if (negativePrompt) input.negative_prompt = negativePrompt;
+            if (seed !== -1) input.seed = seed;
+            const headers = { 'Content-Type': 'application/json' }; if (userToken) headers['Authorization'] = `Bearer ${userToken}`;
+            const createResponse = await fetch('/api/image/replicate', { method: 'POST', headers: headers, body: JSON.stringify({ apiKey: apiKey || undefined, model: modelKey, input: input }) });
             const createResult = await createResponse.json();
-
-            if (!createResponse.ok || createResult.error) {
-                throw new Error(createResult.error || '提交任务失败');
-            }
-
-            // 轮询获取结果
-            const predictionId = createResult.id;
-            loadingText.textContent = '正在生成图片...';
-
-            let attempts = 0;
-            const maxAttempts = 60; // 最多等待 2 分钟
-
+            if (!createResponse.ok || createResult.error) throw new Error(createResult.error || '提交任务失败');
+            const predictionId = createResult.id; loadingText.textContent = '正在生成图片...';
+            let attempts = 0; const maxAttempts = 60;
             while (attempts < maxAttempts) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                attempts++;
-
-                const statusResponse = await fetch(`/api/image/replicate/${predictionId}`, {
-                    headers: {
-                        'X-API-Key': apiKey
-                    }
-                });
-
+                await new Promise(resolve => setTimeout(resolve, 2000)); attempts++;
+                const statusResponse = await fetch(`/api/image/replicate/${predictionId}`, { headers: { 'X-API-Key': apiKey } });
                 const statusResult = await statusResponse.json();
-
-                if (statusResult.status === 'succeeded') {
-                    // 获取图片 URL
-                    const output = statusResult.output;
-                    if (Array.isArray(output) && output.length > 0) {
-                        return output[0];
-                    } else if (typeof output === 'string') {
-                        return output;
-                    }
-                    throw new Error('无法解析生成结果');
-                } else if (statusResult.status === 'failed') {
-                    throw new Error(statusResult.error || '生成失败');
-                }
-
+                if (statusResult.status === 'succeeded') { const output = statusResult.output; if (Array.isArray(output) && output.length > 0) return output[0]; else if (typeof output === 'string') return output; throw new Error('无法解析生成结果'); }
+                else if (statusResult.status === 'failed') throw new Error(statusResult.error || '生成失败');
                 loadingText.textContent = `正在生成图片... (${attempts * 2}s)`;
             }
-
             throw new Error('生成超时，请重试');
         }
 
-        // 使用自定义端点生成
         async function generateWithCustomEndpoint(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText) {
-            const endpoint = document.getElementById('endpoint').value.trim();
-
-            loadingText.textContent = '正在连接服务器...';
-
-            // 构建适用于 Stable Diffusion WebUI API 的请求体
-            const body = {
-                prompt: prompt,
-                negative_prompt: negativePrompt || '',
-                width: width,
-                height: height,
-                steps: steps,
-                cfg_scale: cfgScale,
-                seed: seed === -1 ? -1 : seed,
-            };
-
-            const response = await fetch('/api/image/proxy', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    endpoint: endpoint,
-                    apiKey: apiKey || undefined,
-                    body: body
-                })
-            });
-
+            const endpoint = document.getElementById('endpoint').value.trim(); loadingText.textContent = '正在连接服务器...';
+            const body = { prompt: prompt, negative_prompt: negativePrompt || '', width: width, height: height, steps: steps, cfg_scale: cfgScale, seed: seed === -1 ? -1 : seed };
+            const response = await fetch('/api/image/proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: endpoint, apiKey: apiKey || undefined, body: body }) });
             const result = await response.json();
-
-            if (!response.ok || result.error) {
-                throw new Error(result.error || '请求失败');
-            }
-
-            // 处理 SD WebUI 格式的响应
-            if (result.images && result.images.length > 0) {
-                const base64 = result.images[0];
-                return `data:image/png;base64,${base64}`;
-            }
-
-            // 处理其他可能的响应格式
-            if (result.image) {
-                const img = result.image;
-                return img.startsWith('data:') ? img : `data:image/png;base64,${img}`;
-            }
-
-            if (result.output) {
-                return result.output;
-            }
-
+            if (!response.ok || result.error) throw new Error(result.error || '请求失败');
+            if (result.images && result.images.length > 0) { const base64 = result.images[0]; return `data:image/png;base64,${base64}`; }
+            if (result.image) { const img = result.image; return img.startsWith('data:') ? img : `data:image/png;base64,${img}`; }
+            if (result.output) return result.output;
             throw new Error('无法解析响应格式');
         }
 
-        // 下载图片
         async function downloadImage() {
-            const img = document.getElementById('resultImage');
-            if (!img.src) return;
-
+            const img = document.getElementById('resultImage'); if (!img.src) return;
             try {
-                // 如果是外部 URL，需要先获取图片数据
-                if (img.src.startsWith('http')) {
-                    const response = await fetch(img.src);
-                    const blob = await response.blob();
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = `ai-draw-${Date.now()}.png`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                } else {
-                    const link = document.createElement('a');
-                    link.download = `ai-draw-${Date.now()}.png`;
-                    link.href = img.src;
-                    link.click();
+                if (img.src.startsWith('http')) { const response = await fetch(img.src); const blob = await response.blob(); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.download = `ai-draw-${Date.now()}.png`; link.href = url; link.click(); URL.revokeObjectURL(url); }
+                else { const link = document.createElement('a'); link.download = `ai-draw-${Date.now()}.png`; link.href = img.src; link.click(); }
+            } catch (e) { window.open(img.src, '_blank'); }
+        }
+        function copyPrompt() { const prompt = document.getElementById('prompt').value; navigator.clipboard.writeText(prompt).then(() => { showStatus('提示词已复制到剪贴板', 'success'); setTimeout(hideStatus, 2000); }); }
+        function addToHistory(imageSrc, prompt, parentId = null) {
+            try {
+                if (!imageSrc || !prompt) {
+                    console.error('Missing image details');
+                    return null;
                 }
+                const newItem = {
+                    id: Date.now().toString(),
+                    image: imageSrc,
+                    prompt: prompt,
+                    parentId: parentId || null, // Ensure not undefined
+                    time: Date.now()
+                };
+
+                // Ensure imageHistory is an array
+                if (!Array.isArray(imageHistory)) {
+                    imageHistory = [];
+                }
+
+                imageHistory.unshift(newItem);
+                if (imageHistory.length > 20) imageHistory = imageHistory.slice(0, 20);
+
+                localStorage.setItem('ai-draw-history', JSON.stringify(imageHistory));
+
+                // Render update
+                renderHistory();
+
+                // Force display if hidden (should be handled by renderHistory but just in case)
+                const section = document.getElementById('historySection');
+                if (section && section.style.display === 'none') {
+                    section.style.display = 'block';
+                }
+
+                return newItem.id;
             } catch (e) {
-                // 如果下载失败，直接在新窗口打开
-                window.open(img.src, '_blank');
+                console.error('Error adding to history:', e);
+                showStatus('保存历史记录失败: ' + e.message, 'error');
+                return null;
             }
         }
 
-        // 复制提示词
-        function copyPrompt() {
-            const prompt = document.getElementById('prompt').value;
-            navigator.clipboard.writeText(prompt).then(() => {
-                showStatus('提示词已复制到剪贴板', 'success');
-                setTimeout(hideStatus, 2000);
-            });
-        }
 
-        // 添加到历史记录
-        function addToHistory(imageSrc, prompt) {
-            imageHistory.unshift({
-                image: imageSrc,
-                prompt: prompt,
-                time: Date.now()
-            });
 
-            // 最多保存12张
-            if (imageHistory.length > 12) {
-                imageHistory = imageHistory.slice(0, 12);
+
+
+        function switchHistoryView(mode) {
+            currentViewMode = mode;
+
+            // Update UI buttons
+            document.getElementById('viewBtnGrid').classList.toggle('active', mode === 'grid');
+            document.getElementById('viewBtnTree').classList.toggle('active', mode === 'tree');
+
+            // Update Container Visibility
+            const grid = document.getElementById('historyGrid');
+            const tree = document.getElementById('historyTreeView');
+
+            if (mode === 'grid') {
+                grid.style.display = 'grid';
+                tree.style.display = 'none';
+                renderHistory(); // Re-render grid
+            } else {
+                grid.style.display = 'none';
+                tree.style.display = 'flex'; // Scale to content
+                renderTreeView();
             }
-
-            localStorage.setItem('ai-draw-history', JSON.stringify(imageHistory));
-            renderHistory();
         }
 
-        // 渲染历史记录
         function renderHistory() {
             const section = document.getElementById('historySection');
             const grid = document.getElementById('historyGrid');
+            const tree = document.getElementById('historyTreeView');
 
             if (imageHistory.length === 0) {
                 section.style.display = 'none';
                 return;
             }
-
             section.style.display = 'block';
-            grid.innerHTML = imageHistory.map((item, index) => `
-                <div class="history-item" onclick="loadFromHistory(${index})" title="${escapeHtml(item.prompt)}">
-                    <img src="${escapeHtml(item.image)}" alt="历史图片" onerror="this.parentElement.style.display='none'">
-                </div>
-            `).join('');
+
+            // Dispatch based on view mode
+            if (currentViewMode === 'tree') {
+                grid.style.display = 'none';
+                tree.style.display = 'flex';
+                renderTreeView();
+                return;
+            }
+
+            // Grid Mode
+            tree.style.display = 'none';
+            grid.style.display = 'grid';
+
+            grid.innerHTML = imageHistory.map((item, index) => {
+                const isReference = currentReferenceId === item.id;
+                // Check if parent exists in current history list to show indicator
+                const hasParent = item.parentId && imageHistory.some(h => h.id === item.parentId);
+                return `
+                    <div class="history-item ${isReference ? 'is-reference' : ''}" title="${escapeHtml(item.prompt)}">
+                        ${hasParent ? '<span class="parent-indicator">图生图</span>' : ''}
+                        <img src="${escapeHtml(item.image)}" alt="历史图片" onerror="this.parentElement.style.display='none'">
+                        <div class="overlay">
+                            <button class="overlay-btn" onclick="event.stopPropagation(); useAsReference(${index})">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                参考
+                            </button>
+                            <button class="overlay-btn secondary" onclick="event.stopPropagation(); loadFromHistory(${index})">
+                                加载
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        // 从历史记录加载
-        function loadFromHistory(index) {
+        // Tree View Logic
+        function renderTreeView() {
+            const container = document.getElementById('historyTreeView');
+            if (!container) return;
+
+            try {
+                // Build Tree Data Structure
+                const roots = buildTreeStructure(imageHistory);
+
+                if (roots.length === 0 && imageHistory.length > 0) {
+                    // Fallback if tree build fails
+                    console.error('Tree build returned empty roots despite history');
+                    container.innerHTML = '<div style="color:white; padding:20px;">构建树状图失败，请切换回网格视图</div>';
+                    return;
+                }
+
+                // Recursive Render
+                container.innerHTML = roots.map(node => renderTreeNode(node)).join('');
+            } catch (e) {
+                console.error('Render tree view error:', e);
+                container.innerHTML = `<div style="color:white; padding:20px;">渲染错误: ${e.message}</div>`;
+            }
+        }
+
+        function buildTreeStructure(history) {
+            if (!Array.isArray(history)) return [];
+
+            // Create map of items
+            const itemMap = {};
+            history.forEach((item, index) => {
+                // Attach original index for callbacks and init children array
+                if (item && item.id) {
+                    itemMap[item.id] = { ...item, originalIndex: index, children: [] };
+                }
+            });
+
+            const roots = [];
+
+            // Link children to parents
+            history.forEach(item => {
+                if (!item || !item.id) return;
+
+                const node = itemMap[item.id];
+                // Check if parent exists AND is present in curreny history map
+                if (item.parentId && itemMap[item.parentId]) {
+                    itemMap[item.parentId].children.push(node);
+                } else {
+                    // It's a root (or parent is missing/too old)
+                    roots.push(node);
+                }
+            });
+
+            return roots;
+        }
+
+        function renderTreeNode(node) {
+            const isReference = currentReferenceId === node.id;
+
+            // Recursively render children
+            const childrenHtml = node.children.length > 0
+                ? `<div class="node-children">${node.children.map(child => renderTreeNode(child)).join('')}</div>`
+                : '';
+
+            return `
+                <div class="tree-node">
+                    <div class="node-content">
+                        <div class="history-item ${isReference ? 'is-reference' : ''}" title="${escapeHtml(node.prompt)}">
+                            <span class="parent-indicator" style="display: ${node.parentId ? 'block' : 'none'}">ID: ${node.id.slice(-4)}</span>
+                            <img src="${escapeHtml(node.image)}" alt="历史图片" onerror="this.parentElement.style.display='none'">
+                            <div class="overlay">
+                                <button class="overlay-btn" onclick="event.stopPropagation(); useAsReference(${node.originalIndex})">参考</button>
+                                <button class="overlay-btn secondary" onclick="event.stopPropagation(); loadFromHistory(${node.originalIndex})">加载</button>
+                            </div>
+                        </div>
+                    </div>
+                    ${childrenHtml}
+                </div>
+            `;
+        }
+
+        async function useAsReference(index) {
             const item = imageHistory[index];
             if (!item) return;
 
-            document.getElementById('prompt').value = item.prompt;
+            showStatus('正在处理参考图...', 'info');
 
+            try {
+                // Use Image loading to handle CORS and compression in one go
+                const compressedDataUrl = await compressImageUrl(item.image);
+
+                const matches = compressedDataUrl.match(/^data:(.+);base64,(.+)$/);
+                if (!matches) throw new Error('无效的图片数据');
+
+                const mime = matches[1];
+                const b64 = matches[2];
+
+                referenceImageData = { base64: b64, mimeType: mime };
+                currentReferenceId = item.id;
+
+                // Update UI
+                const previewImg = document.getElementById('previewImg');
+                const uploadPreview = document.getElementById('uploadPreview');
+                const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+                if (previewImg && uploadPreview) {
+                    previewImg.src = compressedDataUrl;
+                    uploadPreview.style.display = 'block';
+                    if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
+                }
+
+                if (item.prompt && !document.getElementById('prompt').value.trim()) {
+                    document.getElementById('prompt').value = item.prompt;
+                }
+
+                renderHistory();
+                showStatus('已设定参考图', 'success');
+                setTimeout(hideStatus, 2000);
+
+                document.getElementById('prompt').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            } catch (e) {
+                console.error('Failed to process reference image', e);
+                if (e.name === 'SecurityError' || e.message.includes('Tainted')) {
+                    showStatus('无法使用此图片作为参考（跨域限制）。请尝试先下载再上传。', 'error');
+                } else {
+                    showStatus('加载参考图失败: ' + e.message, 'error');
+                }
+            }
+        }
+
+        function compressImageUrl(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                // Important: Request CORS permission to read pixels
+                img.crossOrigin = 'Anonymous';
+
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Resize to max 1024x1024
+                        const maxSize = 1024;
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = Math.round(height * (maxSize / width));
+                                width = maxSize;
+                            } else {
+                                width = Math.round(width * (maxSize / height));
+                                height = maxSize;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // This will throw SecurityError if CORS failed despite crossOrigin setting
+                        // (i.e. server did not send Access-Control-Allow-Origin)
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+
+                img.onerror = () => reject(new Error('图片加载失败'));
+                img.src = src;
+            });
+        }
+
+        function loadFromHistory(index) {
+            const item = imageHistory[index];
+            if (!item) return;
+            document.getElementById('prompt').value = item.prompt;
             const resultImage = document.getElementById('resultImage');
             resultImage.src = item.image;
             resultImage.style.display = 'block';
@@ -1346,4 +1567,5 @@
         }
     </script>
 </body>
+
 </html>
