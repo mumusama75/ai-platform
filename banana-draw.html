@@ -397,6 +397,11 @@
         .history-tree-view {
             padding: 20px 0;
             overflow-x: auto;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .tree-node {
@@ -404,14 +409,13 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            padding: 20px;
+            padding: 10px 15px;
         }
 
         .node-content {
             position: relative;
             z-index: 2;
             width: 120px;
-            /* Match history item item style but smaller if needed */
         }
 
         .node-content .history-item {
@@ -424,107 +428,46 @@
             display: flex;
             justify-content: center;
             position: relative;
-            padding-top: 20px;
-            gap: 20px;
+            padding-top: 30px;
+            gap: 10px;
         }
 
-        /* Connecting lines */
+        /* 父节点向下的垂直连接线 */
         .node-children::before {
             content: '';
             position: absolute;
             top: 0;
             left: 50%;
+            transform: translateX(-50%);
             width: 2px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.15);
+            height: 15px;
+            background: rgba(138, 180, 248, 0.6);
         }
 
-        .tree-node::before {
+        /* 子节点向上的垂直连接线 */
+        .node-children > .tree-node::before {
             content: '';
             position: absolute;
-            top: 0;
+            top: -15px;
             left: 50%;
+            transform: translateX(-50%);
             width: 2px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.15);
+            height: 15px;
+            background: rgba(138, 180, 248, 0.6);
         }
 
-        .tree-node:first-child::before {
-            display: none;
-            /* Root node top line handled by parent's children pseudo */
+        /* 单个子节点时隐藏水平线 */
+        .node-children.single-child > .tree-node::before {
+            height: 30px;
+            top: -30px;
         }
-
-        /* Horizontal connector for multiple children */
-        .node-children::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            /* Spans from first child center to last child center */
-            /* This is tricky with pure CSS dynamic width, we might simlify with pseudo on children */
+        .node-children.single-child::before {
             display: none;
         }
 
-        /* Improved Connector Lines Logic */
-        .tree-node::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 50%;
-            width: 50%;
-            /* extend to left */
-            height: 2px;
-            border-top: 2px solid rgba(255, 255, 255, 0.15);
+        /* 根节点不需要向上的连接线 */
+        .history-tree-view > .tree-node::before {
             display: none;
-            /* Only show for non-first/last where approp */
-        }
-
-        /* 
-           Simplified Tree Lines Approach:
-           - Each child has a vertical line going UP to the parent-line
-        */
-        .node-children>.tree-node::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            width: 2px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            display: block;
-        }
-
-        /* Horizontal bar above children */
-        .node-children>.tree-node::after {
-            content: '';
-            position: absolute;
-            top: -20px;
-            width: 100%;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.15);
-            left: 0;
-            /* We need to selectively hide parts of this line */
-            display: none;
-        }
-
-        /* 
-           Let's use a cleaner approach for lines:
-           Parent connects down to children container.
-           Children container has horizontal line.
-           Children connect up to horizontal line.
-        */
-
-        .tree-connector-up {
-            width: 2px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            margin: 0 auto;
-        }
-
-        .tree-connector-horz {
-            height: 2px;
-            background: rgba(255, 255, 255, 0.15);
-            width: 100%;
-            /* Needs calculation? No, we can use flex tricks */
         }
 
         /* View Toggle */
@@ -1290,7 +1233,10 @@
                 }
 
                 imageHistory.unshift(newItem);
-                if (imageHistory.length > 20) imageHistory = imageHistory.slice(0, 20);
+                // 增加限制到50条，并智能保留有父子关系的记录
+                if (imageHistory.length > 50) {
+                    imageHistory = pruneHistoryPreservingRelations(imageHistory, 50);
+                }
 
                 localStorage.setItem('ai-draw-history', JSON.stringify(imageHistory));
 
@@ -1311,8 +1257,39 @@
             }
         }
 
+        // 智能删除历史记录，保留有父子关系的记录
+        function pruneHistoryPreservingRelations(history, maxCount) {
+            if (history.length <= maxCount) return history;
 
+            // 收集所有被引用的父节点ID
+            const referencedParentIds = new Set();
+            history.forEach(item => {
+                if (item.parentId) {
+                    referencedParentIds.add(item.parentId);
+                }
+            });
 
+            // 从后往前删除，但跳过被引用的父节点
+            const result = [];
+            const toRemove = history.length - maxCount;
+            let removed = 0;
+
+            // 先保留前面的记录（较新的）
+            for (let i = 0; i < history.length; i++) {
+                const item = history[i];
+                // 如果已经删除够了，或者这个节点被其他节点引用，保留它
+                if (removed >= toRemove || referencedParentIds.has(item.id)) {
+                    result.push(item);
+                } else if (i >= history.length - toRemove) {
+                    // 从末尾删除
+                    removed++;
+                } else {
+                    result.push(item);
+                }
+            }
+
+            return result.slice(0, maxCount);
+        }
 
 
         function switchHistoryView(mode) {
@@ -1400,10 +1377,52 @@
 
                 // Recursive Render
                 container.innerHTML = roots.map(node => renderTreeNode(node)).join('');
+
+                // 渲染完成后添加水平连接线
+                requestAnimationFrame(() => addHorizontalConnectors(container));
             } catch (e) {
                 console.error('Render tree view error:', e);
                 container.innerHTML = `<div style="color:white; padding:20px;">渲染错误: ${e.message}</div>`;
             }
+        }
+
+        // 添加水平连接线
+        function addHorizontalConnectors(container) {
+            const nodeChildrenList = container.querySelectorAll('.node-children:not(.single-child)');
+            nodeChildrenList.forEach(nodeChildren => {
+                // 移除已存在的连接线
+                const existingConnector = nodeChildren.querySelector('.horizontal-connector');
+                if (existingConnector) existingConnector.remove();
+
+                const children = nodeChildren.querySelectorAll(':scope > .tree-node');
+                if (children.length < 2) return;
+
+                const firstChild = children[0];
+                const lastChild = children[children.length - 1];
+
+                // 计算第一个和最后一个子节点的中心位置
+                const parentRect = nodeChildren.getBoundingClientRect();
+                const firstRect = firstChild.getBoundingClientRect();
+                const lastRect = lastChild.getBoundingClientRect();
+
+                const left = firstRect.left + firstRect.width / 2 - parentRect.left;
+                const right = lastRect.left + lastRect.width / 2 - parentRect.left;
+                const width = right - left;
+
+                // 创建水平连接线
+                const connector = document.createElement('div');
+                connector.className = 'horizontal-connector';
+                connector.style.cssText = `
+                    position: absolute;
+                    top: 15px;
+                    left: ${left}px;
+                    width: ${width}px;
+                    height: 2px;
+                    background: rgba(138, 180, 248, 0.6);
+                    z-index: 1;
+                `;
+                nodeChildren.appendChild(connector);
+            });
         }
 
         function buildTreeStructure(history) {
@@ -1439,17 +1458,21 @@
 
         function renderTreeNode(node) {
             const isReference = currentReferenceId === node.id;
+            const childCount = node.children.length;
 
-            // Recursively render children
-            const childrenHtml = node.children.length > 0
-                ? `<div class="node-children">${node.children.map(child => renderTreeNode(child)).join('')}</div>`
-                : '';
+            // 构建子节点HTML，添加水平连接线支持
+            let childrenHtml = '';
+            if (childCount > 0) {
+                const singleChildClass = childCount === 1 ? 'single-child' : '';
+                const childrenContent = node.children.map(child => renderTreeNode(child)).join('');
+                childrenHtml = `<div class="node-children ${singleChildClass}">${childrenContent}</div>`;
+            }
 
             return `
                 <div class="tree-node">
                     <div class="node-content">
                         <div class="history-item ${isReference ? 'is-reference' : ''}" title="${escapeHtml(node.prompt)}">
-                            <span class="parent-indicator" style="display: ${node.parentId ? 'block' : 'none'}">ID: ${node.id.slice(-4)}</span>
+                            <span class="parent-indicator" style="display: ${node.parentId ? 'block' : 'none'}">图生图</span>
                             <img src="${escapeHtml(node.image)}" alt="历史图片" onerror="this.parentElement.style.display='none'">
                             <div class="overlay">
                                 <button class="overlay-btn" onclick="event.stopPropagation(); useAsReference(${node.originalIndex})">参考</button>
