@@ -6,10 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 绘图工作室 - AI Hub</title>
     <link rel="stylesheet" href="styles/home.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         /* Page Specific Overrides */
-        body {
+        :root {
+            --font-main: 'Outfit', sans-serif;
+        }
+
+        html body {
+            font-family: var(--font-main) !important;
             padding-top: 80px;
+            background-color: #0d0d12 !important;
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.25), transparent 45%),
+                radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.25), transparent 45%),
+                radial-gradient(circle at 50% 100%, rgba(236, 72, 153, 0.15), transparent 50%) !important;
+            background-repeat: no-repeat !important;
+            background-size: 100% 100%, 100% 100%, 100% 100% !important;
+            background-position: 0 0, 0 0, 0 0 !important;
+            background-attachment: fixed !important;
         }
 
         .page-header {
@@ -73,7 +90,7 @@
             border-radius: 24px;
             padding: 30px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px var(--glow-color);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 0 20px -5px rgba(99, 102, 241, 0.1);
         }
 
         [data-theme="light"] .panel {
@@ -125,8 +142,8 @@
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: rgba(41, 151, 255, 0.5);
-            box-shadow: 0 0 0 4px rgba(41, 151, 255, 0.15);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
             background: rgba(255, 255, 255, 0.03);
             transform: translateY(-1px);
         }
@@ -302,9 +319,159 @@
             cursor: pointer;
         }
 
+        /* Custom Select Styles */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+            width: 100%;
+        }
+
+        .custom-select-wrapper select {
+            display: none;
+            /* Hide native */
+        }
+
+        .custom-select-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
+        }
+
+        .custom-select-trigger::after {
+            content: '▼';
+            font-size: 0.6em;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+            margin-left: 10px;
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger {
+            border-color: var(--aurora-1);
+            background: rgba(20, 20, 30, 1);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger::after {
+            transform: rotate(180deg);
+        }
+
+        .custom-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .custom-select-wrapper.open .custom-options {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-option:last-child {
+            border-bottom: none;
+        }
+
+        .custom-option:hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), transparent);
+            color: #fff;
+            padding-left: 20px;
+        }
+
+        .custom-option.selected {
+            background: rgba(99, 102, 241, 0.3);
+            color: #fff;
+            border-left: 3px solid var(--aurora-1);
+        }
+
+        /* Ripple Effect */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        span.ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
         .result-image-grid .result-image:hover {
             transform: scale(1.03);
             z-index: 10;
+        }
+
+        /* Cinematic Reveal Animation */
+        @keyframes revealImage {
+            0% {
+                opacity: 0;
+                transform: scale(0.96) translateY(10px);
+                filter: blur(8px) brightness(1.2);
+                /* Flash effect start */
+            }
+
+            40% {
+                filter: blur(4px) brightness(1.1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0) brightness(1);
+            }
+        }
+
+        .result-image.reveal {
+            animation: revealImage 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: transform, opacity, filter;
         }
 
         .spinner {
@@ -392,8 +559,6 @@
             inset: 0;
             background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 60%);
             opacity: 0;
-            pointer-events: none;
-            /* Don't block clicks when hidden */
             transition: opacity 0.2s;
             display: flex;
             flex-direction: row;
@@ -409,8 +574,6 @@
 
         .history-item:hover .overlay {
             opacity: 1;
-            pointer-events: auto;
-            /* Enable clicks when visible */
         }
 
         .history-item .overlay-btn {
@@ -452,183 +615,8 @@
             overflow: hidden;
             position: relative;
             transition: transform 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Custom Select Styles */
-        .custom-select-wrapper {
-            position: relative;
-            user-select: none;
-            width: 100%;
-        }
-
-        .custom-select-wrapper select {
-            display: none;
-            /* Hide native */
-        }
-
-        .custom-select-trigger {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: rgba(30, 30, 40, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            font-size: 0.95rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .custom-select-trigger:hover {
-            border-color: var(--accent-blue);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 15px var(--glow-color);
-        }
-
-        .custom-select-trigger::after {
-            content: '▼';
-            font-size: 0.6em;
-            color: var(--text-secondary);
-            transition: transform 0.3s;
-            margin-left: 10px;
-        }
-
-        .custom-select-wrapper.open .custom-select-trigger {
-            border-color: var(--accent-blue);
-            background: rgba(20, 20, 30, 1);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .custom-select-wrapper.open .custom-select-trigger::after {
-            transform: rotate(180deg);
-        }
-
-        .custom-options {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: rgba(20, 20, 30, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: none;
-            border-radius: 0 0 12px 12px;
-            z-index: 100;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .custom-select-wrapper.open .custom-options {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .custom-option {
-            padding: 12px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-secondary);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            display: flex;
-            align-items: center;
-        }
-
-        .custom-option:last-child {
-            border-bottom: none;
-        }
-
-        .custom-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding-left: 20px;
-        }
-
-        .custom-option.selected {
-            background: rgba(41, 151, 255, 0.2);
-            color: #fff;
-            border-left: 3px solid var(--accent-blue);
-        }
-
-        /* Light Mode Support for Custom Select */
-        /* Light Mode Support for Custom Select */
-        [data-theme="light"] .custom-select-trigger {
-            background: rgba(255, 255, 255, 0.9);
-            border-color: rgba(0, 0, 0, 0.15);
-            color: var(--text-primary);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        [data-theme="light"] .custom-select-trigger:hover {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: var(--accent-blue);
-            box-shadow: 0 6px 20px rgba(0, 113, 227, 0.1);
-        }
-
-        [data-theme="light"] .custom-select-wrapper.open .custom-select-trigger {
-            background: rgba(255, 255, 255, 0.85);
-            border-color: var(--accent-blue);
-        }
-
-        [data-theme="light"] .custom-options {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        [data-theme="light"] .custom-option {
-            color: var(--text-secondary);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        [data-theme="light"] .custom-option:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-primary);
-        }
-
-        [data-theme="light"] .custom-option.selected {
-            background: rgba(0, 113, 227, 0.1);
-            color: var(--accent-blue);
-            border-left-color: var(--accent-blue);
-        }
-
-        /* Ripple Effect */
-        .btn {
-            position: relative;
-            overflow: hidden;
-        }
-
-        span.ripple {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            background-color: rgba(255, 255, 255, 0.3);
-            pointer-events: none;
-        }
-
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 12px rgba(41, 151, 255, 0.3);
         }
 
         [data-theme="light"] .masonry-item {
@@ -1055,21 +1043,13 @@
         .node-content {
             position: relative;
             z-index: 2;
-            min-width: 100px;
-            max-width: 180px;
+            width: 120px;
         }
 
         .node-content .history-item {
-            width: auto;
-            height: auto;
-            max-width: 180px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto;
-        }
-
-        .node-content .history-item img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
         }
 
         .node-children {
@@ -1284,7 +1264,32 @@
             gap: 15px;
         }
 
+        .status-message {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: none;
+        }
 
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.error {
+            background: rgba(255, 100, 100, 0.1);
+            color: #ff6b6b;
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+        }
+
+        .status-message.info {
+            background: rgba(100, 150, 255, 0.1);
+            color: #6496ff;
+        }
 
         .btn-save-key {
             padding: 5px 12px;
@@ -1647,6 +1652,7 @@
                 </button>
             </div>
 
+            <div class="status-message" id="statusMessage"></div>
         </div>
 
         <!-- Result Panel -->
@@ -1955,7 +1961,7 @@
                 <div class="param-row"><span>Seed</span><span class="param-val">${params.seed || '-'}</span></div>
 
                 <div style="margin-top:30px; display:grid; gap:10px;">
-                    <button class="btn" onclick="useAsReference(${currentLightboxIndex}); closeLightbox()">用作参考</button>
+                    <button class="btn" onclick="remixImage(${currentLightboxIndex}); closeLightbox()">Remix</button>
                     <button class="btn btn-secondary" onclick="window.open('${item.image}', '_blank')">查看原图</button>
                     <button class="btn btn-secondary" onclick="downloadItem('${item.image}')">下载</button>
                 </div>
@@ -1979,7 +1985,7 @@
             if (item.params) {
                 if (item.params.aspectRatio) { const el = document.getElementById('aspectRatio'); el.value = item.params.aspectRatio; el.dispatchEvent(new Event('change')); }
                 if (item.params.steps) { const el = document.getElementById('steps'); el.value = item.params.steps; el.dispatchEvent(new Event('change')); }
-                if (item.params.cfg) document.getElementById('cfgScale').value = item.params.cfg;
+                if (item.params.cfg) document.getElementById('cfgScale').value = item.params.cfg; // range input, no custom select
                 if (item.params.seed) document.getElementById('seed').value = item.params.seed;
             }
 
@@ -2463,11 +2469,6 @@
             const resultContainer = document.getElementById('resultContainer');
 
             btn.disabled = true; btn.innerHTML = '⏳ 生成中...'; loadingOverlay.style.display = 'flex'; placeholder.style.display = 'none'; resultContainer.style.display = 'none'; resultContainer.innerHTML = '';
-
-            // Reset Result Area State
-            resultArea.classList.remove('has-image', 'is-single', 'is-grid');
-            document.getElementById('resultActions').style.display = 'none';
-
             hideStatus();
 
             try {
@@ -2493,7 +2494,7 @@
 
                     const img = document.createElement('img');
                     img.src = images[0];
-                    img.className = 'result-image';
+                    img.className = 'result-image reveal';
                     img.id = 'resultImage'; // Restore ID for download function compatibility
                     img.onclick = () => openLightbox(0); // Open first item in lightbox (careful with index since array changes)
                     resultContainer.appendChild(img);
@@ -2505,7 +2506,7 @@
                     images.forEach((src, idx) => {
                         const img = document.createElement('img');
                         img.src = src;
-                        img.className = 'result-image';
+                        img.className = 'result-image reveal';
                         img.onclick = () => {
                             // Find index in history?
                             // For fresh generation, we simply open lightbox with simplified view or just fallback
@@ -2646,13 +2647,13 @@
                     localStorage.setItem('ai-draw-history', JSON.stringify(imageHistory));
                 }
 
-                // Render update (Synchronous for immediate feedback)
+                // Render update
                 renderHistory();
 
-                // Scroll history section into view if off-screen
+                // Force display if hidden (should be handled by renderHistory but just in case)
                 const section = document.getElementById('historySection');
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                if (section && section.style.display === 'none') {
+                    section.style.display = 'block';
                 }
 
                 return newItem.id;
@@ -2710,7 +2711,7 @@
             const tree = document.getElementById('historyTreeView');
 
             if (mode === 'grid') {
-                grid.style.display = 'block'; // Use block for masonry
+                grid.style.display = 'grid';
                 tree.style.display = 'none';
                 renderHistory(); // Re-render grid
             } else {
@@ -2739,30 +2740,26 @@
             }
 
             tree.style.display = 'none';
+            grid.style.display = 'block'; // Block for Masonry
+            grid.className = 'history-grid masonry-grid'; // Use Masonry Class
 
-            // Build HTML content FIRST
-            const htmlContent = imageHistory.map((item, index) => {
+            grid.innerHTML = imageHistory.map((item, index) => {
                 const isReference = currentReferenceId === item.id;
                 return `
                     <div class="history-item masonry-item ${isReference ? 'is-reference' : ''}" onclick="openLightbox(${index})">
                         ${item.parentId ? '<span class="parent-indicator">图生图</span>' : ''}
                         <img src="${escapeHtml(item.image)}" alt="历史图片" loading="lazy">
                         <div class="overlay">
-                            <button class="overlay-btn" onclick="event.stopPropagation(); useAsReference(${index})">
-                                用作参考
+                            <button class="overlay-btn" onclick="event.stopPropagation(); remixImage(${index})">
+                                Remix
+                            </button>
+                            <button class="overlay-btn secondary" onclick="event.stopPropagation(); useAsReference(${index})">
+                                参考
                             </button>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            // Update innerHTML BEFORE showing
-            grid.innerHTML = htmlContent;
-            grid.className = 'history-grid masonry-grid';
-
-            // Force reflow then show
-            void grid.offsetHeight;
-            grid.style.display = 'block';
         }
 
         // Tree View Logic
@@ -2877,11 +2874,12 @@
             return `
                 <div class="tree-node">
                     <div class="node-content">
-                        <div class="history-item ${isReference ? 'is-reference' : ''}" title="${escapeHtml(node.prompt)}" onclick="openLightbox(${node.originalIndex})">
+                        <div class="history-item ${isReference ? 'is-reference' : ''}" title="${escapeHtml(node.prompt)}">
                             <span class="parent-indicator" style="display: ${node.parentId ? 'block' : 'none'}">图生图</span>
                             <img src="${escapeHtml(node.image)}" alt="历史图片" onerror="this.parentElement.style.display='none'">
                             <div class="overlay">
-                                <button class="overlay-btn" onclick="event.stopPropagation(); useAsReference(${node.originalIndex})">用作参考</button>
+                                <button class="overlay-btn" onclick="event.stopPropagation(); useAsReference(${node.originalIndex})">参考</button>
+                                <button class="overlay-btn secondary" onclick="event.stopPropagation(); remixImage(${node.originalIndex})">Remix</button>
                             </div>
                         </div>
                     </div>
@@ -2909,9 +2907,20 @@
                 referenceImageData = { base64: b64, mimeType: mime };
                 currentReferenceId = item.id;
 
-                // Update reference images array and render previews
-                referenceImagesData = [{ base64: b64, mimeType: mime, preview: compressedDataUrl }];
-                renderReferencePreviews();
+                // Update UI
+                const previewImg = document.getElementById('previewImg');
+                const uploadPreview = document.getElementById('uploadPreview');
+                const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+                if (previewImg && uploadPreview) {
+                    // Legacy code, update to new array logic
+                    referenceImagesData = [{ base64: b64, mimeType: mime, preview: compressedDataUrl }];
+                    renderReferencePreviews();
+                }
+
+                if (item.prompt && !document.getElementById('prompt').value.trim()) {
+                    document.getElementById('prompt').value = item.prompt;
+                }
 
                 renderHistory();
                 showStatus('已设定参考图', 'success');
@@ -2983,9 +2992,6 @@
             document.getElementById('resultActions').style.display = 'flex';
         }
     </script>
-
-    <!-- Toast Notification (Outside of any panel to avoid stacking context issues) -->
-    <div class="status-message" id="statusMessage"></div>
 </body>
 
 </html>

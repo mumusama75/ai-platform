@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masonry Layout Demo - AI Hub</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --text-primary: #fff;
+            --card-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* 核心 Masonry CSS */
+        .masonry-grid {
+            /* 关键：使用多列布局 */
+            column-count: 4;
+            column-gap: 20px;
+
+            /* 限制最大宽度 (可选) */
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 响应式调整列数 */
+        @media (max-width: 1200px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .masonry-grid {
+                column-count: 1;
+            }
+        }
+
+        .masonry-item {
+            /* 关键：防止元素跨列断裂 */
+            break-inside: avoid;
+            margin-bottom: 20px;
+            /* 元素间垂直间距 */
+
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .masonry-item:hover {
+            transform: translateY(-5px);
+            z-index: 2;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: #4a9eff;
+        }
+
+        .masonry-item img {
+            width: 100%;
+            display: block;
+            height: auto;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .item-info p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>✨ 瀑布流 (Masonry) 效果演示</h1>
+    <p style="text-align: center; margin-bottom: 30px; opacity: 0.7;">
+        注意观察：即使每张图片长宽比不同，它们也能紧密排列，没有难看的留白。
+    </p>
+
+    <div class="masonry-grid">
+        <!-- 模拟不同比例的图片 -->
+
+        <!-- 1. 竖图 3:4 -->
+        <div class="masonry-item">
+            <span class="tag">3:4 Portrait</span>
+            <img src="https://placehold.co/600x800/2a2a2a/FFF?text=Portrait+1" alt="img">
+            <div class="item-info">
+                <h3>Cyberpunk Character</h3>
+                <p>Portrait, detailed face, neon lights</p>
+            </div>
+        </div>
+
+        <!-- 2. 横图 16:9 -->
+        <div class="masonry-item">
+            <span class="tag">16:9 Landscape</span>
+            <img src="https://placehold.co/800x450/4a3a2a/FFF?text=Landscape+1" alt="img">
+            <div class="item-info">
+                <h3>Golden Sunset</h3>
+                <p>Landscape, mountains, lake reflection</p>
+            </div>
+        </div>
+
+        <!-- 3. 正方形 1:1 -->
+        <div class="masonry-item">
+            <span class="tag">1:1 Square</span>
+            <img src="https://placehold.co/600x600/2a4a3a/FFF?text=Square+1" alt="img">
+            <div class="item-info">
+                <h3>Abstract Logo</h3>
+                <p>Minimalist vector art</p>
+            </div>
+        </div>
+
+        <!-- 4. 超长竖图 9:18 -->
+        <div class="masonry-item">
+            <span class="tag">9:18 Mobile</span>
+            <img src="https://placehold.co/450x900/3a2a4a/FFF?text=Tall+1" alt="img">
+            <div class="item-info">
+                <h3>Mobile Wallpaper</h3>
+                <p>Vertical abstract pattern</p>
+            </div>
+        </div>
+
+        <!-- 5. 横图 4:3 -->
+        <div class="masonry-item">
+            <span class="tag">4:3 Standard</span>
+            <img src="https://placehold.co/800x600/5a2a2a/FFF?text=Standard+1" alt="img">
+            <div class="item-info">
+                <h3>Classic Painting</h3>
+                <p>Oil painting style, renaissance</p>
+            </div>
+        </div>
+
+        <!-- 6. 竖图 2:3 -->
+        <div class="masonry-item">
+            <span class="tag">2:3 Poster</span>
+            <img src="https://placehold.co/600x900/2a2a5a/FFF?text=Poster+1" alt="img">
+            <div class="item-info">
+                <h3>Movie Poster</h3>
+                <p>Sci-fi typography design</p>
+            </div>
+        </div>
+
+        <!-- 7. 正方形 1:1 -->
+        <div class="masonry-item">
+            <span class="tag">1:1 Icon</span>
+            <img src="https://placehold.co/500x500/4a4a4a/FFF?text=Icon+1" alt="img">
+            <div class="item-info">
+                <h3>App Icon</h3>
+                <p>Rounded 3D render</p>
+            </div>
+        </div>
+
+        <!-- 8. 超宽屏 21:9 -->
+        <div class="masonry-item">
+            <span class="tag">21:9 Cinematic</span>
+            <img src="https://placehold.co/900x385/3a3a3a/FFF?text=Wide+1" alt="img">
+            <div class="item-info">
+                <h3>Cinematic Shot</h3>
+                <p>Wide angle, depth of field</p>
+            </div>
+        </div>
+
+        <!-- 9. 竖图 3:4 -->
+        <div class="masonry-item">
+            <span class="tag">3:4 Portrait</span>
+            <img src="https://placehold.co/600x800/222/FFF?text=Portrait+2" alt="img">
+            <div class="item-info">
+                <h3>Fashion Model</h3>
+                <p>Studio lighting, vogue style</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

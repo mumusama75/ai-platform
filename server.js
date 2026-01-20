@@ -54,7 +54,7 @@ app.use(cors({
 }));
 
 app.use(compression()); // 开启 Gzip 压缩
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' })); // 支持多图上传
 app.use('/api/', generalLimiter); // 全局限流
 
 // ==================== 静态文件服务 ====================
@@ -67,6 +67,9 @@ app.use('/api/data/avatars', express.static(path.join(__dirname, 'data', 'avatar
 }));
 app.use('/data/avatars', express.static(path.join(__dirname, 'data', 'avatars'), {
     maxAge: '1d'
+}));
+app.use('/data/generated_images', express.static(path.join(__dirname, 'data', 'generated_images'), {
+    maxAge: '7d' // Generated images can be cached longer
 }));
 
 // 静态资源目录（前端页面）
