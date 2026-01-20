@@ -218,6 +218,7 @@
 
         .result-area.has-image {
             border-style: solid;
+            align-items: flex-start;
         }
 
         .result-placeholder {
@@ -231,11 +232,48 @@
             margin-bottom: 15px;
         }
 
+        .result-image-container {
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
         .result-image {
             max-width: 100%;
-            max-height: 100%;
+            max-height: 70vh;
             object-fit: contain;
             border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        /* Grid for multiple images */
+        .result-image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            width: 100%;
+            gap: 15px;
+            padding: 15px;
+            align-items: start;
+            align-content: start;
+        }
+
+        .result-image-grid .result-image {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            aspect-ratio: 1;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .result-image-grid .result-image:hover {
+            transform: scale(1.03);
+            z-index: 10;
         }
 
         .spinner {
@@ -445,7 +483,7 @@
         }
 
         /* 子节点向上的垂直连接线 */
-        .node-children > .tree-node::before {
+        .node-children>.tree-node::before {
             content: '';
             position: absolute;
             top: -15px;
@@ -457,16 +495,17 @@
         }
 
         /* 单个子节点时隐藏水平线 */
-        .node-children.single-child > .tree-node::before {
+        .node-children.single-child>.tree-node::before {
             height: 30px;
             top: -30px;
         }
+
         .node-children.single-child::before {
             display: none;
         }
 
         /* 根节点不需要向上的连接线 */
-        .history-tree-view > .tree-node::before {
+        .history-tree-view>.tree-node::before {
             display: none;
         }
 
@@ -736,7 +775,8 @@
                     <option value="replicate">Replicate SDXL</option>
                     <option value="custom">自定义端点 (本地 SD WebUI)</option>
                 </select>
-                <small id="providerNote" style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px; display: none;">
+                <small id="providerNote"
+                    style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px; display: none;">
                     💡 Gemini 使用多模态 API (Nano Banana) 实现图生图，支持指令式编辑
                 </small>
             </div>
@@ -781,14 +821,31 @@
             </div>
 
             <div class="form-group" id="aspectRatioGroup">
-                <label>宽高比 (Gemini Imagen)</label>
-                <select id="aspectRatio">
-                    <option value="1:1">1:1 正方形</option>
-                    <option value="16:9">16:9 横屏</option>
-                    <option value="9:16">9:16 竖屏</option>
-                    <option value="4:3">4:3 标准</option>
-                    <option value="3:4">3:4 竖版</option>
+                <label>宽高比 (Aspect Ratio)</label>
+                <select id="aspectRatio" onchange="updateResolutionHint()">
+                    <option value="1:1" data-res="1024×1024">1:1 正方形</option>
+                    <option value="16:9" data-res="1344×768">16:9 横屏视频</option>
+                    <option value="9:16" data-res="768×1344">9:16 竖屏/手机壁纸</option>
+                    <option value="4:3" data-res="1184×880">4:3 标准照片</option>
+                    <option value="3:4" data-res="880×1184">3:4 竖幅照片</option>
+                    <option value="3:2" data-res="1248×832">3:2 单反照片</option>
+                    <option value="2:3" data-res="832×1248">2:3 竖幅单反</option>
+                    <option value="5:4" data-res="1136×912">5:4 中画幅</option>
+                    <option value="4:5" data-res="912×1136">4:5 Instagram</option>
+                    <option value="21:9" data-res="1536×656">21:9 电影宽画幅</option>
                 </select>
+                <small id="resolutionHint" style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 5px; display: block;">
+                    📐 输出分辨率: 1024×1024
+                </small>
+            </div>
+
+            <div class="form-group" id="imageCountGroup" style="display: none;">
+                <label>生成数量 (Number of Images)</label>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="range" id="imageCount" min="1" max="4" value="1" step="1"
+                        oninput="document.getElementById('imageCountVal').textContent = this.value" style="flex:1;">
+                    <span id="imageCountVal" style="width: 20px; text-align: center;">1</span>
+                </div>
             </div>
 
             <div class="form-group" id="endpointGroup" style="display: none;">
@@ -873,33 +930,60 @@
 
             <div class="advanced-settings" id="advancedSettings">
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group" id="widthGroup">
                         <label>宽度 (Width)</label>
                         <select id="width">
                             <option value="512" selected>512px</option>
+                            <option value="640">640px</option>
                             <option value="768">768px</option>
+                            <option value="896">896px</option>
                             <option value="1024">1024px</option>
+                            <option value="1152">1152px</option>
+                            <option value="1280">1280px</option>
+                            <option value="1536">1536px</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="heightGroup">
                         <label>高度 (Height)</label>
                         <select id="height">
                             <option value="512" selected>512px</option>
+                            <option value="640">640px</option>
                             <option value="768">768px</option>
+                            <option value="896">896px</option>
                             <option value="1024">1024px</option>
+                            <option value="1152">1152px</option>
+                            <option value="1280">1280px</option>
+                            <option value="1536">1536px</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group" id="stepsGroup">
                         <label>采样步数 (Steps)</label>
                         <input type="number" id="steps" value="30" min="1" max="150">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="cfgGroup">
                         <label>引导系数 (CFG Scale)</label>
                         <input type="number" id="cfgScale" value="7.5" min="1" max="20" step="0.5">
                     </div>
+                </div>
+
+                <div class="form-group" id="temperatureGroup" style="display: none;">
+                    <label>创意度 (Temperature): <span id="tempVal">0.9</span></label>
+                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.9"
+                        oninput="document.getElementById('tempVal').textContent = this.value">
+                    <small style="color: var(--text-secondary); font-size: 0.8rem;">值越高越有创意，但也可能越不可控</small>
+                </div>
+
+                <div class="form-group" id="safetyGroup" style="display: none;">
+                    <label>安全过滤等级 (Safety Filter)</label>
+                    <select id="safetySettings">
+                        <option value="BLOCK_ONLY_HIGH">仅拦截高风险 (默认)</option>
+                        <option value="BLOCK_MEDIUM_AND_ABOVE">拦截中等及以上</option>
+                        <option value="BLOCK_LOW_AND_ABOVE">拦截低风险及以上</option>
+                        <option value="BLOCK_NONE">不过滤 (慎用)</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -926,7 +1010,10 @@
                     <span></span>
                     <p>输入提示词并点击生成</p>
                 </div>
-                <img class="result-image" id="resultImage" style="display: none;">
+                <div id="resultContainer" class="result-image-container" style="display: none;">
+                    <!-- Images will be injected here -->
+                    <img class="result-image" id="resultImage" style="display: none;">
+                </div>
                 <div class="loading-overlay" id="loadingOverlay" style="display: none;">
                     <div class="spinner"></div>
                     <div class="loading-text">正在生成中...</div>
@@ -1080,6 +1167,16 @@
             select.value = '';
         }
 
+        function updateResolutionHint() {
+            const select = document.getElementById('aspectRatio');
+            const hint = document.getElementById('resolutionHint');
+            if (!select || !hint) return;
+
+            const selectedOption = select.options[select.selectedIndex];
+            const res = selectedOption.getAttribute('data-res') || '1024×1024';
+            hint.textContent = '📐 输出分辨率: ' + res;
+        }
+
         function switchProvider() {
             const provider = document.getElementById('apiProvider').value;
             const modelGroup = document.getElementById('modelGroup');
@@ -1091,20 +1188,87 @@
             const referenceImageGroup = document.getElementById('referenceImageGroup');
             const providerNote = document.getElementById('providerNote');
 
+            const imageCountGroup = document.getElementById('imageCountGroup');
+            const temperatureGroup = document.getElementById('temperatureGroup');
+            const safetyGroup = document.getElementById('safetyGroup');
+
+            // Replicate specific fields
+            const widthGroup = document.getElementById('widthGroup');
+            const heightGroup = document.getElementById('heightGroup');
+            const stepsGroup = document.getElementById('stepsGroup');
+            const cfgGroup = document.getElementById('cfgGroup');
+
+            const resolutionHint = document.getElementById('resolutionHint');
+
             if (provider === 'gemini') {
-                modelGroup.style.display = 'none'; endpointGroup.style.display = 'none'; aspectRatioGroup.style.display = 'none'; advancedToggle.style.display = 'none'; document.getElementById('advancedSettings').classList.remove('show');
-                apiKeyInput.placeholder = '输入你的 Google AI API Key'; apiKeyHint.innerHTML = '获取 Key: <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--text-primary);">aistudio.google.com/apikey</a>';
-                // Gemini 支持图生图 (多模态 Nano Banana)
+                modelGroup.style.display = 'none';
+                endpointGroup.style.display = 'none';
+
+                // Show Gemini controls
+                aspectRatioGroup.style.display = 'block';
+                // Gemini 2.5 Flash Image 目前不支持多图生成，隐藏该选项
+                imageCountGroup.style.display = 'none';
+                // 显示分辨率提示
+                if (resolutionHint) resolutionHint.style.display = 'block';
+                updateResolutionHint();
+
+                // Advanced Toggle visible, but content filtered
+                advancedToggle.style.display = 'flex';
+
+                // Show/Hide inside Advanced Settings
+                document.getElementById('advancedSettings').classList.remove('show');
+                widthGroup.style.display = 'none';
+                heightGroup.style.display = 'none';
+                stepsGroup.style.display = 'none';
+                cfgGroup.style.display = 'none';
+                temperatureGroup.style.display = 'block';
+                safetyGroup.style.display = 'block';
+
+                apiKeyInput.placeholder = '输入你的 Google AI API Key';
+                apiKeyHint.innerHTML = '获取 Key: <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--text-primary);">aistudio.google.com/apikey</a>';
+                // Gemini 支持图生图
                 referenceImageGroup.style.display = 'block';
                 providerNote.style.display = 'block';
             } else if (provider === 'replicate') {
-                modelGroup.style.display = 'block'; endpointGroup.style.display = 'none'; aspectRatioGroup.style.display = 'none'; advancedToggle.style.display = 'flex';
-                apiKeyInput.placeholder = '输入你的 Replicate API Key'; apiKeyHint.innerHTML = '获取 Key: <a href="https://replicate.com/account/api-tokens" target="_blank" style="color: var(--text-primary);">replicate.com/account/api-tokens</a>';
+                modelGroup.style.display = 'block';
+                endpointGroup.style.display = 'none';
+                // 隐藏分辨率提示（Replicate使用宽度/高度）
+                if (resolutionHint) resolutionHint.style.display = 'none';
+                aspectRatioGroup.style.display = 'none';
+                imageCountGroup.style.display = 'none';
+
+                advancedToggle.style.display = 'flex';
+
+                widthGroup.style.display = 'block';
+                heightGroup.style.display = 'block';
+                stepsGroup.style.display = 'block';
+                cfgGroup.style.display = 'block';
+                temperatureGroup.style.display = 'none';
+                safetyGroup.style.display = 'none';
+
+                apiKeyInput.placeholder = '输入你的 Replicate API Key';
+                apiKeyHint.innerHTML = '获取 Key: <a href="https://replicate.com/account/api-tokens" target="_blank" style="color: var(--text-primary);">replicate.com/account/api-tokens</a>';
                 referenceImageGroup.style.display = 'block';
                 providerNote.style.display = 'none';
             } else {
-                modelGroup.style.display = 'none'; endpointGroup.style.display = 'block'; aspectRatioGroup.style.display = 'none'; advancedToggle.style.display = 'flex';
-                apiKeyInput.placeholder = 'API Key (可选，视端点要求)'; apiKeyHint.innerHTML = '使用本地 Stable Diffusion WebUI 时，API Key 通常不需要';
+                modelGroup.style.display = 'none';
+                endpointGroup.style.display = 'block';
+                aspectRatioGroup.style.display = 'none';
+                imageCountGroup.style.display = 'none';
+                // 隐藏分辨率提示（自定义端点使用宽度/高度）
+                if (resolutionHint) resolutionHint.style.display = 'none';
+
+                advancedToggle.style.display = 'flex';
+
+                widthGroup.style.display = 'block';
+                heightGroup.style.display = 'block';
+                stepsGroup.style.display = 'block';
+                cfgGroup.style.display = 'block';
+                temperatureGroup.style.display = 'none';
+                safetyGroup.style.display = 'none';
+
+                apiKeyInput.placeholder = 'API Key (可选，视端点要求)';
+                apiKeyHint.innerHTML = '使用本地 Stable Diffusion WebUI 时，API Key 通常不需要';
                 referenceImageGroup.style.display = 'block';
                 providerNote.style.display = 'none';
             }
@@ -1144,16 +1308,62 @@
             if (apiKey && !hasServerKey) localStorage.setItem('ai-draw-api-key', apiKey);
             if (provider === 'custom') localStorage.setItem('ai-draw-endpoint', document.getElementById('endpoint').value.trim());
             const btn = document.getElementById('generateBtn'); const loadingOverlay = document.getElementById('loadingOverlay'); const loadingText = loadingOverlay.querySelector('.loading-text'); const placeholder = document.getElementById('placeholder'); const resultArea = document.getElementById('resultArea');
-            btn.disabled = true; btn.innerHTML = '⏳ 生成中...'; loadingOverlay.style.display = 'flex'; placeholder.style.display = 'none'; hideStatus();
+            const resultContainer = document.getElementById('resultContainer');
+
+            btn.disabled = true; btn.innerHTML = '⏳ 生成中...'; loadingOverlay.style.display = 'flex'; placeholder.style.display = 'none'; resultContainer.style.display = 'none'; resultContainer.innerHTML = '';
+            hideStatus();
+
             try {
-                let imageUrl = null;
-                if (provider === 'gemini') imageUrl = await generateWithGemini(apiKey, prompt, negativePrompt, loadingText);
-                else if (provider === 'replicate') imageUrl = await generateWithReplicate(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
-                else imageUrl = await generateWithCustomEndpoint(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
-                if (!imageUrl) throw new Error('未能获取到图片');
-                const resultImage = document.getElementById('resultImage'); resultImage.src = imageUrl; resultImage.style.display = 'block'; resultArea.classList.add('has-image'); document.getElementById('resultActions').style.display = 'flex';
-                // Pass currentReferenceId as parentId
-                const newId = addToHistory(imageUrl, prompt, currentReferenceId);
+                let resultData = null;
+                if (provider === 'gemini') resultData = await generateWithGemini(apiKey, prompt, negativePrompt, loadingText);
+                else if (provider === 'replicate') resultData = await generateWithReplicate(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
+                else resultData = await generateWithCustomEndpoint(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText);
+
+                if (!resultData) throw new Error('未能获取到图片');
+
+                // Normalizing resultData to array
+                const images = Array.isArray(resultData) ? resultData : [resultData];
+
+                if (images.length === 0) throw new Error('未能获取到图片');
+
+                resultContainer.style.display = 'flex';
+                resultArea.classList.add('has-image');
+
+                if (images.length === 1) {
+                    resultContainer.className = 'result-image-container'; // Single view
+                    const img = document.createElement('img');
+                    img.src = images[0];
+                    img.className = 'result-image';
+                    img.id = 'resultImage'; // Restore ID for download function compatibility
+                    resultContainer.appendChild(img);
+                } else {
+                    resultContainer.className = 'result-image-container result-image-grid'; // Grid view
+                    images.forEach((src, idx) => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'result-image';
+                        img.onclick = () => {
+                            // Show Fullscreen or swap logic could go here
+                            const win = window.open();
+                            win.document.write('<img src="' + src + '" style="max-width:100%">');
+                        };
+                        img.title = `点击查看大图 ${idx + 1}`;
+                        resultContainer.appendChild(img);
+                    });
+                    // Set the first one as 'resultImage' for compatibility with actions
+                    // Ideally we should update actions to handle multiple, but for now simple fallback
+                    const hiddenMain = document.createElement('img');
+                    hiddenMain.id = 'resultImage';
+                    hiddenMain.src = images[0];
+                    hiddenMain.style.display = 'none';
+                    resultContainer.appendChild(hiddenMain);
+                }
+
+                document.getElementById('resultActions').style.display = 'flex';
+
+                // Add first image to history (or all? let's behave and add first for now to avoid spamming history with variations)
+                // Actually adding user preference might be good, but let's stick to first one as "Main Result"
+                const newId = addToHistory(images[0], prompt, currentReferenceId);
 
                 showStatus('图片生成成功！', 'success');
             } catch (error) { console.error('生成失败:', error); showStatus(`生成失败: ${error.message}`, 'error'); placeholder.style.display = 'block'; }
@@ -1163,11 +1373,28 @@
         async function generateWithGemini(apiKey, prompt, negativePrompt, loadingText) {
             loadingText.textContent = referenceImageData ? '正在进行图生图 (多模态)...' : '正在生成图片...';
             const headers = { 'Content-Type': 'application/json' }; if (userToken) headers['Authorization'] = `Bearer ${userToken}`;
+
+            const aspectRatio = document.getElementById('aspectRatio').value;
+            const temperature = document.getElementById('temperature').value;
+            const safetySettings = document.getElementById('safetySettings').value;
+
             // Gemini 支持多模态图生图 (Nano Banana)
-            const response = await fetch('/api/image/gemini', { method: 'POST', headers: headers, body: JSON.stringify({ apiKey: apiKey || undefined, prompt: prompt, negativePrompt: negativePrompt || undefined, numberOfImages: 1, referenceImage: referenceImageData }) });
+            const response = await fetch('/api/image/gemini', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    apiKey: apiKey || undefined,
+                    prompt: prompt,
+                    negativePrompt: negativePrompt || undefined,
+                    referenceImage: referenceImageData,
+                    aspectRatio,
+                    temperature,
+                    safetySettings
+                })
+            });
             const result = await response.json();
             if (!response.ok || result.error) throw new Error(result.error || '生成失败');
-            if (result.images && result.images.length > 0) return result.images[0];
+            if (result.images && result.images.length > 0) return result.images; // Return Array
             throw new Error('未能获取到图片');
         }
 

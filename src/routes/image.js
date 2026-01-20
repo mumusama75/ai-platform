@@ -55,6 +55,7 @@ router.post('/gemini', async (req, res) => {
 
         // 构建提示词 (结合负向提示词)
         let fullPrompt = prompt;
+
         if (negativePrompt) {
             fullPrompt += `\n\n[Avoid: ${negativePrompt}]`;
         }
@@ -62,15 +63,41 @@ router.post('/gemini', async (req, res) => {
         // 添加文字指令
         parts.push({ text: fullPrompt });
 
+        // 构建安全设置
+        // 默认放宽限制以允许更多创意内容，除非用户特别指定
+        let safetySettings = [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+        ];
+
+        // 如果前端传来了自定义安全设置
+        if (req.body.safetySettings) {
+            const level = req.body.safetySettings;
+            safetySettings = safetySettings.map(s => ({ ...s, threshold: level }));
+        }
+
+        // 构建 generationConfig，包含 imageConfig 用于宽高比
+        const generationConfig = {
+            responseModalities: ['TEXT', 'IMAGE'],
+            temperature: req.body.temperature ? parseFloat(req.body.temperature) : 0.9
+        };
+
+        // 添加宽高比配置 (支持: 1:1, 3:2, 2:3, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9)
+        if (aspectRatio) {
+            generationConfig.imageConfig = {
+                aspectRatio: aspectRatio
+            };
+        }
+
         // 构建请求体 (Gemini 多模态 generateContent)
         const requestBody = {
             contents: [{
-                parts: parts  // 不需要指定 role
+                parts: parts
             }],
-            generationConfig: {
-                responseModalities: ['TEXT', 'IMAGE'],  // 关键：同时支持文本和图片输出
-                temperature: 0.9
-            }
+            generationConfig: generationConfig,
+            safetySettings: safetySettings
         };
 
         // 使用 Gemini 2.5 Flash Image 模型 (支持图片输出)
