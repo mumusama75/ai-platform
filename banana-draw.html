@@ -739,6 +739,29 @@
             background: rgba(251, 251, 253, 0.85);
         }
 
+        /* Light mode Inpainting Modal specific styles */
+        [data-theme="light"] #inpaintingModal {
+            background: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        [data-theme="light"] #inpaintingModal .panel {
+            background: rgba(255, 255, 255, 0.6) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Floating action buttons - transparent in both modes */
+        [data-theme="light"] #inpaintingModal .panel>div:first-child {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        [data-theme="light"] #inpaintToolbar {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 113, 227, 0.1) !important;
+        }
+
         .lightbox-overlay.show {
             display: flex;
             opacity: 1;
@@ -1146,6 +1169,156 @@
             color: #fff;
         }
 
+
+        /* Tutorial Guide Styles */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10010;
+            pointer-events: none;
+            display: none;
+        }
+
+        .tutorial-overlay.active {
+            display: block;
+        }
+
+        .tutorial-spotlight {
+            position: fixed;
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 10011;
+            opacity: 0;
+        }
+
+        /* Pulse animation for spotlight */
+        .tutorial-spotlight::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 14px;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(41, 151, 255, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(41, 151, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(41, 151, 255, 0);
+            }
+        }
+
+        .tutorial-tooltip {
+            position: fixed;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 16px;
+            width: 320px;
+            max-width: 90vw;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 10012;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .tutorial-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tutorial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .tutorial-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tutorial-step-badge {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 100px;
+        }
+
+        .tutorial-content {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .tutorial-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tutorial-skip {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .tutorial-skip:hover {
+            color: var(--text-primary);
+        }
+
+        .tutorial-next {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 980px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(41, 151, 255, 0.3);
+        }
+
+        .tutorial-next:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(41, 151, 255, 0.4);
+        }
+
+        [data-theme="light"] .tutorial-tooltip {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .tutorial-step-badge {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+        }
+
         /* Style Presets */
         .style-presets {
             display: flex;
@@ -1348,6 +1521,21 @@
         <p>支持 Gemini 多模态图生图 (Nano Banana)、Replicate SDXL 和本地 SD WebUI</p>
     </section>
 
+    <!-- Tutorial Elements -->
+    <div class="tutorial-overlay" id="tutorialOverlay"></div>
+    <div class="tutorial-spotlight" id="tutorialSpotlight"></div>
+    <div class="tutorial-tooltip" id="tutorialTooltip">
+        <div class="tutorial-header">
+            <div class="tutorial-title" id="tutorialTitle">Title</div>
+            <div class="tutorial-step-badge" id="tutorialBadge">1/5</div>
+        </div>
+        <div class="tutorial-content" id="tutorialContent">Content</div>
+        <div class="tutorial-actions">
+            <button class="tutorial-skip" onclick="skipTutorial()">跳过教程</button>
+            <button class="tutorial-next" onclick="nextTutorialStep()" id="tutorialNextBtn">下一步</button>
+        </div>
+    </div>
+
     <div class="main-container">
         <!-- Input Panel -->
         <div class="panel">
@@ -1471,23 +1659,25 @@
             <div class="form-group">
                 <label>风格预设 <span style="color: var(--text-secondary); font-weight: normal;">(点击添加到提示词)</span></label>
                 <div class="style-presets" id="stylePresets">
-                    <button type="button" class="style-tag" data-style="anime style, manga, cel shading">动漫</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
+                        data-style="anime style, manga, cel shading">动漫</button>
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="photorealistic, hyperrealistic, 8k uhd, dslr">写实</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="oil painting, classical art, renaissance style">油画</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="watercolor painting, soft colors, artistic">水彩</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="cyberpunk, neon lights, futuristic, sci-fi">赛博朋克</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="fantasy art, magical, ethereal, mystical">奇幻</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="pixel art, 16-bit, retro game style">像素风</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="3d render, blender, octane render, c4d">3D渲染</button>
-                    <button type="button" class="style-tag" data-style="minimalist, simple, clean design">极简</button>
-                    <button type="button" class="style-tag"
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
+                        data-style="minimalist, simple, clean design">极简</button>
+                    <button type="button" class="style-tag" onclick="toggleStylePreset(this)"
                         data-style="studio ghibli style, hayao miyazaki">吉卜力</button>
                 </div>
             </div>
@@ -2234,11 +2424,55 @@
                 container.innerHTML = referenceImagesData.map((img, index) => `
                     <div class="upload-preview" onclick="event.stopPropagation()">
                         <img src="${img.preview}" alt="预览">
+                        ${img.hasMask ? '<div class="mask-badge" style="position:absolute; top:5px; left:5px; background:var(--accent-blue); color:white; padding:2px 6px; border-radius:4px; font-size:10px;">Masked</div>' : ''}
+                        
+                        <div style="position:absolute; bottom:5px; left:5px; display:flex; gap:5px;">
+                             <button class="remove-image" onclick="openInpaintingEditor('${img.preview}'); currentEditingIndex = ${index};" title="局部重绘" style="position:static; transform:none; background:rgba(0,0,0,0.6);"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg></button>
+                        </div>
+
                         <button class="remove-image" onclick="removeReferenceImage(event, ${index})"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                     </div>
                 `).join('');
             }
         }
+
+        let currentEditingIndex = -1;
+
+        // Hook into save function to update specific item (deferred until all scripts loaded)
+        window.addEventListener('load', function() {
+            if (typeof saveInpaintingMask === 'function') {
+                const originalSaveMask = saveInpaintingMask;
+                window.saveInpaintingMask = function () {
+                    const canvas = document.getElementById('inpaintingCanvas');
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = canvas.width; finalCanvas.height = canvas.height;
+                    const finalCtx = finalCanvas.getContext('2d');
+                    finalCtx.fillStyle = '#000000'; finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                    finalCtx.drawImage(canvas, 0, 0);
+
+                    // Threshold
+                    const imageData = finalCtx.getImageData(0, 0, finalCanvas.width, finalCanvas.height);
+                    const data = imageData.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i] > 20) { data[i] = 255; data[i + 1] = 255; data[i + 2] = 255; data[i + 3] = 255; }
+                        else { data[i] = 0; data[i + 1] = 0; data[i + 2] = 0; data[i + 3] = 255; }
+                    }
+                    finalCtx.putImageData(imageData, 0, 0);
+
+                    const maskBase64 = finalCanvas.toDataURL('image/png');
+
+                    // Save to the specific reference item
+                    if (currentEditingIndex >= 0 && referenceImagesData[currentEditingIndex]) {
+                        referenceImagesData[currentEditingIndex].mask = maskBase64;
+                        referenceImagesData[currentEditingIndex].hasMask = true;
+                        renderReferencePreviews();
+                        showStatus('遮罩已应用到图片', 'success');
+                    }
+
+                    closeInpaintingModal();
+                };
+            }
+        });
 
         function removeReferenceImage(event, index) {
             event.stopPropagation();
@@ -2257,14 +2491,28 @@
             if (files && files.length > 0) processImageFiles(files);
         });
 
-        // Style presets
-        document.querySelectorAll('.style-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const style = tag.dataset.style; const prompt = document.getElementById('prompt'); tag.classList.toggle('active');
-                if (tag.classList.contains('active')) { prompt.value = prompt.value.trim() ? prompt.value.trim() + ', ' + style : style; }
-                else { prompt.value = prompt.value.split(', ').filter(s => s !== style).join(', '); }
-            });
-        });
+        // Style presets - toggle function called by onclick
+        function toggleStylePreset(btn) {
+            const style = btn.dataset.style;
+            const promptEl = document.getElementById('prompt');
+            const isCurrentlyActive = btn.classList.contains('active');
+
+            if (isCurrentlyActive) {
+                // Remove the style from prompt using string replace
+                btn.classList.remove('active');
+                let current = promptEl.value;
+                // Try to remove ", style" or "style, " or just "style"
+                current = current.replace(', ' + style, '');
+                current = current.replace(style + ', ', '');
+                current = current.replace(style, '');
+                promptEl.value = current.trim();
+            } else {
+                // Add the style to prompt
+                btn.classList.add('active');
+                const current = promptEl.value.trim();
+                promptEl.value = current ? current + ', ' + style : style;
+            }
+        }
 
         // Templates
         const templates = {
@@ -2293,11 +2541,242 @@
             hint.textContent = '📐 输出分辨率: ' + res;
         }
 
+        // Tutorial Logic
+        var tutorialSteps = [
+            {
+                element: null, // Global welcome
+                title: "欢迎使用 Banana Draw",
+                content: "在这里，您可以通过 AI 释放无限创意。让我们花 1 分钟了解如何生成独特的图像。",
+                position: "center"
+            },
+            {
+                element: "#stylePresets",
+                title: "1. 风格预设",
+                content: "不知道怎么写提示词？点击这些风格标签，快速为您的创作定下基调。再次点击即可移除及取消。",
+                position: "bottom"
+            },
+            {
+                element: "#prompt",
+                title: "2. 描述您的创意",
+                content: "在这里输入您想要生成的画面描述。支持中文，越详细效果越好！",
+                position: "bottom"
+            },
+            {
+                element: "#optimizeBtn",
+                title: "3. 智能优化 (神器)",
+                content: "强烈推荐！点击这个魔法棒，AI 会自动帮您扩写和润色提示词，让画面细节更丰富。",
+                position: "bottom"
+            },
+            {
+                element: "#imageUploadArea",
+                title: "4. 参考图 (可选)",
+                content: "想要生成特定构图或风格？上传一张参考图，AI 会参考它的特征来创作。",
+                position: "right"
+            },
+            {
+                element: "#generateBtn",
+                title: "5. 开始生成",
+                content: "一切准备就绪，点击生成！稍等片刻，奇迹就会发生。",
+                position: "top"
+            },
+            {
+                element: "#resultArea",
+                title: "6. 结果区域",
+                content: "生成的图片将显示在这里。您可以预览、下载，或点击历史记录中的图片进行更多操作。",
+                position: "left"
+            },
+            {
+                element: "#historySection",
+                title: "7. 历史记录",
+                content: "所有生成的图片都会保存在这里。点击可查看详情、重用提示词或用作参考图。开始创作吧！",
+                position: "top",
+                showHidden: true
+            }
+        ];
+
+        var inpaintingTutorialSteps = [
+            {
+                element: null,
+                title: "欢迎使用局部重绘",
+                content: "局部重绘可以修复图片中的小瑕疵。用画笔涂抹想要修改的区域，AI 会重新绘制这些部分。",
+                position: "center"
+            },
+            {
+                element: "#inpaintToolbar",
+                title: "1. 工具栏",
+                content: "调节笔刷大小，选择画笔或橡皮擦。画笔用于标记修改区域，橡皮擦用于撤销标记。",
+                position: "top"
+            },
+            {
+                element: "#editorCanvasContainer",
+                title: "2. 绘制遮罩",
+                content: "在图片上涂抹（红色区域）。这些区域会被 AI 重新绘制，未涂抹区域保持不变。",
+                position: "bottom"
+            },
+            {
+                element: null,
+                title: "3. 完成操作",
+                content: "涂抹完成后，点击右上角绿色 ✓ 按钮应用遮罩，或点击红色 ✕ 按钮取消。",
+                position: "center"
+            }
+        ];
+
+        var currentStepIndex = 0;
+        var isTutorialActive = false;
+        var currentTutorialSet = tutorialSteps;
+
+        function initTutorial() {
+            if (!localStorage.getItem('bananaDrawTutorialComplete')) {
+                // Short delay to ensure loading
+                setTimeout(() => startTutorial(), 1000);
+            }
+        }
+
+        function startTutorial(isSubTutorial = false) {
+            isTutorialActive = true;
+            currentStepIndex = 0;
+            currentTutorialSet = isSubTutorial ? inpaintingTutorialSteps : tutorialSteps;
+
+            document.getElementById('tutorialOverlay').classList.add('active');
+            showStep(currentStepIndex);
+        }
+
+        function startInpaintingTutorial() {
+            if (!localStorage.getItem('bananaDrawInpaintingTutorialComplete')) {
+                setTimeout(() => startTutorial(true), 500);
+            }
+        }
+
+        function nextTutorialStep() {
+            if (currentStepIndex < currentTutorialSet.length - 1) {
+                currentStepIndex++;
+                showStep(currentStepIndex);
+            } else {
+                endTutorial();
+            }
+        }
+
+        function showStep(index) {
+            const step = currentTutorialSet[index];
+            const tooltip = document.getElementById('tutorialTooltip');
+            const spotlight = document.getElementById('tutorialSpotlight');
+            const titleEl = document.getElementById('tutorialTitle');
+            const contentEl = document.getElementById('tutorialContent');
+            const badgeEl = document.getElementById('tutorialBadge');
+            const nextBtn = document.getElementById('tutorialNextBtn');
+
+            // Update Content
+            titleEl.textContent = step.title;
+            contentEl.textContent = step.content;
+            badgeEl.textContent = `${index + 1}/${currentTutorialSet.length}`;
+            nextBtn.textContent = index === currentTutorialSet.length - 1 ? "完成" : "下一步";
+
+            // Position Logic
+            if (!step.element) {
+                // Center / Welcome step
+                spotlight.style.opacity = '0';
+                tooltip.style.top = '50%';
+                tooltip.style.left = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+                tooltip.classList.add('visible');
+            } else {
+                const targetEl = document.querySelector(step.element);
+                if (targetEl) {
+                    // Show hidden elements temporarily for tutorial
+                    if (step.showHidden && targetEl.style.display === 'none') {
+                        targetEl.style.display = 'block';
+                        targetEl.dataset.tutorialHidden = 'true';
+                    }
+
+                    // First scroll to element, then position after scroll completes
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // Wait for scroll to complete, then position elements
+                    setTimeout(() => {
+                        const rect = targetEl.getBoundingClientRect();
+
+                        // Set Spotlight
+                        spotlight.style.width = (rect.width + 16) + 'px';
+                        spotlight.style.height = (rect.height + 16) + 'px';
+                        spotlight.style.top = (rect.top - 8) + 'px';
+                        spotlight.style.left = (rect.left - 8) + 'px';
+                        spotlight.style.opacity = '1';
+
+                        // Set Tooltip Position
+                        let top, left;
+                        const gap = 20;
+
+                        if (step.position === 'bottom') {
+                            top = rect.bottom + gap;
+                            left = rect.left + (rect.width / 2) - 160;
+                        } else if (step.position === 'top') {
+                            top = rect.top - 180 - gap; // Approximate tooltip height
+                            left = rect.left + (rect.width / 2) - 160;
+                        } else if (step.position === 'right') {
+                            top = rect.top;
+                            left = rect.right + gap;
+                        } else if (step.position === 'left') {
+                            top = rect.top;
+                            left = rect.left - 320 - gap;
+                        } else {
+                            top = rect.bottom + gap;
+                            left = rect.left;
+                        }
+
+                        // Boundary checks
+                        if (left < 20) left = 20;
+                        if (left + 320 > window.innerWidth) left = window.innerWidth - 340;
+                        if (top < 20) top = 20;
+                        if (top + 200 > window.innerHeight) top = window.innerHeight - 220;
+
+                        tooltip.style.transform = 'none';
+                        tooltip.style.top = top + 'px';
+                        tooltip.style.left = left + 'px';
+                        tooltip.classList.add('visible');
+                    }, 400); // Wait for scroll animation
+                } else {
+                    // Element not found - skip or fallback
+                    console.warn('Tutorial element not found:', step.element);
+                    // center tooltip as fallback
+                    spotlight.style.opacity = '0';
+                    tooltip.style.top = '50%';
+                    tooltip.style.left = '50%';
+                    tooltip.style.transform = 'translate(-50%, -50%)';
+                    tooltip.classList.add('visible');
+                }
+            }
+        }
+
+        function skipTutorial() {
+            endTutorial();
+        }
+
+        function endTutorial() {
+            isTutorialActive = false;
+            document.getElementById('tutorialOverlay').classList.remove('active');
+            document.getElementById('tutorialTooltip').classList.remove('visible');
+            document.getElementById('tutorialSpotlight').style.opacity = '0';
+
+            // Restore hidden elements that were shown for tutorial
+            document.querySelectorAll('[data-tutorial-hidden="true"]').forEach(el => {
+                el.style.display = 'none';
+                delete el.dataset.tutorialHidden;
+            });
+
+            if (currentTutorialSet === tutorialSteps) {
+                localStorage.setItem('bananaDrawTutorialComplete', 'true');
+            } else {
+                localStorage.setItem('bananaDrawInpaintingTutorialComplete', 'true');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', initTutorial);
+
         function switchProvider() {
             const provider = document.getElementById('apiProvider').value;
             const modelGroup = document.getElementById('modelGroup');
             const endpointGroup = document.getElementById('endpointGroup');
-            const aspectRatioGroup = document.getElementById('aspectRatioGroup');
             const advancedToggle = document.querySelector('.advanced-toggle');
             const apiKeyInput = document.getElementById('apiKey');
             const apiKeyHint = document.getElementById('apiKeyHint');
@@ -2315,6 +2794,7 @@
             const cfgGroup = document.getElementById('cfgGroup');
 
             const resolutionHint = document.getElementById('resolutionHint');
+            const aspectRatioGroup = document.getElementById('aspectRatioGroup');
 
             if (provider === 'gemini') {
                 modelGroup.style.display = 'none';
@@ -2388,7 +2868,8 @@
                 referenceImageGroup.style.display = 'block';
                 providerNote.style.display = 'none';
             }
-            localStorage.setItem('ai-draw-provider', provider); updateApiKeyUI();
+            localStorage.setItem('ai-draw-provider', provider);
+            updateApiKeyUI();
         }
 
         function toggleApiKeyVisibility() {
@@ -2552,6 +3033,8 @@
             const safetySettings = document.getElementById('safetySettings').value;
 
             // Gemini 支持多模态图生图 (Array of images)
+            // Note: Gemini Inpainting is not standard, mainly edit via prompt with images. 
+            // We pass the mask in the object, assuming backend or model handles it if capable.
             const response = await fetch('/api/image/gemini', {
                 method: 'POST',
                 headers: headers,
@@ -2576,6 +3059,19 @@
             const input = { prompt: prompt, width: width, height: height, num_inference_steps: steps, guidance_scale: cfgScale };
             if (negativePrompt) input.negative_prompt = negativePrompt;
             if (seed !== -1) input.seed = seed;
+
+            // Check for Reference Image & Mask
+            if (referenceImagesData.length > 0) {
+                // Replicate Inpainting logic usually requires: image (init) + mask
+                // We take the first one for simplicity
+                const ref = referenceImagesData[0];
+                input.image = ref.preview; // Base64
+                if (ref.mask) {
+                    input.mask = ref.mask; // Base64
+                    // Some models use 'mask_image'
+                    input.mask_image = ref.mask;
+                }
+            }
             const headers = { 'Content-Type': 'application/json' }; if (userToken) headers['Authorization'] = `Bearer ${userToken}`;
             const createResponse = await fetch('/api/image/replicate', { method: 'POST', headers: headers, body: JSON.stringify({ apiKey: apiKey || undefined, model: modelKey, input: input }) });
             const createResult = await createResponse.json();
@@ -2596,6 +3092,24 @@
         async function generateWithCustomEndpoint(apiKey, prompt, negativePrompt, width, height, steps, cfgScale, seed, loadingText) {
             const endpoint = document.getElementById('endpoint').value.trim(); loadingText.textContent = '正在连接服务器...';
             const body = { prompt: prompt, negative_prompt: negativePrompt || '', width: width, height: height, steps: steps, cfg_scale: cfgScale, seed: seed === -1 ? -1 : seed };
+
+            // Check for Reference Image & Mask (SD WebUI API structure)
+            if (referenceImagesData.length > 0) {
+                const ref = referenceImagesData[0];
+                body.init_images = [ref.base64]; // SD WebUI expects array of base64 strings (no data header usually, but depends on proxy)
+                // Or just pass the full dataURL if proxy handles it. Let's assume proxy handles standard SD args.
+                // Actually our helper has full dataURL in .preview, and .base64 without header? 
+                // compressImageUrl returns dataURL. 
+                // Let's use the .preview (dataURL) as safe bet, or .base64 if SD requires raw. 
+                // Let's check logic: useAsReference sets { base64: b64, mimeType: mime, preview: ... }
+
+                body.init_images = [ref.preview];
+
+                if (ref.mask) {
+                    body.mask = ref.mask;
+                    body.inpainting_fill = 1; // Default fill mode (original)
+                }
+            }
             const response = await fetch('/api/image/proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: endpoint, apiKey: apiKey || undefined, body: body }) });
             const result = await response.json();
             if (!response.ok || result.error) throw new Error(result.error || '请求失败');
@@ -2982,6 +3496,347 @@
             document.getElementById('resultArea').classList.add('has-image');
             document.getElementById('resultActions').style.display = 'flex';
         }
+    </script>
+
+    <!-- Inpainting Editor Modal -->
+    <div id="inpaintingModal" class="lightbox-overlay"
+        style="display: none; padding: 20px; background: rgba(13, 13, 18, 0.4) !important;">
+        <div class="panel"
+            style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 0; overflow: hidden; background: rgba(20, 20, 30, 0.2); backdrop-filter: saturate(180%) blur(50px); -webkit-backdrop-filter: saturate(180%) blur(50px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);">
+            <!-- Floating Action Buttons -->
+            <div style="position: absolute; top: 20px; right: 20px; z-index: 10020; display: flex; gap: 12px;">
+                <button class="btn" id="inpaintCancelBtn" onclick="closeInpaintingModal()"
+                    style="position: relative; z-index: 10020; pointer-events: auto !important; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border-radius: 50%; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(239, 68, 68, 0.9); border: 2px solid rgba(255,255,255,0.3); color: white;"
+                    title="取消">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
+                </button>
+                <button class="btn" onclick="saveInpaintingMask()"
+                    style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border-radius: 50%; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);"
+                    title="应用遮罩">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Canvas Area -->
+            <div style="flex: 1; display: flex; justify-content: center; align-items: center; background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px), radial-gradient(circle at 50% 50%, var(--glow-color), transparent 70%); background-size: 30px 30px, 30px 30px, 100% 100%; background-position: center; position: relative; overflow: hidden;"
+                id="editorCanvasContainer">
+                <div style="position: relative; display: inline-block; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+                    <img id="editorBaseImage"
+                        style="display: block; max-width: 90vw; max-height: 75vh; object-fit: contain; pointer-events: none; user-select: none;">
+                    <canvas id="inpaintingCanvas"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none;"></canvas>
+                </div>
+            </div>
+
+            <div id="inpaintToolbar" class="toolbar"
+                style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; align-items: center; background: var(--card-bg); padding: 12px 25px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 20px var(--glow-color); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); cursor: move; user-select: none;">
+                <div class="tool-group"
+                    style="display: flex; align-items: center; gap: 12px; color: var(--text-primary); border-right: 1px solid rgba(255,255,255,0.1); padding-right: 20px;">
+                    <span style="font-size: 0.9rem; opacity: 0.7;">笔刷</span>
+                    <input type="range" id="brushSize" min="5" max="150" value="40"
+                        style="width: 100px; accent-color: var(--accent-blue);">
+                    <span id="brushSizeLabel"
+                        style="width: 45px; text-align: right; font-size: 0.85rem; opacity: 0.8;">40px</span>
+                </div>
+
+                <div class="tool-group" style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" id="brushBtn" onclick="setInpaintingTool('brush')"
+                        style="display: flex; justify-content: center; align-items: center; padding: 0; border-radius: 50%; width: 44px; height: 44px;"
+                        title="画笔">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M18.37 2.63 14 7l-1.59-1.59a2 2 0 0 0-2.82 0L8 7l9 9 1.59-1.59a2 2 0 0 0 0-2.82L17 10l4.37-4.37a2.12 2.12 0 1 0-3-3Z">
+                            </path>
+                            <path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-7"></path>
+                            <path d="M14.5 17.5 4.5 15"></path>
+                        </svg>
+                    </button>
+                    <button class="btn btn-secondary" id="eraserBtn" onclick="setInpaintingTool('eraser')"
+                        style="display: flex; justify-content: center; align-items: center; padding: 0; border-radius: 50%; width: 44px; height: 44px;"
+                        title="橡皮擦">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21">
+                            </path>
+                            <path d="M22 21H7"></path>
+                            <path d="m5 11 9 9"></path>
+                        </svg>
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearInpaintingMask()"
+                        style="display: flex; justify-content: center; align-items: center; padding: 0; border-radius: 50%; width: 44px; height: 44px; color: #ff6b6b;"
+                        title="清空画布">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inpainting State
+        let currentMaskData = null;
+        let isInpaintingEditorOpen = false;
+        let inpaintingCtx = null;
+        let isDrawingMask = false;
+        let isEraserMode = false;
+        let editorBrushSize = 40;
+
+        function openInpaintingEditor(imageSrc) {
+            const modal = document.getElementById('inpaintingModal');
+            const baseImg = document.getElementById('editorBaseImage');
+            const canvas = document.getElementById('inpaintingCanvas');
+
+            // Show modal with animation
+            modal.style.display = 'flex';
+            requestAnimationFrame(() => {
+                modal.classList.add('show');
+            });
+            isInpaintingEditorOpen = true;
+
+            // Generate canvas context if not exists
+            if (!inpaintingCtx) {
+                inpaintingCtx = canvas.getContext('2d');
+                setupCanvasEvents(canvas);
+            }
+
+            // Load Image
+            baseImg.onload = () => {
+                // Resize canvas to match displayed image dimensions
+                const rect = baseImg.getBoundingClientRect();
+                canvas.width = baseImg.naturalWidth;
+                canvas.height = baseImg.naturalHeight;
+
+                // Match visual size
+                canvas.style.width = rect.width + 'px';
+                canvas.style.height = rect.height + 'px';
+
+                inpaintingCtx.lineCap = 'round';
+                inpaintingCtx.lineJoin = 'round';
+
+                // Trigger tutorial after layout is ready
+                startInpaintingTutorial();
+            };
+            baseImg.src = imageSrc;
+
+            // Clear previous mask unless we want to allow editing existing one (todo)
+            clearInpaintingMask();
+        }
+
+        function closeInpaintingModal() {
+            // End tutorial if active
+            if (isTutorialActive && currentTutorialSet === inpaintingTutorialSteps) {
+                endTutorial();
+            }
+
+            const modal = document.getElementById('inpaintingModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 400); // Match CSS transition duration
+            isInpaintingEditorOpen = false;
+        }
+
+        function setupCanvasEvents(canvas) {
+            canvas.addEventListener('mousedown', startDrawingMask);
+            canvas.addEventListener('mousemove', drawMask);
+            canvas.addEventListener('mouseup', stopDrawingMask);
+            canvas.addEventListener('mouseout', stopDrawingMask);
+
+            const brushInput = document.getElementById('brushSize');
+            const updateBrushLabel = () => {
+                editorBrushSize = parseInt(brushInput.value);
+                const label = document.getElementById('brushSizeLabel');
+                if (label) {
+                    label.textContent = editorBrushSize + 'px';
+                }
+            };
+
+            brushInput.addEventListener('input', updateBrushLabel);
+            // Init label
+            updateBrushLabel();
+
+            // Setup toolbar dragging
+            setupToolbarDrag();
+        }
+
+        function setupToolbarDrag() {
+            const toolbar = document.getElementById('inpaintToolbar');
+            if (!toolbar) return;
+
+            let isDragging = false;
+            let hasMoved = false;
+            let offsetX, offsetY;
+            let initialStyles = {};
+
+            toolbar.addEventListener('mousedown', (e) => {
+                // Only start drag if clicking on toolbar itself or non-interactive elements
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'SVG' || e.target.tagName === 'path') return;
+
+                isDragging = true;
+                hasMoved = false;
+
+                const toolbarRect = toolbar.getBoundingClientRect();
+
+                // Calculate offset from mouse to toolbar corner
+                offsetX = e.clientX - toolbarRect.left;
+                offsetY = e.clientY - toolbarRect.top;
+
+                // Store initial styles to restore if no movement
+                initialStyles = {
+                    left: toolbar.style.left,
+                    top: toolbar.style.top,
+                    bottom: toolbar.style.bottom,
+                    transform: toolbar.style.transform
+                };
+
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                // Apply position style changes only on first move
+                if (!hasMoved) {
+                    hasMoved = true;
+                    toolbar.style.bottom = 'auto';
+                    toolbar.style.transform = 'none';
+                }
+
+                const parent = toolbar.offsetParent || document.body;
+                const parentRect = parent.getBoundingClientRect();
+
+                // Calculate new position relative to parent
+                const newLeft = e.clientX - parentRect.left - offsetX;
+                const newTop = e.clientY - parentRect.top - offsetY;
+
+                toolbar.style.left = newLeft + 'px';
+                toolbar.style.top = newTop + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        }
+
+        function startDrawingMask(e) {
+            isDrawingMask = true;
+            drawMask(e);
+        }
+
+        function drawMask(e) {
+            if (!isDrawingMask) return;
+
+            const canvas = document.getElementById('inpaintingCanvas');
+            const rect = canvas.getBoundingClientRect();
+
+            // Map client coords to canvas internal coords
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            inpaintingCtx.lineWidth = editorBrushSize * scaleX; // Adjust brush size by scale
+
+            if (isEraserMode) {
+                inpaintingCtx.globalCompositeOperation = 'destination-out';
+            } else {
+                inpaintingCtx.globalCompositeOperation = 'source-over';
+                inpaintingCtx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            }
+
+            inpaintingCtx.lineTo(x, y);
+            inpaintingCtx.stroke();
+            inpaintingCtx.beginPath();
+            inpaintingCtx.moveTo(x, y);
+        }
+
+        function stopDrawingMask() {
+            isDrawingMask = false;
+            inpaintingCtx.beginPath();
+        }
+
+        function setInpaintingTool(tool) {
+            isEraserMode = (tool === 'eraser');
+            document.getElementById('brushBtn').classList.toggle('active', !isEraserMode);
+            document.getElementById('eraserBtn').classList.toggle('active', isEraserMode);
+
+            // Visual feedback
+            const activeColor = 'var(--accent-blue)';
+            document.getElementById('brushBtn').style.background = !isEraserMode ? activeColor : '';
+            document.getElementById('eraserBtn').style.background = isEraserMode ? activeColor : '';
+        }
+
+        function clearInpaintingMask() {
+            if (inpaintingCtx) {
+                const canvas = document.getElementById('inpaintingCanvas');
+                inpaintingCtx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function saveInpaintingMask() {
+            const canvas = document.getElementById('inpaintingCanvas');
+
+            // Generate Binary Mask
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = canvas.width;
+            finalCanvas.height = canvas.height;
+            const finalCtx = finalCanvas.getContext('2d');
+
+            // Fill Black
+            finalCtx.fillStyle = '#000000';
+            finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+            // Draw Strokes
+            finalCtx.drawImage(canvas, 0, 0);
+
+            // Threshold to Pure White
+            const imageData = finalCtx.getImageData(0, 0, finalCanvas.width, finalCanvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] > 20) { // If visible
+                    data[i] = 255; data[i + 1] = 255; data[i + 2] = 255; data[i + 3] = 255;
+                } else {
+                    data[i] = 0; data[i + 1] = 0; data[i + 2] = 0; data[i + 3] = 255;
+                }
+            }
+            finalCtx.putImageData(imageData, 0, 0);
+
+            // Save Base64
+            currentMaskData = finalCanvas.toDataURL('image/png');
+
+            showStatus('局部重绘遮罩已保存', 'success');
+            closeInpaintingModal();
+
+            // Update UI to show mask is active
+            updateReferencePreviewUI();
+        }
+
+        function updateReferencePreviewUI() {
+            // To be called when mask is saved to show an indicator
+            const containers = document.querySelectorAll('.upload-preview');
+            containers.forEach(div => {
+                if (!div.querySelector('.mask-badge')) {
+                    // Add visual indicator (logic needs to verify if this image is the one masked)
+                    // For simplicity now, we assume single reference image flow for inpainting
+                }
+            });
+        }
+
     </script>
 
     <!-- Toast Notification (Outside of any panel to avoid stacking context issues) -->
