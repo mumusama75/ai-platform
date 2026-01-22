@@ -1,19 +1,50 @@
 # 依赖
 node_modules/
+.venv/
+__pycache__/
 
 # 环境变量（敏感信息）
 .env
 .env.local
 .env.production
 
+# 数据库
+data/database.sqlite
+data/*.sqlite
+*.sqlite
+
+# 生成的文件
+data/generated_images/
+data/avatars/
+
 # 系统文件
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
 # 日志
 *.log
 npm-debug.log*
+logs/
 
 # 编辑器
 .vscode/
 .idea/
+*.sublime-*
+
+# 构建输出
+dist/
+build/
+
+# 测试覆盖率
+coverage/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# Claude/Gemini AI 配置
+.claude/
+.gemini/

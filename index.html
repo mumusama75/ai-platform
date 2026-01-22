@@ -1,5 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
+<script>
+    // CRITICAL: Set theme IMMEDIATELY before any CSS loads
+    (function () {
+        var t = localStorage.getItem('ai-hub-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+</script>
 
 <head>
     <meta charset="UTF-8">
@@ -7,9 +14,73 @@
     <title>AI Hub - 你的创意无限可能</title>
     <link rel="stylesheet" href="styles/home.css">
     <!-- Favicon placeholders if any, keeping it simple for now -->
+    <link rel="stylesheet" href="styles/loading.css">
+    <style>
+        /* CRITICAL: Force hide navbar immediately to prevent flash */
+        html.html-loading .navbar,
+        body:not(.navbar-ready) .navbar {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+    <script>
+        // Immediately apply loading class to prevent navbar flash
+        document.documentElement.classList.add('html-loading');
+    </script>
+    <script src="scripts/loading.js"></script>
 </head>
 
-<body>
+<body class="is-loading">
+
+    <!-- Loading Effect Elements -->
+    <div id="initial-curtain"></div>
+    <div id="loader-transformer">
+
+
+        <div id="loader-fill"></div>
+        <!-- Future Navbar Content (Hidden during loading, revealed after morph) -->
+        <!-- Future Navbar Content (Hidden during loading, revealed after morph) -->
+        <div class="nav-content"
+            style="display: flex; justify-content: space-between; align-items: center; height: 100%; padding: 0 20px; width: 100%; color: var(--text-primary);">
+
+            <!-- 1. Logo (Matches Real Nav) -->
+            <a href="#" style="font-weight: 600; font-size: 16px; color: inherit; text-decoration: none;">AI Hub</a>
+
+            <!-- 2. Links (Matches Real Nav .nav-links) -->
+            <div class="nav-links">
+                <a href="#">概览</a>
+                <a href="#">对话</a>
+                <a href="#">绘图</a>
+                <a href="#">社区</a>
+            </div>
+
+            <!-- 3. Actions (Matches Real Nav .nav-actions) -->
+            <!-- We clone this so it takes up EXACT same space AND is visible -->
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <!-- Fake Theme Toggle (Visual only) -->
+                <button class="theme-toggle"
+                    style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;">
+                    <!-- Default to Sun (Dark mode default) matches line 27 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                <!-- Fake Login Button -->
+                <a href="#" class="btn btn-primary"
+                    style="padding: 6px 16px; font-size: 12px; text-decoration: none;">登录</a>
+            </div>
+        </div>
+    </div>
 
     <nav class="navbar">
         <div class="nav-content">
@@ -47,25 +118,56 @@
     </nav>
 
     <section class="hero">
-        <div class="fade-in-up">
-            <h1>你的创意。<br>无限可能。</h1>
-            <h2>Gemini 2.0 驱动，探索 AI 的极限。</h2>
-            <div class="cta-buttons" style="justify-content: center;">
-                <button class="btn btn-primary" onclick="window.location.href='gemini-chat.html'">开始对话</button>
-                <button class="btn btn-outline" onclick="window.location.href='banana-draw.html'">去创作</button>
-            </div>
+        <!-- Staggered Animation Container -->
+        <h1 class="hero-title">
+            <span class="hero-reveal delay-1">你的创意</span><br>
+            <span class="hero-reveal delay-2">无限可能</span>
+        </h1>
+        <h2 class="hero-reveal delay-3">Gemini 2.0 驱动，探索 AI 的极限。</h2>
+
+        <!-- Smart Input -->
+        <div class="input-wrapper hero-reveal delay-4"
+            style="margin: 60px auto; width: 100%; max-width: 700px; position: relative;">
+            <input type="text" class="smart-input" id="heroInput" placeholder="试着输入: 帮我写一首诗..." autocomplete="off">
+            <button class="action-btn" id="submitBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+
+        </div>
+
+        <div class="cta-buttons hero-reveal delay-5" style="justify-content: center;">
+            <button class="btn btn-primary" onclick="window.location.href='gemini-chat.html'">开始对话</button>
+            <button class="btn btn-outline" onclick="window.location.href='banana-draw.html'">去创作</button>
+        </div>
+        <div class="scroll-indicator hero-reveal delay-6">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+            </svg>
         </div>
     </section>
 
     <section class="bento-section">
-        <div class="section-header fade-in-up">
+        <div class="section-header hero-reveal delay-1">
             <h3>探索更多。</h3>
             <p style="color: var(--text-secondary); font-size: 19px;">一个平台，满足你所有 AI 需求。</p>
         </div>
 
         <div class="bento-grid">
             <!-- 聊天卡片 (大) -->
-            <div class="bento-card span-2 highlight fade-in-up" onclick="window.location.href='gemini-chat.html'">
+            <div class="bento-card span-2 highlight hero-reveal delay-2"
+                onclick="window.location.href='gemini-chat.html'">
+                <div class="preview-layer">
+                    <div class="chat-container">
+                        <div class="bubble bubble-user">写一首关于秋天的诗</div>
+                        <div class="bubble bubble-ai">当然。金色的落叶...</div>
+                        <div class="bubble bubble-ai bubble-ai-2" style="width: 60%">...铺满了回家的路。</div>
+                    </div>
+                </div>
                 <div class="card-content">
                     <div class="card-eyebrow">Gemini Flash 2.0</div>
                     <div class="card-title">智能对话</div>
@@ -73,27 +175,57 @@
                 </div>
             </div>
 
-            <!-- 绘图卡片 (中) -->
-            <div class="bento-card span-2 fade-in-up" onclick="window.location.href='image.html'">
+            <!-- Banana Studio (Moved to Slot 2) -->
+            <div class="bento-card span-2 hero-reveal delay-2" onclick="window.location.href='banana-draw.html'"
+                style="overflow: hidden;">
+                <div class="preview-layer">
+                    <div class="gallery-track">
+                        <div class="gallery-item img-1"></div>
+                        <div class="gallery-item img-2"></div>
+                        <div class="gallery-item img-3"></div>
+                        <div class="gallery-item img-4"></div>
+                        <div class="gallery-item img-1"></div>
+                        <div class="gallery-item img-2"></div>
+                    </div>
+                </div>
                 <div class="card-content">
-                    <div class="card-eyebrow">Imagen 3 & SDXL</div>
-                    <div class="card-title">AI 绘图</div>
-                    <div class="card-desc">输入文字，即刻生成电影级画质图像。支持多种风格预设。</div>
+                    <div class="card-eyebrow">全新推出</div>
+                    <div class="card-title">Nano Banana</div>
+                    <div class="card-desc">专为创作者打造并在本地运行的强大绘图工作台。</div>
                 </div>
             </div>
 
-            <!-- 工作室 (通栏) -->
-            <div class="bento-card span-4 fade-in-up" style="min-height: 300px;"
-                onclick="window.location.href='banana-draw.html'">
+            <!-- Creator Community (Moved to Slot 3 - Wide) -->
+            <div class="bento-card span-4 hero-reveal delay-3" style="min-height: 300px;"
+                onclick="window.location.href='forum.html'">
+                <div class="preview-layer">
+                    <div class="community-tags">
+                        <div class="tag-pill">#Prompt</div>
+                        <div class="tag-pill">#AI_Art</div>
+                        <div class="tag-pill">#Inspiration</div>
+                        <div class="tag-pill">#Tutorial</div>
+                        <div class="tag-pill">#Showcase</div>
+                        <div class="tag-pill">#Community</div>
+                    </div>
+                </div>
                 <div class="card-content" style="max-width: 50%;">
-                    <div class="card-eyebrow">全新推出</div>
-                    <div class="card-title">香蕉工作室</div>
-                    <div class="card-desc">专为创作者打造并在本地运行的强大绘图工作台。实时预览，无限画布。</div>
+                    <div class="card-eyebrow">加入我们</div>
+                    <div class="card-title">创作者社区</div>
+                    <div class="card-desc">分享你的 Prompt，寻找灵感，与数千名创作者交流心得。</div>
                 </div>
             </div>
 
             <!-- 音乐 (小) -->
-            <div class="bento-card fade-in-up" onclick="window.location.href='music.html'">
+            <div class="bento-card hero-reveal delay-4" onclick="window.location.href='music.html'">
+                <div class="preview-layer">
+                    <div class="equalizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
                 <div class="card-content">
                     <div class="card-title">AI 音乐</div>
                     <div class="card-desc">Suno 强力驱动。</div>
@@ -101,25 +233,79 @@
             </div>
 
             <!-- 视频 (小) -->
-            <div class="bento-card fade-in-up" onclick="window.location.href='video.html'">
+            <div class="bento-card hero-reveal delay-4" onclick="window.location.href='video.html'">
                 <div class="card-content">
                     <div class="card-title">AI 视频</div>
                     <div class="card-desc">文字生成大片。</div>
                 </div>
             </div>
 
-            <!-- 社区 (中) -->
-            <div class="bento-card span-2 fade-in-up" onclick="window.location.href='forum.html'">
+            <!-- AI Drawing (Moved to Slot 6) -->
+            <div class="bento-card span-2 hero-reveal delay-4" onclick="window.location.href='image.html'">
                 <div class="card-content">
-                    <div class="card-title">创作者社区</div>
-                    <div class="card-desc">分享你的 Prompt，寻找灵感，与数千名创作者交流。</div>
+                    <div class="card-eyebrow">Imagen 3 & SDXL</div>
+                    <div class="card-title">AI 绘图</div>
+                    <div class="card-desc">输入文字，即刻生成电影级画质图像。</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer>
-        Copyright © 2025 AI Hub Inc. 保留所有权利。隐私政策 | 使用条款
+    <footer class="site-footer">
+        <div class="footer-container fade-in-up">
+            <div class="footer-grid">
+                <!-- Brand Column -->
+                <div class="footer-brand">
+                    <h2>AI Hub</h2>
+                    <p>释放创意的无限可能。基于 Gemini 2.0 构建的下一代人工智能创作平台。</p>
+                </div>
+
+                <!-- Column 1 -->
+                <div class="footer-column">
+                    <h3>产品</h3>
+                    <ul class="footer-links">
+                        <li><a href="gemini-chat.html">智能对话</a></li>
+                        <li><a href="image.html">AI 绘图</a></li>
+                        <li><a href="music.html">音乐生成</a></li>
+                        <li><a href="video.html">视频生成</a></li>
+                        <li><a href="banana-draw.html">香蕉工作室</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="footer-column">
+                    <h3>资源</h3>
+                    <ul class="footer-links">
+                        <li><a href="forum.html">社区论坛</a></li>
+                        <li><a href="#">帮助中心</a></li>
+                        <li><a href="#">开发文档</a></li>
+                        <li><a href="#">Prompt 指南</a></li>
+                        <li><a href="#">博客</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div class="footer-column">
+                    <h3>公司</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">关于我们</a></li>
+                        <li><a href="#">加入我们</a></li>
+                        <li><a href="#">联系方式</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">服务条款</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    &copy; 2025 AI Hub Inc. All rights reserved.
+                </div>
+                <div class="made-with-badge">
+                    Made By MU STUDIO
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script src="scripts/layout.js"></script>
