@@ -36,14 +36,21 @@ async function getDb() {
         return db;
     }
 
-    const dbPath = path.join(__dirname, '../../data', 'database.sqlite');
+    // Check if running in Vercel/Postgres environment
+    if (process.env.POSTGRES_URL) {
+        console.log('Connecting to Vercel Postgres...');
+        db = require('./postgres-adapter');
+    } else {
+        // Fallback to SQLite (Local Development)
+        const dbPath = path.join(__dirname, '../../data', 'database.sqlite');
+        db = await open({
+            filename: dbPath,
+            driver: sqlite3.Database
+        });
+    }
 
-    db = await open({
-        filename: dbPath,
-        driver: sqlite3.Database
-    });
-
-    // 创建表
+    // Initialize Tables
+    // Note: We use basic SQL types that are compatible or handled by our adapter
     await db.exec(`
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
@@ -105,15 +112,34 @@ async function getDb() {
         );
     `);
 
-    // 添加可能缺失的列（兼容已有数据库）
-    const columns = await db.all("PRAGMA table_info(users)");
-    const columnNames = columns.map(c => c.name);
+    // Schema Migrations (Columns)
+    // For Vercel Postgres, we might need to be careful with specific PRAGMA calls
+    // Our adapter ignores PRAGMA or we just skip this part for simplicity or handle gracefully
 
-    if (!columnNames.includes('avatar_file')) {
-        await db.exec('ALTER TABLE users ADD COLUMN avatar_file TEXT');
-    }
-    if (!columnNames.includes('password_changed_at')) {
-        await db.exec('ALTER TABLE users ADD COLUMN password_changed_at DATETIME');
+    // SQLite uses PRAGMA, Postgres uses information_schema
+    // Basic compatibility check:
+    if (!process.env.POSTGRES_URL) {
+        // SQLite specific migrations
+        const columns = await db.all("PRAGMA table_info(users)");
+        const columnNames = columns.map(c => c.name);
+
+        if (!columnNames.includes('avatar_file')) {
+            await db.exec('ALTER TABLE users ADD COLUMN avatar_file TEXT');
+        }
+        if (!columnNames.includes('password_changed_at')) {
+            await db.exec('ALTER TABLE users ADD COLUMN password_changed_at DATETIME');
+        }
+    } else {
+        // Postgres basic migration heuristic (simplified)
+        // In a real prod app, use a migration tool like drizzle-kit or prisma
+        try {
+            await db.exec(`
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_file TEXT;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMP;
+            `);
+        } catch (e) {
+            // Ignore if already exists (Postgres usually requires check first or catch)
+        }
     }
 
     return db;

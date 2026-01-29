@@ -92,13 +92,24 @@ app.use('/api/image', imageRoutes); // AI 绘图
 
 // ==================== 启动服务器 ====================
 
-// 确保必要目录存在
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+// 确保必要目录存在 (仅在本地或非只读环境)
+try {
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+    }
+} catch (error) {
+    // Ignore error in read-only environments (Vercel)
+    console.log('Skipping data dir creation (read-only fs)');
 }
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// For Vercel Serverless, we must export the app
+module.exports = app;
+
+// Only listen if run directly
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+}

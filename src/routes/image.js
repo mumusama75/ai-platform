@@ -15,7 +15,7 @@ if (!fs.existsSync(GENERATED_DIR)) {
     fs.mkdirSync(GENERATED_DIR, { recursive: true });
 }
 
-// 辅助函数: 保存图片到磁盘
+// 辅助函数: 保存图片到磁盘或云存储
 async function saveImageToDisk(imageData, userId) {
     // Determine extension and data
     let buffer;
@@ -34,8 +34,25 @@ async function saveImageToDisk(imageData, userId) {
     }
 
     const filename = `${userId}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
-    const filepath = path.join(GENERATED_DIR, filename);
 
+    // Cloud Storage (Vercel Blob)
+    // Check if we are in Vercel environment (using BLOB_READ_WRITE_TOKEN usually)
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+        try {
+            const { put } = require('@vercel/blob');
+            const blob = await put(filename, buffer, {
+                access: 'public',
+                contentType: `image/${ext}`
+            });
+            return blob.url;
+        } catch (error) {
+            console.error('Vercel Blob Upload Error:', error);
+            throw new Error('云存储上传失败');
+        }
+    }
+
+    // Local Filesystem (Fallback)
+    const filepath = path.join(GENERATED_DIR, filename);
     await fs.promises.writeFile(filepath, buffer);
     return `/data/generated_images/${filename}`;
 }
