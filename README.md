@@ -1,248 +1,153 @@
-# 🚀 AI Hub
-
 <div align="center">
 
-![AI Hub Banner](https://img.shields.io/badge/AI%20Hub-你的创意%20无限可能-667eea?style=for-the-badge&logo=openai&logoColor=white)
+<img src="assets/icons/icon_studio_flat_1768787191809.png" width="76" alt="AI Hub">
 
-**一站式 AI 创作平台** - 集对话、绘图、社区于一体
+# AI Hub
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+**AI 对话 · 图像创作 · 创作者社区**
 
-[🌐 在线体验](#在线体验) • [✨ 功能特性](#功能特性) • [🚀 快速开始](#快速开始) • [📖 文档](#使用指南) • [🤝 贡献](#贡献)
+一个使用原生 JavaScript、Express 和 SQLite 搭建的 AI 应用原型。<br>
+将第三方模型接口、用户账户、生成记录与社区交互连接到同一套 Web 界面。
+
+![Status](https://img.shields.io/badge/status-prototype-7C6FF0?style=flat-square)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=222222)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/license-MIT-64748B?style=flat-square)](LICENSE)
+
+[功能概览](#功能概览) · [本地启动](#本地启动) · [代码导览](#代码导览) · [当前边界](#当前边界)
 
 </div>
 
----
+## 项目介绍
 
-## ✨ 功能特性
+AI Hub 围绕「输入需求 → 调用模型 → 展示结果 → 保存与分享」组织功能，主要展示 AI 应用集成、前后端交互和数据持久化的实现。模型能力来自 Gemini、Replicate 等外部服务；本仓库不包含模型训练代码或自研模型权重。
 
-### 🤖 AI 对话
-- 支持 Google Gemini API
-- 多轮对话、上下文记忆
-- 代码高亮、Markdown 渲染
-- Token 统计与管理
+目前适合本地学习、代码交流与项目演示，尚未提供经过验证的公开在线体验。
 
-### 🎨 AI 绘图工作室 (Banana Draw)
-- Gemini 多模态图片生成
-- Replicate 模型支持 (Flux, SD)
-- 多参考图混合创作
-- 历史记录 & 画廊管理
-- 丰富的参数调节
+## 功能概览
 
-### 👥 创作者社区
-- 发帖 & 评论互动
-- 点赞 & 收藏
-- 分类标签筛选
-- Prompt 灵感分享
+| 模块 | 仓库中的实现 | 入口 |
+| --- | --- | --- |
+| AI 对话 | Gemini 接口代理、会话内多轮上下文、模型与生成参数选择、回复展示 | [`gemini-chat.html`](gemini-chat.html) |
+| 图像创作 | Gemini 图像生成、多参考图输入、Replicate 任务提交与轮询、自定义图像服务代理 | [`banana-draw.html`](banana-draw.html) |
+| 生成记录 | 登录后的 Gemini 生成结果保存、历史记录查询、图片文件与参数存储 | [`src/routes/image.js`](src/routes/image.js) |
+| 用户账户 | 注册登录、JWT 验证、密码哈希、个人资料、头像和按服务商管理 API Key | [`src/routes/auth.js`](src/routes/auth.js) · [`src/routes/user.js`](src/routes/user.js) |
+| 创作者社区 | 发帖、评论、点赞、分类筛选与搜索；帖子使用 JSON 文件存储 | [`forum.html`](forum.html) · [`src/routes/forum.js`](src/routes/forum.js) |
+| 工具导航 | 图像、音乐和视频工具入口；这些导航页本身不提供音乐或视频生成服务 | [`image.html`](image.html) · [`music.html`](music.html) · [`video.html`](video.html) |
 
-### 🎵 更多 AI 工具
-- AI 音乐工具导航
-- AI 视频工具导航
-- AI 图片工具聚合
+另有 [`browser-agent/`](browser-agent/) 浏览器扩展实验目录，与主站启动流程独立，不作为已验证的完整 Agent 产品。
 
----
+## 技术与数据流
 
-## 🛠️ 技术栈
+```text
+浏览器页面（HTML / CSS / JavaScript）
+          │ HTTP / JSON
+          ▼
+Express API
+  ├─ 认证与用户 ── SQLite：账户、登录记录、API Key、图片历史
+  ├─ AI 对话/绘图 ── Gemini / Replicate / 自定义端点
+  ├─ 生成图片 ── data/generated_images/
+  └─ 社区 ── data/forum.json
+```
 
-| 前端 | 后端 | 数据库 | 其他 |
-|------|------|--------|------|
-| HTML5/CSS3 | Node.js | SQLite | JWT 认证 |
-| Vanilla JS | Express.js | - | Bcrypt 加密 |
-| CSS 动画 | RESTful API | - | Rate Limiting |
+前端使用原生 JavaScript；后端使用 Express、JWT、bcryptjs、Helmet 和请求限流中间件。数据库通过 `sqlite` / `sqlite3` 访问，用户 API Key 的服务端存储使用加密函数处理。相关实现可直接从下方代码入口阅读。
 
----
+## 本地启动
 
-## 🚀 快速开始
-
-### 环境要求
-- Node.js 18+
-- npm 或 yarn
-
-### 安装步骤
+需要支持原生 `fetch` 的 Node.js（18+）和 npm，建议选择仍受维护的 Node.js LTS 版本。生成内容还需要有效的服务商 API Key、相应模型权限和可访问的网络环境；调用可能产生服务商费用。
 
 ```bash
-# 1. 克隆项目
-git clone https://github.com/your-username/ai-platform.git
+git clone https://github.com/mumusama75/ai-platform.git
 cd ai-platform
+npm ci
+```
 
-# 2. 安装依赖
-npm install
+复制环境配置模板：
 
-# 3. 配置环境变量
+```powershell
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+```bash
+# macOS / Linux
 cp .env.example .env
-# 编辑 .env 文件，填入必要的配置
+```
 
-# 4. 启动开发服务器
+编辑 `.env`，将 `JWT_SECRET` 改为随机生成、至少 32 字符的 ASCII 字符串。其余选项见 [`.env.example`](.env.example)：
+
+| 配置 | 用途 |
+| --- | --- |
+| `PORT` | Web 服务端口，默认 `3000` |
+| `JWT_SECRET` | JWT 签名，也参与现有 API Key 加密；更改后旧令牌及已保存密钥可能失效 |
+| `JWT_EXPIRES_IN` | JWT 有效期，默认 `7d` |
+| `CORS_ORIGIN` | 允许的请求来源；模板默认 `*` |
+| `NODE_ENV` | 本地使用 `development` |
+| `RATE_LIMIT_WINDOW_MS` / `RATE_LIMIT_MAX_REQUESTS` | 通用 API 限流窗口及请求数 |
+| `LOGIN_RATE_LIMIT_MAX` / `REGISTER_RATE_LIMIT_MAX` | 登录、注册的限流阈值 |
+
+```bash
 npm run dev
+# 或不使用自动重启：npm start
 ```
 
-### 环境变量配置
+在本机浏览器打开 <http://localhost:3000>。使用自定义端口时相应调整地址。
 
-```env
-# 服务器配置
-PORT=3000
-NODE_ENV=development
+1. 打开登录页注册测试账号，进入个人中心。
+2. 在个人中心配置 Gemini 或 Replicate API Key，也可使用功能页面提供的输入框。
+3. 进入对话或绘图页，执行一次小规模请求，检查结果和错误反馈。
+4. 登录后使用 Gemini 绘图，查看生成历史；进入社区体验发帖、评论与搜索。
 
-# JWT 配置 (生产环境请使用强密钥)
-JWT_SECRET=your-super-secret-key-change-in-production
-JWT_EXPIRES_IN=7d
+**API Key 配置说明：** 当前后端从请求或登录账户读取服务商密钥，不读取 `GEMINI_API_KEY`、`REPLICATE_API_TOKEN` 环境变量。不要把真实密钥写入代码、README 或提交记录。
 
-# CORS 配置
-CORS_ORIGIN=*
+## 代码导览
 
-# API Keys (用户也可在个人中心配置)
-# GEMINI_API_KEY=your-gemini-api-key
-# REPLICATE_API_TOKEN=your-replicate-token
-```
+| 路径 | 阅读重点 |
+| --- | --- |
+| [`server.js`](server.js) | 中间件、静态文件服务、API 路由注册 |
+| [`scripts/chat.js`](scripts/chat.js) | 多轮消息组织、请求状态与响应展示 |
+| [`src/routes/chat.js`](src/routes/chat.js) | Gemini 请求转换与提示词优化接口 |
+| [`src/routes/image.js`](src/routes/image.js) | 图片生成、任务轮询、文件保存与历史查询 |
+| [`src/routes/auth.js`](src/routes/auth.js) | 注册、登录、令牌与密码重置流程 |
+| [`src/routes/user.js`](src/routes/user.js) | 用户资料及服务商密钥管理 |
+| [`src/db/database.js`](src/db/database.js) | SQLite 表结构与 API Key 加解密 |
+| [`src/routes/forum.js`](src/routes/forum.js) | JSON 文件持久化与社区交互 |
+| [`styles/`](styles/) · [`assets/`](assets/) | 页面样式与静态资源 |
 
----
+<details>
+<summary>展开查看主要 API</summary>
 
-## 📁 项目结构
+| 方法 | 路径 | 用途 |
+| --- | --- | --- |
+| `POST` | `/api/register` · `/api/login` | 注册与登录 |
+| `GET` | `/api/verify` | 验证登录状态 |
+| `GET` / `PUT` | `/api/user` | 读取或更新个人资料 |
+| `GET` / `POST` | `/api/user/apikeys` | 查询密钥配置状态或保存密钥 |
+| `POST` | `/api/chat/gemini` | Gemini 对话 |
+| `POST` | `/api/chat/optimize-prompt` | 绘图提示词优化 |
+| `POST` | `/api/image/gemini` | Gemini 图像生成 |
+| `POST` / `GET` | `/api/image/replicate` · `/api/image/replicate/:id` | 创建任务与查询结果 |
+| `GET` | `/api/image/history` | 查询登录用户的生成历史 |
+| `GET` / `POST` | `/api/forum/posts` | 浏览或发布帖子 |
+| `POST` | `/api/forum/posts/:id/comments` | 发表评论 |
 
-```
-ai-platform/
-├── 📄 index.html          # 首页
-├── 📄 login.html          # 登录/注册
-├── 📄 gemini-chat.html    # AI 对话
-├── 📄 banana-draw.html    # AI 绘图工作室
-├── 📄 forum.html          # 社区论坛
-├── 📄 profile.html        # 个人中心
-├── 📄 music.html          # AI 音乐导航
-├── 📄 video.html          # AI 视频导航
-├── 📄 image.html          # AI 图片导航
-├── 📄 server.js           # Express 服务器入口
-│
-├── 📂 src/
-│   ├── 📂 routes/         # API 路由
-│   │   ├── auth.js        # 认证相关
-│   │   ├── user.js        # 用户管理
-│   │   ├── chat.js        # AI 对话
-│   │   ├── image.js       # AI 绘图
-│   │   └── forum.js       # 社区论坛
-│   ├── 📂 middleware/     # 中间件
-│   │   ├── auth.js        # JWT 验证
-│   │   └── rateLimit.js   # 请求限流
-│   └── 📂 db/             # 数据库
-│       └── database.js    # SQLite 配置
-│
-├── 📂 scripts/            # 前端脚本
-├── 📂 styles/             # 样式文件
-├── 📂 assets/             # 静态资源
-└── 📂 data/               # 数据存储
-    ├── avatars/           # 用户头像
-    └── generated_images/  # 生成的图片
-```
+接口的认证要求、请求字段和错误返回以对应路由文件为准。
 
----
+</details>
 
-## 📖 使用指南
+## 当前边界
 
-### 用户注册与登录
-1. 访问首页，点击「登录」按钮
-2. 选择注册新账号或登录已有账号
-3. 登录后可在个人中心配置 API Key
+- **第三方兼容性：** 部分模型名称写在页面或路由中，实际可用性取决于服务商接口和账号权限。当前文档不代表已完成真实 API 联调或运行验证。
+- **本地原型：** 当前静态服务覆盖仓库根目录；公开部署前需要隔离静态资源与数据目录、收紧自定义代理端点，并检查密钥和日志处理。不要直接把包含真实账户数据的实例暴露到公网。
+- **数据与密钥：** 部分页面把密钥或会话令牌存于浏览器 `localStorage`。演示请使用测试账户，并在共享设备上清理相关数据。
+- **功能范围：** 对话上下文保存在当前页面会话中，不等同于长期记忆；音乐和视频页以工具导航为主；密码重置已包含令牌流程，但尚未接入邮件发送服务。
+- **验证工作：** `package.json` 尚未配置自动化测试命令。接口回归测试、端到端流程验证和部署加固是后续完善方向。
 
-### 配置 API Key
-1. 进入「个人中心」>「API 密钥管理」
-2. 配置 Google Gemini API Key（用于对话和绘图）
-3. 可选配置 Replicate API Token（用于更多绘图模型）
+## 依赖与许可
 
-### AI 对话
-- 支持多轮连续对话
-- 可调节模型温度等参数
-- 代码自动语法高亮
+本仓库使用 [MIT 许可证](LICENSE)。Gemini、Replicate 及其他第三方服务、模型和素材仍受各自的使用条款与许可约束。
 
-### AI 绘图
-- 输入文字描述生成图片
-- 支持上传参考图（多达4张）
-- 可调节图片比例、生成数量等
-- 自动保存到历史记录
+相关技术文档：[Google Gemini API](https://ai.google.dev/) · [Replicate](https://replicate.com/docs) · [Express](https://expressjs.com/) · [SQLite](https://www.sqlite.org/docs.html)
 
----
-
-## 🔧 API 接口
-
-### 认证
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| POST | `/api/register` | 用户注册 |
-| POST | `/api/login` | 用户登录 |
-| GET | `/api/verify` | 验证 Token |
-
-### 用户
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | `/api/user/profile` | 获取个人信息 |
-| PUT | `/api/user/profile` | 更新个人信息 |
-| POST | `/api/user/apikey` | 保存 API Key |
-
-### AI 功能
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| POST | `/api/chat/gemini` | Gemini 对话 |
-| POST | `/api/image/gemini` | Gemini 图片生成 |
-| GET | `/api/image/history` | 获取绘图历史 |
-
-### 社区
-| 方法 | 路径 | 描述 |
-|------|------|------|
-| GET | `/api/forum/posts` | 获取帖子列表 |
-| POST | `/api/forum/posts` | 发布新帖子 |
-| POST | `/api/forum/posts/:id/like` | 点赞帖子 |
-
----
-
-## 🌙 主题切换
-
-支持明暗主题切换，基于 CSS 变量实现：
-
-```css
-:root[data-theme="dark"] {
-    --bg-color: #0a0a0f;
-    --text-primary: #ffffff;
-}
-
-:root[data-theme="light"] {
-    --bg-color: #f8f9fa;
-    --text-primary: #1d1d1f;
-}
-```
-
----
-
-## 🤝 贡献
-
-欢迎贡献代码！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解详情。
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
-
----
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
-
----
-
-## 🙏 致谢
-
-- [Google Gemini API](https://ai.google.dev/)
-- [Replicate](https://replicate.com/)
-- [Express.js](https://expressjs.com/)
-- [DiceBear Avatars](https://www.dicebear.com/)
-
----
-
-<div align="center">
-
-**[⬆ 回到顶部](#-ai-hub)**
-
-Made with ❤️ by AI Hub Team
-
-</div>
+欢迎通过 [Issues](https://github.com/mumusama75/ai-platform/issues) 反馈可复现的问题或改进建议；提交代码前可阅读 [贡献指南](CONTRIBUTING.md)。
